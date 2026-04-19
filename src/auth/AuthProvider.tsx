@@ -117,19 +117,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, [hydrateAuth])
 
-  const signIn = useCallback(async (email: string, password: string) => {
-    const normalizedEmail = email.trim().toLowerCase()
+  const signIn = useCallback(
+    async (email: string, password: string) => {
+      const normalizedEmail = email.trim().toLowerCase()
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email: normalizedEmail,
-      password,
-    })
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: normalizedEmail,
+        password,
+      })
 
-    if (error) {
-      console.error('Error signing in:', error)
-      throw error
-    }
-  }, [])
+      if (error) {
+        console.error('Error signing in:', error)
+        throw error
+      }
+
+      await hydrateAuth(data.user ?? null)
+    },
+    [hydrateAuth],
+  )
 
   const signUp = useCallback(
     async (email: string, password: string, fullName: string) => {

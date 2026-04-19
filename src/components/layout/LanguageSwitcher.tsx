@@ -1,21 +1,40 @@
-import { Languages } from 'lucide-react'
+import { Globe } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
+const LANGUAGES = [
+  { code: 'en', label: 'EN' },
+  { code: 'es', label: 'ES' },
+  { code: 'zh', label: '中文' },
+]
+
 export default function LanguageSwitcher() {
-  const { i18n, t } = useTranslation()
+  const { i18n } = useTranslation()
+
+  const current = i18n.language?.split('-')[0] || 'en'
+
+  const handleChange = async (
+    event: React.ChangeEvent<HTMLSelectElement>,
+  ) => {
+    const next = event.target.value
+    await i18n.changeLanguage(next)
+  }
 
   return (
-    <div className="flex items-center gap-2 rounded-2xl border border-surface-border bg-surface px-3 py-2 shadow-[var(--shadow-soft)]">
-      <Languages className="h-4 w-4 text-brand-primary" />
+    <div className="relative">
+      <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary">
+        <Globe className="h-4 w-4" />
+      </div>
 
       <select
-        aria-label={t('language.label')}
-        value={i18n.language}
-        onChange={(e) => void i18n.changeLanguage(e.target.value)}
-        className="bg-transparent text-sm text-text-primary outline-none"
+        value={current}
+        onChange={handleChange}
+        className="h-10 rounded-xl border border-surface-border bg-surface pl-9 pr-8 text-sm font-medium text-text-primary shadow-[var(--shadow-soft)] transition hover:bg-surface-hover focus:border-brand-primary focus:outline-none"
       >
-        <option value="es">{t('language.spanish')}</option>
-        <option value="en">{t('language.english')}</option>
+        {LANGUAGES.map((lang) => (
+          <option key={lang.code} value={lang.code}>
+            {lang.label}
+          </option>
+        ))}
       </select>
     </div>
   )

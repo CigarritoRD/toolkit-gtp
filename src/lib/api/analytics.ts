@@ -14,9 +14,9 @@ export type ContributorEventType =
 function getCountryHint() {
   try {
     const locale = Intl.DateTimeFormat().resolvedOptions().locale || ''
-    return locale.split('-')[1] || null
+    return locale.split('-')[1] || 'Unknown'
   } catch {
-    return null
+    return 'Unknown'
   }
 }
 
@@ -73,11 +73,9 @@ export async function getTopResources(limit = 5): Promise<TopResourceMetric[]> {
   const { data, error } = await supabase
     .from('resources')
     .select('id, title, slug, resource_events!left(id, event_type)')
-    .order('title', { ascending: true })
 
   if (error) throw error
 
- 
   const mapped = (data ?? []).map((item: any) => {
     const events = (item.resource_events ?? []).filter((ev: any) =>
       ['open', 'download'].includes(ev.event_type),
@@ -100,7 +98,6 @@ export async function getTopContributorsByViews(
   const { data, error } = await supabase
     .from('contributors')
     .select('id, name, slug, contributor_events!left(id, event_type)')
-    .order('name', { ascending: true })
 
   if (error) throw error
 

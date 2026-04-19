@@ -16,6 +16,8 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/auth/useAuth'
 import AppButton from '@/components/ui/AppButton'
+import LanguageSwitcher from '@/components/layout/LanguageSwitcher'
+import ThemeToggle from '@/components/layout/ThemeToggle'
 import gtpLogo from '@/assets/gtp-logo.png'
 
 type AdminNavItem = {
@@ -139,6 +141,11 @@ export default function AdminLayout() {
               <p className="mt-1 text-sm capitalize text-text-secondary">
                 {profile?.role || t('admin.layout.admin')}
               </p>
+
+              <div className="mt-4 flex items-center gap-2">
+                <LanguageSwitcher />
+                <ThemeToggle />
+              </div>
             </div>
           </div>
 
@@ -186,12 +193,17 @@ export default function AdminLayout() {
                 </div>
               </NavLink>
 
-              <AppButton
-                variant="secondary"
-                onClick={() => setIsMenuOpen((prev) => !prev)}
-              >
-                {isMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-              </AppButton>
+              <div className="flex items-center gap-2">
+                <LanguageSwitcher />
+                <ThemeToggle />
+
+                <AppButton
+                  variant="secondary"
+                  onClick={() => setIsMenuOpen((prev) => !prev)}
+                >
+                  {isMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+                </AppButton>
+              </div>
             </div>
 
             <AnimatePresence>
@@ -232,6 +244,11 @@ export default function AdminLayout() {
                     <p className="mt-1 text-sm capitalize text-text-secondary">
                       {profile?.role || t('admin.layout.admin')}
                     </p>
+
+                    <div className="mt-4 flex items-center gap-2">
+                      <LanguageSwitcher />
+                      <ThemeToggle />
+                    </div>
                   </div>
 
                   <div className="mt-4 space-y-2 border-t border-surface-border pt-4">

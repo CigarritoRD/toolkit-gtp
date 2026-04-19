@@ -4,6 +4,7 @@ import { LogIn } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { useAuth } from '@/auth/useAuth'
+import { supabase } from '@/lib/supabaseClient'
 import FadeIn from '@/components/ui/FadeIn'
 import AppInput from '@/components/ui/AppInput'
 import AppButton from '@/components/ui/AppButton'
@@ -26,8 +27,31 @@ export default function LoginPage() {
 
       await signIn(email, password)
 
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+
+      if (!user) {
+        throw new Error('No authenticated user found after login.')
+      }
+
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+
+      if (profileError) {
+        throw profileError
+      }
+
       toast.success('Welcome back 👋')
-      navigate('/dashboard')
+
+      if (profile?.role === 'admin') {
+        navigate('/admin')
+      } else {
+        navigate('/dashboard')
+      }
     } catch (err) {
       console.error(err)
       toast.error('Incorrect credentials.')
@@ -47,7 +71,9 @@ export default function LoginPage() {
               <LogIn className="h-5 w-5" />
             </div>
 
-            <h1 className="mt-4 font-heading text-2xl">{t('auth.loginTitle')}</h1>
+            <h1 className="mt-4 font-heading text-2xl">
+              {t('auth.loginTitle')}
+            </h1>
             <p className="mt-2 text-sm text-brand-primary">
               {t('auth.loginSubtitle')}
             </p>

@@ -17,8 +17,10 @@ import EmptyState from '@/components/ui/EmptyState'
 import SectionCard from '@/components/ui/SectionCard'
 import StatusBadge from '@/components/ui/StatusBadge'
 import AppButton from '@/components/ui/AppButton'
+import RatingPanel from '@/components/ratings/RatingPanel'
 import { getPublishedResourceBySlug } from '@/lib/api/resources'
 import { openTrackedResource } from '@/lib/resourceAccess'
+import { trackResourceEvent } from '@/lib/api/analytics'
 
 type ResourceDetail = {
   id: string
@@ -209,6 +211,8 @@ export default function ResourceDetailPage() {
 
       setIsOpening(true)
 
+      await trackResourceEvent(resource.id, 'open')
+
       await openTrackedResource({
         id: resource.id,
         file_url: resource.file_url,
@@ -299,7 +303,7 @@ export default function ResourceDetailPage() {
             </SectionCard>
 
             <SectionCard className="p-6 md:p-8">
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <StatusBadge
                   label={formatTypeLabel(resource.resource_type, t)}
                   tone="muted"
@@ -392,6 +396,14 @@ export default function ResourceDetailPage() {
                 </div>
               </div>
             </SectionCard>
+          </div>
+        </section>
+      </FadeIn>
+
+      <FadeIn delay={0.08}>
+        <section className="px-6 pb-16 md:px-10 lg:px-16">
+          <div className="mx-auto max-w-6xl">
+            <RatingPanel mode="resource" targetId={resource.id} />
           </div>
         </section>
       </FadeIn>

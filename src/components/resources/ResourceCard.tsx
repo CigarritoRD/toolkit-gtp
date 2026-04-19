@@ -48,7 +48,7 @@ function getTypeLabel(type?: string | null, t?: (key: string) => string) {
     case 'download':
       return t ? t('resources.typeDownload') : 'DOWNLOAD'
     default:
-      return type?.toUpperCase?.() || (t ? t('home.resourceFallback') : 'RESOURCE')
+      return type?.toUpperCase?.() || 'RESOURCE'
   }
 }
 
