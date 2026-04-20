@@ -7,12 +7,24 @@ import EmptyState from '@/components/ui/EmptyState'
 import SearchInput from '@/components/ui/SearchInput'
 import SectionCard from '@/components/ui/SectionCard'
 import { getActiveContributors } from '@/lib/api/contributors'
+import { getContributorRatingSummaries } from '@/lib/api/ratings'
 import type { ContributorListItem } from '@/types/contributors'
+
+type RatingMap = Map<
+  string,
+  {
+    average_rating: number
+    total_ratings: number
+  }
+>
 
 export default function ContributorsPage() {
   const { t } = useTranslation()
 
   const [contributors, setContributors] = useState<ContributorListItem[]>([])
+  const [contributorRatings, setContributorRatings] = useState<RatingMap>(
+    new Map(),
+  )
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [query, setQuery] = useState('')
@@ -29,6 +41,14 @@ export default function ContributorsPage() {
         if (!active) return
 
         setContributors(data)
+
+        const ratingsMap = await getContributorRatingSummaries(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          data.map((contributor: any) => contributor.id),
+        )
+
+        if (!active) return
+        setContributorRatings(ratingsMap)
       } catch (err) {
         if (!active) return
 
@@ -205,6 +225,14 @@ export default function ContributorsPage() {
                         specialty={contributor.specialty}
                         avatarUrl={contributor.avatar_url}
                         websiteUrl={contributor.website_url}
+                        averageRating={
+                          contributorRatings.get(contributor.id)?.average_rating ??
+                          0
+                        }
+                        totalRatings={
+                          contributorRatings.get(contributor.id)?.total_ratings ??
+                          0
+                        }
                       />
                     </FadeIn>
                   ))}

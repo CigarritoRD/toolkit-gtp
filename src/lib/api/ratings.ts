@@ -188,3 +188,47 @@ export async function getContributorReviews(
   if (error) throw error
   return (data ?? []) as RatingReview[]
 }
+
+export async function getResourceRatingSummaries(resourceIds: string[]) {
+  if (!resourceIds.length) return new Map<string, RatingSummary>()
+
+  const { data, error } = await supabase
+    .from('resource_rating_summary')
+    .select('resource_id, average_rating, total_ratings')
+    .in('resource_id', resourceIds)
+
+  if (error) throw error
+
+  const map = new Map<string, RatingSummary>()
+
+  for (const row of data ?? []) {
+    map.set(row.resource_id, {
+      average_rating: Number(row.average_rating ?? 0),
+      total_ratings: Number(row.total_ratings ?? 0),
+    })
+  }
+
+  return map
+}
+
+export async function getContributorRatingSummaries(contributorIds: string[]) {
+  if (!contributorIds.length) return new Map<string, RatingSummary>()
+
+  const { data, error } = await supabase
+    .from('contributor_rating_summary')
+    .select('contributor_id, average_rating, total_ratings')
+    .in('contributor_id', contributorIds)
+
+  if (error) throw error
+
+  const map = new Map<string, RatingSummary>()
+
+  for (const row of data ?? []) {
+    map.set(row.contributor_id, {
+      average_rating: Number(row.average_rating ?? 0),
+      total_ratings: Number(row.total_ratings ?? 0),
+    })
+  }
+
+  return map
+}

@@ -34,14 +34,6 @@ type ResourceWithTags = ResourceListItem & {
   }>
 }
 
-type RatingMap = Map<
-  string,
-  {
-    average_rating: number
-    total_ratings: number
-  }
->
-
 export default function ResourcesPage() {
   const { t } = useTranslation()
 
@@ -59,7 +51,9 @@ export default function ResourcesPage() {
   const [resources, setResources] = useState<ResourceWithTags[]>([])
   const [categories, setCategories] = useState<ResourceCategory[]>([])
   const [tags, setTags] = useState<TagRecord[]>([])
-  const [resourceRatings, setResourceRatings] = useState<RatingMap>(new Map())
+  const [resourceRatings, setResourceRatings] = useState<
+    Map<string, { average_rating: number; total_ratings: number }>
+  >(new Map())
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -91,14 +85,6 @@ export default function ResourcesPage() {
         setResources(resourceData as unknown as ResourceWithTags[])
         setCategories(categoryData)
         setTags(tagsData)
-
-        const ratingsMap = await getResourceRatingSummaries(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          resourceData.map((resource: any) => resource.id),
-        )
-
-        if (!active) return
-        setResourceRatings(ratingsMap)
       } catch (err) {
         if (!active) return
 

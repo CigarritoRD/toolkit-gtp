@@ -18,6 +18,7 @@ import {
 import { useAuth } from '@/auth/useAuth'
 import { useResourceActions } from '@/hooks/useResourceActions'
 import { trackResourceEvent } from '@/lib/api/analytics'
+import RatingSummaryBadge from '@/components/ratings/RatingSummaryBadge'
 
 type ResourceCardProps = {
   id: string
@@ -27,6 +28,8 @@ type ResourceCardProps = {
   type: string
   contributorName?: string | null
   slug?: string
+  averageRating?: number
+  totalRatings?: number
 }
 
 function getTypeLabel(type?: string | null, t?: (key: string) => string) {
@@ -106,6 +109,8 @@ export default function ResourceCard({
   type,
   contributorName,
   slug,
+  averageRating = 0,
+  totalRatings = 0,
 }: ResourceCardProps) {
   const navigate = useNavigate()
   const { user } = useAuth()
@@ -229,12 +234,6 @@ export default function ResourceCard({
               <p className="line-clamp-2 font-heading text-lg leading-snug text-text-primary">
                 {title}
               </p>
-
-              {contributorName ? (
-                <p className="mt-2 text-sm text-text-secondary">
-                  {contributorName}
-                </p>
-              ) : null}
             </div>
           </div>
         )}
@@ -306,10 +305,26 @@ export default function ResourceCard({
         ) : null}
 
         <div className="mt-auto pt-4">
-          {contributorName ? (
-            <p className="text-xs text-neutral-muted">
-              {t('home.by')} <span className="text-text-primary">{contributorName}</span>
-            </p>
+          {(contributorName || totalRatings > 0) ? (
+            <div className="mt-3 flex items-center justify-between gap-3">
+              <p className="truncate text-sm text-text-secondary">
+                {contributorName ? (
+                  <>
+                    {t('home.by')}{' '}
+                    <span className="text-text-primary">{contributorName}</span>
+                  </>
+                ) : null}
+              </p>
+
+              {totalRatings > 0 ? (
+                <div className="shrink-0">
+                  <RatingSummaryBadge
+                    average={averageRating}
+                    count={totalRatings}
+                  />
+                </div>
+              ) : null}
+            </div>
           ) : null}
 
           {slug ? (

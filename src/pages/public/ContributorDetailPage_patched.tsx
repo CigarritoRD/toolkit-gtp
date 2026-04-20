@@ -16,26 +16,13 @@ import FadeIn from '@/components/ui/FadeIn'
 import EmptyState from '@/components/ui/EmptyState'
 import SectionCard from '@/components/ui/SectionCard'
 import ResourceCard from '@/components/resources/ResourceCard'
-import RatingPanel from '@/components/ratings/RatingPanel'
 import {
   getContributorBySlug,
   getContributorResources,
   type ContributorDetail,
 } from '@/lib/api/contributors'
-import { getResourceRatingSummaries } from '@/lib/api/ratings'
 import type { ResourceListItem } from '@/types/resources'
-import {
-  trackContributorEvent,
-  type ContributorEventType,
-} from '@/lib/api/analytics'
-
-type RatingMap = Map<
-  string,
-  {
-    average_rating: number
-    total_ratings: number
-  }
->
+import { trackContributorEvent, type ContributorEventType } from '@/lib/api/analytics'
 
 export default function ContributorDetailPage() {
   const { t } = useTranslation()
@@ -43,7 +30,9 @@ export default function ContributorDetailPage() {
 
   const [contributor, setContributor] = useState<ContributorDetail | null>(null)
   const [resources, setResources] = useState<ResourceListItem[]>([])
-  const [resourceRatings, setResourceRatings] = useState<RatingMap>(new Map())
+  const [resourceRatings, setResourceRatings] = useState<
+    Map<string, { average_rating: number; total_ratings: number }>
+  >(new Map())
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -309,14 +298,6 @@ export default function ContributorDetailPage() {
           </section>
         </FadeIn>
       ) : null}
-
-      <FadeIn delay={0.1}>
-        <section className="px-6 pb-8 md:px-10 lg:px-16">
-          <div className="mx-auto max-w-6xl">
-            <RatingPanel mode="contributor" targetId={contributor.id} />
-          </div>
-        </section>
-      </FadeIn>
 
       <FadeIn delay={0.12}>
         <section className="px-6 pb-16 md:px-10 lg:px-16">

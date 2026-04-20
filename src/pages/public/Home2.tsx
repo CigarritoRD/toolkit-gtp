@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowRight, Search, Sparkles } from 'lucide-react'
+import { ArrowRight, Search, Sparkles, } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import ResourceCard from '@/components/resources/ResourceCard'
 import ContributorCard from '@/components/contributors/ContributorCard'
@@ -14,20 +13,8 @@ import {
   type ResourceCategory,
 } from '@/lib/api/resources'
 import { getFeaturedContributors } from '@/lib/api/contributors'
-import {
-  getContributorRatingSummaries,
-  getResourceRatingSummaries,
-} from '@/lib/api/ratings'
 import type { ResourceListItem } from '@/types/resources'
 import type { ContributorListItem } from '@/types/contributors'
-
-type RatingMap = Map<
-  string,
-  {
-    average_rating: number
-    total_ratings: number
-  }
->
 
 export default function Home() {
   const { t } = useTranslation()
@@ -35,10 +22,6 @@ export default function Home() {
   const [categories, setCategories] = useState<ResourceCategory[]>([])
   const [resources, setResources] = useState<ResourceListItem[]>([])
   const [contributors, setContributors] = useState<ContributorListItem[]>([])
-  const [resourceRatings, setResourceRatings] = useState<RatingMap>(new Map())
-  const [contributorRatings, setContributorRatings] = useState<RatingMap>(
-    new Map(),
-  )
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -74,28 +57,16 @@ export default function Home() {
 
         if (!active) return
 
-        const normalizedResources = resourcesData.map((resource: any) => ({
-          ...resource,
-          external_url: resource.external_url ?? '',
-          file_url: resource.file_url ?? '',
-        }))
-
         setCategories(categoriesData.slice(0, 4))
-        setResources(normalizedResources)
+        setResources(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          resourcesData.map((resource: any) => ({
+            ...resource,
+            external_url: resource.external_url ?? '',
+            file_url: resource.file_url ?? '',
+          })),
+        )
         setContributors(contributorsData)
-
-        const [resourceRatingsMap, contributorRatingsMap] = await Promise.all([
-          getResourceRatingSummaries(
-            normalizedResources.map((resource: any) => resource.id),
-          ),
-          getContributorRatingSummaries(
-            contributorsData.map((contributor: any) => contributor.id),
-          ),
-        ])
-
-        if (!active) return
-        setResourceRatings(resourceRatingsMap)
-        setContributorRatings(contributorRatingsMap)
       } catch (err) {
         if (!active) return
         const message =
@@ -127,6 +98,7 @@ export default function Home() {
 
               <h1 className="mt-5 max-w-4xl font-heading text-4xl leading-tight md:text-5xl lg:text-6xl">
                 {t('home.title')}{' '}
+                
               </h1>
 
               <p className="mt-6 max-w-2xl font-body text-lg leading-8 text-brand-primary">
@@ -346,12 +318,6 @@ export default function Home() {
                     type={resource.resource_type}
                     contributorName={resource.contributor?.name ?? null}
                     slug={resource.slug}
-                    averageRating={
-                      resourceRatings.get(resource.id)?.average_rating ?? 0
-                    }
-                    totalRatings={
-                      resourceRatings.get(resource.id)?.total_ratings ?? 0
-                    }
                   />
                 ))}
               </div>
@@ -386,12 +352,11 @@ export default function Home() {
                 {Array.from({ length: 3 }).map((_, index) => (
                   <div
                     key={index}
-                    className="animate-pulse rounded-xl border border-surface-border bg-surface p-5"
+                    className="animate-pulse rounded-xl border border-surface-border bg-surface p-6"
                   >
-                    <div className="mb-4 h-16 w-16 rounded-full bg-bg-soft" />
-                    <div className="h-6 w-2/3 rounded bg-bg-soft" />
+                    <div className="h-16 w-16 rounded-xl bg-bg-soft" />
+                    <div className="mt-4 h-5 w-2/3 rounded bg-bg-soft" />
                     <div className="mt-3 h-4 w-full rounded bg-bg-soft" />
-                    <div className="mt-2 h-4 w-2/3 rounded bg-bg-soft" />
                   </div>
                 ))}
               </div>
@@ -406,12 +371,6 @@ export default function Home() {
                     specialty={contributor.specialty}
                     avatarUrl={contributor.avatar_url}
                     websiteUrl={contributor.website_url}
-                    averageRating={
-                      contributorRatings.get(contributor.id)?.average_rating ?? 0
-                    }
-                    totalRatings={
-                      contributorRatings.get(contributor.id)?.total_ratings ?? 0
-                    }
                   />
                 ))}
               </div>
