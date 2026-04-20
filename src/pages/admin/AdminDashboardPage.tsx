@@ -7,13 +7,13 @@ import {
   ShieldCheck,
   TrendingUp,
   Users,
+  Star,
+  Globe2,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import {
-  getAdminDashboardStats,
   getRecentContributors,
   getRecentResources,
-  type AdminDashboardStats,
   type AdminRecentContributor,
   type AdminRecentResource,
 } from '@/lib/api/admin'
@@ -22,10 +22,16 @@ import {
   type ContributorApplicationRecord,
 } from '@/lib/api/contributor-applications-admin'
 import {
+  getAdminOverview,
   getResourceEventsByCountry,
   getTopContributorsByViews,
+  getTopRatedContributors,
+  getTopRatedResources,
   getTopResources,
+  type AdminOverviewMetric,
+  type ContributorRatingMetric,
   type CountryMetric,
+  type ResourceRatingMetric,
   type TopContributorMetric,
   type TopResourceMetric,
 } from '@/lib/api/analytics'
@@ -33,12 +39,15 @@ import AppButton from '@/components/ui/AppButton'
 import EmptyState from '@/components/ui/EmptyState'
 import SectionCard from '@/components/ui/SectionCard'
 import StatusBadge from '@/components/ui/StatusBadge'
+import RatingSummaryBadge from '@/components/ratings/RatingSummaryBadge'
 
 export default function AdminDashboardPage() {
   const { t } = useTranslation()
 
-  const [stats, setStats] = useState<AdminDashboardStats | null>(null)
-  const [recentContributors, setRecentContributors] = useState<AdminRecentContributor[]>([])
+  const [overview, setOverview] = useState<AdminOverviewMetric | null>(null)
+  const [recentContributors, setRecentContributors] = useState<
+    AdminRecentContributor[]
+  >([])
   const [recentResources, setRecentResources] = useState<AdminRecentResource[]>([])
   const [pendingApplications, setPendingApplications] = useState<
     ContributorApplicationRecord[]
@@ -46,6 +55,12 @@ export default function AdminDashboardPage() {
   const [topResources, setTopResources] = useState<TopResourceMetric[]>([])
   const [topContributors, setTopContributors] = useState<TopContributorMetric[]>([])
   const [countryMetrics, setCountryMetrics] = useState<CountryMetric[]>([])
+  const [topRatedResources, setTopRatedResources] = useState<ResourceRatingMetric[]>(
+    [],
+  )
+  const [topRatedContributors, setTopRatedContributors] = useState<
+    ContributorRatingMetric[]
+  >([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -56,30 +71,36 @@ export default function AdminDashboardPage() {
         setError(null)
 
         const [
-          statsData,
+          overviewData,
           contributorsData,
           resourcesData,
           applicationsData,
           topResourcesData,
           topContributorsData,
           countryMetricsData,
+          topRatedResourcesData,
+          topRatedContributorsData,
         ] = await Promise.all([
-          getAdminDashboardStats(),
+          getAdminOverview(),
           getRecentContributors(5),
           getRecentResources(5),
           getContributorApplications('pending_review'),
           getTopResources(5),
           getTopContributorsByViews(5),
           getResourceEventsByCountry(10),
+          getTopRatedResources(5),
+          getTopRatedContributors(5),
         ])
 
-        setStats(statsData)
+        setOverview(overviewData)
         setRecentContributors(contributorsData)
         setRecentResources(resourcesData)
         setPendingApplications(applicationsData.slice(0, 5))
         setTopResources(topResourcesData)
         setTopContributors(topContributorsData)
         setCountryMetrics(countryMetricsData)
+        setTopRatedResources(topRatedResourcesData)
+        setTopRatedContributors(topRatedContributorsData)
       } catch (err) {
         setError(err instanceof Error ? err.message : t('admin.dashboard.error'))
       } finally {
@@ -100,7 +121,7 @@ export default function AdminDashboardPage() {
     )
   }
 
-  if (error || !stats) {
+  if (error || !overview) {
     return (
       <div className="space-y-6">
         <SectionCard className="border-red-200 bg-red-50 p-6">
@@ -145,27 +166,27 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <StatCard
           label={t('admin.dashboard.contributors')}
-          value={stats.totalContributors}
+          value={overview.total_contributors}
           icon={<Users className="h-4 w-4" />}
         />
         <StatCard
           label={t('admin.dashboard.activeContributors')}
-          value={stats.activeContributors}
+          value={overview.active_contributors}
           icon={<Users className="h-4 w-4" />}
         />
         <StatCard
           label={t('admin.dashboard.resources')}
-          value={stats.totalResources}
+          value={overview.total_resources}
           icon={<FolderKanban className="h-4 w-4" />}
         />
         <StatCard
           label={t('admin.dashboard.published')}
-          value={stats.publishedResources}
+          value={overview.published_resources}
           icon={<TrendingUp className="h-4 w-4" />}
         />
         <StatCard
           label={t('admin.dashboard.downloads')}
-          value={stats.totalDownloads}
+          value={overview.total_downloads}
           icon={<TrendingUp className="h-4 w-4" />}
         />
       </div>
@@ -233,7 +254,9 @@ export default function AdminDashboardPage() {
             ) : (
               pendingApplications.map((item) => {
                 const displayName =
-                  item.organization_name || item.full_name || t('admin.dashboard.unnamed')
+                  item.organization_name ||
+                  item.full_name ||
+                  t('admin.dashboard.unnamed')
 
                 return (
                   <div
@@ -424,113 +447,70 @@ export default function AdminDashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <SectionCard className="overflow-hidden">
-          <div className="border-b border-surface-border px-5 py-4">
-            <h2 className="font-heading text-lg text-text-primary">
-              {t('admin.analytics.topResourcesTitle')}
-            </h2>
-            <p className="text-sm text-text-secondary">
-              {t('admin.analytics.topResourcesSubtitle')}
-            </p>
-          </div>
+        <MetricListCard
+          title={t('admin.analytics.topResourcesTitle')}
+          subtitle={t('admin.analytics.topResourcesSubtitle')}
+          emptyText={t('admin.analytics.noResourceData')}
+          items={topResources.map((item) => ({
+            key: item.id,
+            title: item.title,
+            subtitle: `@${item.slug}`,
+            value: item.total_opens,
+          }))}
+        />
 
-          <div className="divide-y divide-surface-border">
-            {topResources.length === 0 ? (
-              <div className="px-5 py-8 text-sm text-text-secondary">
-                {t('admin.analytics.noResourceData')}
-              </div>
-            ) : (
-              topResources.map((item, index) => (
-                <div
-                  key={item.id}
-                  className="flex items-center justify-between gap-4 px-5 py-4"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate font-medium text-text-primary">
-                      {index + 1}. {item.title}
-                    </p>
-                    <p className="text-sm text-text-secondary">@{item.slug}</p>
-                  </div>
+        <MetricListCard
+          title={t('admin.analytics.topContributorsTitle')}
+          subtitle={t('admin.analytics.topContributorsSubtitle')}
+          emptyText={t('admin.analytics.noContributorData')}
+          items={topContributors.map((item) => ({
+            key: item.id,
+            title: item.name,
+            subtitle: `@${item.slug}`,
+            value: item.total_views,
+          }))}
+        />
 
-                  <div className="shrink-0 text-sm font-semibold text-brand-primary">
-                    {item.total_opens}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </SectionCard>
+        <MetricListCard
+          title={t('admin.analytics.countriesTitle')}
+          subtitle={t('admin.analytics.countriesSubtitle')}
+          emptyText={t('admin.analytics.noCountryData')}
+          items={countryMetrics.map((item, index) => ({
+            key: `${item.country}-${index}`,
+            title: item.country,
+            subtitle: '',
+            value: item.total,
+          }))}
+          icon={<Globe2 className="h-4 w-4" />}
+        />
+      </div>
 
-        <SectionCard className="overflow-hidden">
-          <div className="border-b border-surface-border px-5 py-4">
-            <h2 className="font-heading text-lg text-text-primary">
-              {t('admin.analytics.topContributorsTitle')}
-            </h2>
-            <p className="text-sm text-text-secondary">
-              {t('admin.analytics.topContributorsSubtitle')}
-            </p>
-          </div>
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+        <RatingMetricCard
+          title={t('admin.analytics.topRatedResourcesTitle')}
+          subtitle={t('admin.analytics.topRatedResourcesSubtitle')}
+          emptyText={t('admin.analytics.noTopRatedResources')}
+          items={topRatedResources.map((item) => ({
+            key: item.id,
+            title: item.title,
+            subtitle: `@${item.slug}`,
+            average: item.average_rating,
+            count: item.total_ratings,
+          }))}
+        />
 
-          <div className="divide-y divide-surface-border">
-            {topContributors.length === 0 ? (
-              <div className="px-5 py-8 text-sm text-text-secondary">
-                {t('admin.analytics.noContributorData')}
-              </div>
-            ) : (
-              topContributors.map((item, index) => (
-                <div
-                  key={item.id}
-                  className="flex items-center justify-between gap-4 px-5 py-4"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate font-medium text-text-primary">
-                      {index + 1}. {item.name}
-                    </p>
-                    <p className="text-sm text-text-secondary">@{item.slug}</p>
-                  </div>
-
-                  <div className="shrink-0 text-sm font-semibold text-brand-primary">
-                    {item.total_views}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </SectionCard>
-
-        <SectionCard className="overflow-hidden">
-          <div className="border-b border-surface-border px-5 py-4">
-            <h2 className="font-heading text-lg text-text-primary">
-              {t('admin.analytics.countriesTitle')}
-            </h2>
-            <p className="text-sm text-text-secondary">
-              {t('admin.analytics.countriesSubtitle')}
-            </p>
-          </div>
-
-          <div className="divide-y divide-surface-border">
-            {countryMetrics.length === 0 ? (
-              <div className="px-5 py-8 text-sm text-text-secondary">
-                {t('admin.analytics.noCountryData')}
-              </div>
-            ) : (
-              countryMetrics.map((item, index) => (
-                <div
-                  key={`${item.country}-${index}`}
-                  className="flex items-center justify-between gap-4 px-5 py-4"
-                >
-                  <p className="truncate font-medium text-text-primary">
-                    {item.country}
-                  </p>
-
-                  <div className="shrink-0 text-sm font-semibold text-brand-primary">
-                    {item.total}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </SectionCard>
+        <RatingMetricCard
+          title={t('admin.analytics.topRatedContributorsTitle')}
+          subtitle={t('admin.analytics.topRatedContributorsSubtitle')}
+          emptyText={t('admin.analytics.noTopRatedContributors')}
+          items={topRatedContributors.map((item) => ({
+            key: item.id,
+            title: item.name,
+            subtitle: `@${item.slug}`,
+            average: item.average_rating,
+            count: item.total_ratings,
+          }))}
+        />
       </div>
     </div>
   )
@@ -587,6 +567,117 @@ function QuickActionCard({
         <Link to={to}>
           <AppButton>{actionLabel}</AppButton>
         </Link>
+      </div>
+    </SectionCard>
+  )
+}
+
+function MetricListCard({
+  title,
+  subtitle,
+  emptyText,
+  items,
+  icon,
+}: {
+  title: string
+  subtitle: string
+  emptyText: string
+  items: Array<{
+    key: string
+    title: string
+    subtitle: string
+    value: number
+  }>
+  icon?: ReactNode
+}) {
+  return (
+    <SectionCard className="overflow-hidden">
+      <div className="border-b border-surface-border px-5 py-4">
+        <div className="flex items-center gap-2">
+          {icon ? <span className="text-brand-primary">{icon}</span> : null}
+          <h2 className="font-heading text-lg text-text-primary">{title}</h2>
+        </div>
+        <p className="text-sm text-text-secondary">{subtitle}</p>
+      </div>
+
+      <div className="divide-y divide-surface-border">
+        {items.length === 0 ? (
+          <div className="px-5 py-8 text-sm text-text-secondary">{emptyText}</div>
+        ) : (
+          items.map((item, index) => (
+            <div
+              key={item.key}
+              className="flex items-center justify-between gap-4 px-5 py-4"
+            >
+              <div className="min-w-0">
+                <p className="truncate font-medium text-text-primary">
+                  {index + 1}. {item.title}
+                </p>
+                {item.subtitle ? (
+                  <p className="text-sm text-text-secondary">{item.subtitle}</p>
+                ) : null}
+              </div>
+
+              <div className="shrink-0 text-sm font-semibold text-brand-primary">
+                {item.value}
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </SectionCard>
+  )
+}
+
+function RatingMetricCard({
+  title,
+  subtitle,
+  emptyText,
+  items,
+}: {
+  title: string
+  subtitle: string
+  emptyText: string
+  items: Array<{
+    key: string
+    title: string
+    subtitle: string
+    average: number
+    count: number
+  }>
+}) {
+  return (
+    <SectionCard className="overflow-hidden">
+      <div className="border-b border-surface-border px-5 py-4">
+        <div className="flex items-center gap-2">
+          <Star className="h-4 w-4 text-brand-primary" />
+          <h2 className="font-heading text-lg text-text-primary">{title}</h2>
+        </div>
+        <p className="text-sm text-text-secondary">{subtitle}</p>
+      </div>
+
+      <div className="divide-y divide-surface-border">
+        {items.length === 0 ? (
+          <div className="px-5 py-8 text-sm text-text-secondary">{emptyText}</div>
+        ) : (
+          items.map((item, index) => (
+            <div
+              key={item.key}
+              className="flex items-center justify-between gap-4 px-5 py-4"
+            >
+              <div className="min-w-0">
+                <p className="truncate font-medium text-text-primary">
+                  {index + 1}. {item.title}
+                </p>
+                <p className="text-sm text-text-secondary">{item.subtitle}</p>
+              </div>
+
+              <div className="shrink-0">
+                <RatingSummaryBadge average={item.average} count={item.count} />
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </SectionCard>
   )

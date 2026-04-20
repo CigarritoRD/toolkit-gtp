@@ -12,8 +12,46 @@ import {
   getRecentLibraryResources,
   type DashboardStats,
 } from '@/lib/api/dashboard'
+import { getResourceRatingSummaries } from '@/lib/api/ratings'
 import { useAuth } from '@/auth/useAuth'
 import type { ResourceListItem } from '@/types/resources'
+
+type RatingMap = Map<
+  string,
+  {
+    average_rating: number
+    total_ratings: number
+  }
+>
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function normalizeResource(resource: any): ResourceListItem {
+  return {
+    ...resource,
+    title: resource?.title ?? resource?.resource?.title ?? '',
+    slug: resource?.slug ?? resource?.resource?.slug ?? '',
+    description:
+      resource?.description ??
+      resource?.resource?.description ??
+      null,
+    short_description:
+      resource?.short_description ??
+      resource?.resource?.short_description ??
+      null,
+    thumbnail_url:
+      resource?.thumbnail_url ??
+      resource?.resource?.thumbnail_url ??
+      null,
+    resource_type:
+      resource?.resource_type ??
+      resource?.resource?.resource_type ??
+      'resource',
+    contributor:
+      resource?.contributor ??
+      resource?.resource?.contributor ??
+      null,
+  } as ResourceListItem
+}
 
 export default function DashboardHomePage() {
   const { user, profile } = useAuth()
@@ -25,6 +63,7 @@ export default function DashboardHomePage() {
   })
   const [recentLibrary, setRecentLibrary] = useState<ResourceListItem[]>([])
   const [recentDownloads, setRecentDownloads] = useState<ResourceListItem[]>([])
+  const [resourceRatings, setResourceRatings] = useState<RatingMap>(new Map())
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -46,9 +85,25 @@ export default function DashboardHomePage() {
 
         if (!active) return
 
+        const normalizedLibrary = (libraryData ?? []).map(normalizeResource)
+        const normalizedDownloads = (downloadData ?? []).map(normalizeResource)
+
         setStats(statsData)
-        setRecentLibrary(libraryData)
-        setRecentDownloads(downloadData as unknown as ResourceListItem[])
+        setRecentLibrary(normalizedLibrary)
+        setRecentDownloads(normalizedDownloads)
+
+        const allResourceIds = Array.from(
+          new Set(
+            [...normalizedLibrary, ...normalizedDownloads]
+              .map((resource) => resource.id)
+              .filter(Boolean),
+          ),
+        )
+
+        const ratingsMap = await getResourceRatingSummaries(allResourceIds)
+
+        if (!active) return
+        setResourceRatings(ratingsMap)
       } catch (err) {
         if (!active) return
         const message =
@@ -186,6 +241,12 @@ export default function DashboardHomePage() {
                         type={resource.resource_type}
                         contributorName={resource.contributor?.name ?? null}
                         slug={resource.slug}
+                        averageRating={
+                          resourceRatings.get(resource.id)?.average_rating ?? 0
+                        }
+                        totalRatings={
+                          resourceRatings.get(resource.id)?.total_ratings ?? 0
+                        }
                       />
                     </div>
                   </FadeIn>
@@ -230,6 +291,12 @@ export default function DashboardHomePage() {
                         type={resource.resource_type}
                         contributorName={resource.contributor?.name ?? null}
                         slug={resource.slug}
+                        averageRating={
+                          resourceRatings.get(resource.id)?.average_rating ?? 0
+                        }
+                        totalRatings={
+                          resourceRatings.get(resource.id)?.total_ratings ?? 0
+                        }
                       />
                     </div>
                   </FadeIn>
