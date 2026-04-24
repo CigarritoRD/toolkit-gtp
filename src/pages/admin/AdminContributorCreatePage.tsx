@@ -1,18 +1,35 @@
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import ContributorForm from '@/components/admin/ContributorForm'
+import ContributorForm, {
+  type ContributorFormValues,
+} from '@/components/admin/ContributorForm'
 import SectionCard from '@/components/ui/SectionCard'
-import { createContributor } from '@/lib/api/contributors'
+import {
+  createContributor,
+  uploadContributorAvatar,
+} from '@/lib/api/contributors'
 
 export default function AdminContributorCreatePage() {
   const navigate = useNavigate()
   const { t } = useTranslation()
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async function handleSubmit(values: any) {
+  async function handleSubmit(
+    values: ContributorFormValues,
+    files: { thumbnailFile: File | null },
+  ) {
     try {
-      await createContributor(values)
+      let avatarUrl = values.avatar_url || null
+
+      if (files.thumbnailFile) {
+        avatarUrl = await uploadContributorAvatar(files.thumbnailFile, values.slug)
+      }
+
+      await createContributor({
+        ...values,
+        avatar_url: avatarUrl,
+      })
+
       toast.success(t('admin.contributorForm.createSuccess'))
       navigate('/admin/contributors')
     } catch (error) {

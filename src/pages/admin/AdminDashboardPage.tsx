@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { getCountryLabel } from '@/lib/constants/countries'
 import {
   FileSearch,
   FolderKanban,
@@ -276,7 +277,7 @@ export default function AdminDashboardPage() {
 
                       <p className="mt-1 text-xs text-text-secondary">
                         {item.contact_email || t('admin.dashboard.notAvailable')}
-                        {item.country ? ` · ${item.country}` : ''}
+                        {item.country ? ` · ${getCountryLabel(item.country)}` : ''}
                       </p>
                     </div>
 
@@ -477,7 +478,7 @@ export default function AdminDashboardPage() {
           emptyText={t('admin.analytics.noCountryData')}
           items={countryMetrics.map((item, index) => ({
             key: `${item.country}-${index}`,
-            title: item.country,
+            title: getCountryLabel(item.country),
             subtitle: '',
             value: item.total,
           }))}

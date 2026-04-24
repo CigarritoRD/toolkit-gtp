@@ -2,10 +2,12 @@ import { supabase } from '@/lib/supabaseClient'
 
 export type ContributorApplicationInput = {
   user_id?: string | null
+
   contact_name: string
   contact_role?: string | null
   contact_email: string
   contact_phone?: string | null
+
   organization_name: string
   avatar_url?: string | null
   country?: string | null
@@ -20,39 +22,19 @@ export type ContributorApplicationInput = {
   youtube_url?: string | null
 }
 
-function normalizeOptionalUrl(value?: string | null) {
-  const trimmed = value?.trim() || ''
-  if (!trimmed) return null
-  if (/^https?:\/\//i.test(trimmed)) return trimmed
-  return `https://${trimmed}`
-}
-
 export async function createContributorApplication(
   values: ContributorApplicationInput,
 ) {
   const payload = {
-    user_id: values.user_id ?? null,
-    full_name: values.organization_name.trim(),
-    email: values.contact_email.trim().toLowerCase(),
-    avatar_url: values.avatar_url ?? null,
-    country: values.country?.trim() || null,
-    organization: values.organization?.trim() || null,
-    specialty: values.specialty?.trim() || null,
-    short_bio: values.short_bio?.trim() || null,
-    full_bio: values.full_bio?.trim() || null,
-    website_url: normalizeOptionalUrl(values.website_url),
-    instagram_url: normalizeOptionalUrl(values.instagram_url),
-    facebook_url: normalizeOptionalUrl(values.facebook_url),
-    linkedin_url: normalizeOptionalUrl(values.linkedin_url),
-    youtube_url: normalizeOptionalUrl(values.youtube_url),
+    ...values,
+
+    // compatibilidad temporal con columnas viejas
+    full_name: values.organization_name,
+    email: values.contact_email,
+
     status: 'pending_review',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
-    contact_name: values.contact_name.trim(),
-    contact_role: values.contact_role?.trim() || null,
-    contact_email: values.contact_email.trim().toLowerCase(),
-    contact_phone: values.contact_phone?.trim() || null,
-    organization_name: values.organization_name.trim(),
   }
 
   const { data, error } = await supabase
@@ -61,7 +43,10 @@ export async function createContributorApplication(
     .select()
     .single()
 
-  if (error) throw error
+  if (error) {
+    throw error
+  }
+
   return data
 }
 
@@ -80,8 +65,11 @@ export async function uploadContributorApplicationAvatar(
       upsert: true,
     })
 
-  if (uploadError) throw uploadError
+  if (uploadError) {
+    throw uploadError
+  }
 
   const { data } = supabase.storage.from('avatars').getPublicUrl(filePath)
+
   return data.publicUrl
 }

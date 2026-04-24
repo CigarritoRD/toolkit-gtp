@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabaseClient'
 type UpdateMyProfileInput = {
   full_name?: string
   avatar_url?: string | null
+  country?: string | null
 }
 
 export async function updateMyProfile(
@@ -19,9 +20,7 @@ export async function updateMyProfile(
     .update(payload)
     .eq('id', userId)
 
-  if (error) {
-    throw error
-  }
+  if (error) throw error
 }
 
 export async function uploadProfileAvatar(file: File, userId: string) {
@@ -35,9 +34,7 @@ export async function uploadProfileAvatar(file: File, userId: string) {
       upsert: true,
     })
 
-  if (uploadError) {
-    throw uploadError
-  }
+  if (uploadError) throw uploadError
 
   const { data } = supabase.storage.from('avatars').getPublicUrl(filePath)
 

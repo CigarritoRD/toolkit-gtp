@@ -2,24 +2,33 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import ContributorForm from '@/components/admin/ContributorForm'
+import ContributorForm, {
+  type ContributorFormValues,
+} from '@/components/admin/ContributorForm'
 import SectionCard from '@/components/ui/SectionCard'
 import {
   getContributorById,
   updateContributor,
+  uploadContributorAvatar,
 } from '@/lib/api/contributors'
 
 type ContributorRecord = {
   id: string
   name: string
   slug: string
+  specialty?: string | null
   short_bio?: string | null
   full_bio?: string | null
+  avatar_url?: string | null
   website_url?: string | null
   instagram_url?: string | null
   facebook_url?: string | null
   linkedin_url?: string | null
   youtube_url?: string | null
+  contact_name?: string | null
+  contact_role?: string | null
+  contact_email?: string | null
+  contact_phone?: string | null
   is_active: boolean
   is_featured: boolean
 }
@@ -46,7 +55,7 @@ export default function AdminContributorEditPage() {
         setError(null)
 
         const data = await getContributorById(id)
-        setContributor(data as ContributorRecord)
+        setContributor(data as unknown as ContributorRecord)
       } catch (err) {
         setError(
           err instanceof Error
@@ -61,15 +70,27 @@ export default function AdminContributorEditPage() {
     void loadContributor()
   }, [id, t])
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async function handleSubmit(values: any) {
+  async function handleSubmit(
+    values: ContributorFormValues,
+    files: { thumbnailFile: File | null },
+  ) {
     if (!id) {
       toast.error(t('admin.contributorForm.missingId'))
       return
     }
 
     try {
-      await updateContributor(id, values)
+      let avatarUrl = values.avatar_url || null
+
+      if (files.thumbnailFile) {
+        avatarUrl = await uploadContributorAvatar(files.thumbnailFile, values.slug)
+      }
+
+      await updateContributor(id, {
+        ...values,
+        avatar_url: avatarUrl,
+      })
+
       toast.success(t('admin.contributorForm.updateSuccess'))
       navigate('/admin/contributors')
     } catch (error) {
@@ -118,13 +139,19 @@ export default function AdminContributorEditPage() {
           initialValues={{
             name: contributor.name,
             slug: contributor.slug,
+            specialty: contributor.specialty ?? '',
             short_bio: contributor.short_bio ?? '',
             full_bio: contributor.full_bio ?? '',
+            avatar_url: contributor.avatar_url ?? '',
             website_url: contributor.website_url ?? '',
             instagram_url: contributor.instagram_url ?? '',
             facebook_url: contributor.facebook_url ?? '',
             linkedin_url: contributor.linkedin_url ?? '',
             youtube_url: contributor.youtube_url ?? '',
+            contact_name: contributor.contact_name ?? '',
+            contact_role: contributor.contact_role ?? '',
+            contact_email: contributor.contact_email ?? '',
+            contact_phone: contributor.contact_phone ?? '',
             is_active: contributor.is_active,
             is_featured: contributor.is_featured,
           }}

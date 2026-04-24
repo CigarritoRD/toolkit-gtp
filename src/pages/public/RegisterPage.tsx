@@ -7,6 +7,7 @@ import { useAuth } from '@/auth/useAuth'
 import FadeIn from '@/components/ui/FadeIn'
 import AppInput from '@/components/ui/AppInput'
 import AppButton from '@/components/ui/AppButton'
+import CountrySelect from '@/components/ui/CountrySelect'
 import SectionCard from '@/components/ui/SectionCard'
 
 export default function RegisterPage() {
@@ -16,22 +17,33 @@ export default function RegisterPage() {
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [country, setCountry] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    if (!name.trim()) {
+      toast.error(t('auth.nameRequired'))
+      return
+    }
+
+    if (!country) {
+      toast.error(t('auth.countryRequired'))
+      return
+    }
+
     try {
       setLoading(true)
 
-      await signUp(email, password, name)
+      await signUp(email, password, name.trim(), country)
 
-      toast.success('Account created successfully 🎉')
+      toast.success(t('auth.registerSuccess'))
       navigate('/dashboard')
     } catch (err) {
       console.error(err)
-      toast.error('Could not create account.')
+      toast.error(t('auth.registerError'))
     } finally {
       setLoading(false)
     }
@@ -48,7 +60,9 @@ export default function RegisterPage() {
               <UserPlus className="h-5 w-5" />
             </div>
 
-            <h1 className="mt-4 font-heading text-2xl">{t('auth.registerTitle')}</h1>
+            <h1 className="mt-4 font-heading text-2xl">
+              {t('auth.registerTitle')}
+            </h1>
             <p className="mt-2 text-sm text-brand-primary">
               {t('auth.registerSubtitle')}
             </p>
@@ -63,8 +77,16 @@ export default function RegisterPage() {
 
             <AppInput
               label={t('auth.email')}
+              type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+            />
+
+            <CountrySelect
+              label={t('profile.country')}
+              value={country}
+              placeholder={t('common.selectCountry')}
+              onChange={setCountry}
             />
 
             <AppInput

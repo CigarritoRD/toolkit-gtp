@@ -24,11 +24,19 @@ export default function AdminResourceCreatePage() {
     let fileUrl = values.file_url ?? null
 
     if (files.thumbnailFile) {
-      thumbnailUrl = await uploadResourceThumbnail(files.thumbnailFile, values.slug)
+      thumbnailUrl = await uploadResourceThumbnail(
+        files.thumbnailFile,
+        values.slug,
+        values.contributor_id,
+      )
     }
 
     if (files.resourceFile) {
-      fileUrl = await uploadResourceFile(files.resourceFile, values.slug)
+      fileUrl = await uploadResourceFile(
+        files.resourceFile,
+        values.slug,
+        values.contributor_id,
+      )
     }
 
     const created = await createResource({

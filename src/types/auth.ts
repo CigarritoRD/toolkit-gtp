@@ -21,6 +21,7 @@ export type AuthContextType = {
     email: string,
     password: string,
     fullName: string,
+    country?: string,
   ) => Promise<unknown>
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>

@@ -23,19 +23,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loading, setLoading] = useState(true)
 
   const fetchProfile = useCallback(async (userId: string) => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('id, full_name, email, role, avatar_url, created_at, updated_at')
-      .eq('id', userId)
-      .single()
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, full_name, email, role, avatar_url, country, created_at, updated_at')
+    .eq('id', userId)
+    .single()
 
-    if (error) {
-      console.error('Error loading profile:', error)
-      return null
-    }
+  if (error) {
+    console.error('Error loading profile:', error)
+    return null
+  }
 
-    return data as Profile
-  }, [])
+  return data as Profile
+}, [])
 
   const hydrateAuth = useCallback(
     async (sessionUser: Session['user'] | null) => {
@@ -136,30 +136,31 @@ export function AuthProvider({ children }: AuthProviderProps) {
     [hydrateAuth],
   )
 
-  const signUp = useCallback(
-    async (email: string, password: string, fullName: string) => {
-      const normalizedEmail = email.trim().toLowerCase()
-      const normalizedName = fullName.trim()
+ const signUp = useCallback(
+  async (email: string, password: string, fullName: string, country?: string) => {
+    const normalizedEmail = email.trim().toLowerCase()
+    const normalizedName = fullName.trim()
 
-      const { data, error } = await supabase.auth.signUp({
-        email: normalizedEmail,
-        password,
-        options: {
-          data: {
-            full_name: normalizedName,
-          },
+    const { data, error } = await supabase.auth.signUp({
+      email: normalizedEmail,
+      password,
+      options: {
+        data: {
+          full_name: normalizedName,
+          country: country || null,
         },
-      })
+      },
+    })
 
-      if (error) {
-        console.error('Error signing up:', error)
-        throw error
-      }
+    if (error) {
+      console.error('Error signing up:', error)
+      throw error
+    }
 
-      return data
-    },
-    [],
-  )
+    return data
+  },
+  [],
+)
 
   const signOut = useCallback(async () => {
     const { error } = await supabase.auth.signOut()

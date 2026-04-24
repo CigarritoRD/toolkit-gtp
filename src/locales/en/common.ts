@@ -431,6 +431,11 @@ const en = {
   },
 
   auth: {
+    nameRequired: 'Enter your name.',
+    countryRequired: 'Select your country.',
+    registerSuccess: 'Account created successfully 🎉',
+    registerError: 'Could not create account.',
+
     loginTitle: 'Log in',
     loginSubtitle: 'Access your account to continue',
     registerTitle: 'Create account',
@@ -445,7 +450,29 @@ const en = {
     noAccount: "Don't have an account?",
     alreadyHaveAccount: 'Already have an account?',
   },
-
+  profile: {
+    badge: 'Profile',
+    title: 'Your account',
+    subtitle: 'Manage your basic information and image inside Toolkit Box.',
+    fullName: 'Full name',
+    fullNamePlaceholder: 'Your name',
+    email: 'Email address',
+    country: 'Country',
+    userId: 'User ID',
+    accountStatus: 'Account status',
+    active: 'Active',
+    avatar: 'Avatar',
+    avatarBadge: 'Profile avatar',
+    avatarHint: 'PNG, JPG or WEBP',
+    saveSuccess: 'Profile updated successfully.',
+    saveError: 'Could not update profile.',
+    missingSession: 'We could not find your session.',
+    nameRequired: 'Enter your name.',
+    saving: 'Saving...',
+    saveChanges: 'Save changes',
+    reset: 'Reset',
+  },
+  
   home: {
     titleAccent: 'that matter',
     badge: 'Toolkit Box',
@@ -582,6 +609,7 @@ const en = {
   },
   descriptionSection: 'Description',
   common: {
+     selectCountry: 'Select a country',
     loading: 'Loading...',
     save: 'Save',
     saving: 'Saving...',

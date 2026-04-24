@@ -74,14 +74,21 @@ export default function AdminResourceEditPage() {
     let thumbnailUrl = values.thumbnail_url ?? resource?.thumbnail_url ?? null
     let fileUrl = values.file_url ?? resource?.file_url ?? null
 
-    if (files.thumbnailFile) {
-      thumbnailUrl = await uploadResourceThumbnail(files.thumbnailFile, values.slug)
+if (files.thumbnailFile) {
+      thumbnailUrl = await uploadResourceThumbnail(
+        files.thumbnailFile,
+        values.slug,
+        values.contributor_id,
+      )
     }
 
     if (files.resourceFile) {
-      fileUrl = await uploadResourceFile(files.resourceFile, values.slug)
+      fileUrl = await uploadResourceFile(
+        files.resourceFile,
+        values.slug,
+        values.contributor_id,
+      )
     }
-
     await updateResource(id, {
       ...values,
       thumbnail_url: thumbnailUrl,
@@ -133,7 +140,7 @@ export default function AdminResourceEditPage() {
         initialValues={{
           title: resource.title,
           slug: resource.slug,
-          description: resource.description ?? '',
+          full_description: resource.full_description ?? '',
           short_description: resource.short_description ?? '',
           thumbnail_url: resource.thumbnail_url ?? '',
           resource_type: resource.resource_type ?? '',

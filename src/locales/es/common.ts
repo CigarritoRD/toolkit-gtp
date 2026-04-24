@@ -8,6 +8,19 @@ const es = {
       categories: 'Categorías',
       tags: 'Tags',
     },
+    categories: {
+    badge: 'Categorías',
+    title: 'Gestión de categorías',
+    subtitle: 'Administra las categorías disponibles en la plataforma.',
+    newCategory: 'Nueva categoría',
+    total: 'Total',
+    withDescription: 'Con descripción',
+    visible: 'Visibles',
+    searchPlaceholder: 'Buscar categorías...',
+    listTitle: 'Lista de categorías',
+    view: 'Ver',
+    noDescription: 'Sin descripción',
+  },
     layout: {
       adminPanel: 'Panel admin',
       signedInAs: 'Sesión iniciada como',
@@ -413,6 +426,11 @@ const es = {
   },
 
   auth: {
+  nameRequired: 'Escribe tu nombre.',
+  countryRequired: 'Selecciona tu país.',
+  registerSuccess: 'Cuenta creada correctamente 🎉',
+  registerError: 'No se pudo crear la cuenta.',
+    
     loginTitle: 'Iniciar sesión',
     loginSubtitle: 'Accede a tu cuenta para continuar',
     registerTitle: 'Crear cuenta',
@@ -427,6 +445,31 @@ const es = {
     noAccount: '¿No tienes cuenta?',
     alreadyHaveAccount: '¿Ya tienes cuenta?',
   },
+  profile: {
+  badge: 'Perfil',
+  title: 'Tu cuenta',
+  subtitle: 'Administra tu información básica y tu imagen dentro de Toolkit Box.',
+  fullName: 'Nombre completo',
+  fullNamePlaceholder: 'Tu nombre',
+  email: 'Correo electrónico',
+  country: 'País',
+  userId: 'ID de usuario',
+  accountStatus: 'Estado de cuenta',
+  active: 'Activa',
+  avatar: 'Avatar',
+  avatarBadge: 'Avatar de perfil',
+  avatarHint: 'PNG, JPG o WEBP',
+  saveSuccess: 'Perfil actualizado correctamente.',
+  saveError: 'No se pudo actualizar el perfil.',
+  missingSession: 'No encontramos tu sesión.',
+  nameRequired: 'Escribe tu nombre.',
+  saving: 'Guardando...',
+  saveChanges: 'Guardar cambios',
+  reset: 'Restablecer',
+},
+
+  selectCountry: 'Selecciona un país',
+
 
   home: {
     titleAccent: 'real',
@@ -592,6 +635,7 @@ const es = {
     favoriteError: 'No se pudo actualizar favoritos.',
   },
   common: {
+    selectCountry: 'Selecciona un país',
     loading: 'Cargando...',
     save: 'Guardar',
     saving: 'Guardando...',

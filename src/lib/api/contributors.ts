@@ -177,6 +177,10 @@ export type AdminContributorInput = {
   facebook_url?: string | null
   linkedin_url?: string | null
   youtube_url?: string | null
+  contact_name?: string | null
+  contact_role?: string | null
+  contact_email?: string | null
+  contact_phone?: string | null
   is_featured?: boolean
   is_active?: boolean
 }
@@ -206,22 +210,26 @@ export async function getContributorById(id: string) {
   const { data, error } = await supabase
     .from('contributors')
     .select(`
-      id,
-      name,
-      slug,
-      short_bio,
-      full_bio,
-      specialty,
-      avatar_url,
-      website_url,
-      instagram_url,
-      facebook_url,
-      linkedin_url,
-      youtube_url,
-      is_featured,
-      is_active,
-      created_at
-    `)
+  id,
+  name,
+  slug,
+  short_bio,
+  full_bio,
+  specialty,
+  avatar_url,
+  website_url,
+  instagram_url,
+  facebook_url,
+  linkedin_url,
+  youtube_url,
+  is_featured,
+  is_active,
+  created_at,
+  contact_name,
+  contact_role,
+  contact_email,
+  contact_phone
+`)
     .eq('id', id)
     .single()
 
@@ -246,6 +254,10 @@ export async function createContributor(input: AdminContributorInput) {
       youtube_url: input.youtube_url ?? null,
       is_featured: input.is_featured ?? false,
       is_active: input.is_active ?? true,
+      contact_name: input.contact_name ?? null,
+      contact_role: input.contact_role ?? null,
+      contact_email: input.contact_email ?? null,
+      contact_phone: input.contact_phone ?? null,
     })
     .select()
     .single()
@@ -271,6 +283,10 @@ export async function updateContributor(id: string, input: AdminContributorInput
       youtube_url: input.youtube_url ?? null,
       is_featured: input.is_featured ?? false,
       is_active: input.is_active ?? true,
+      contact_name: input.contact_name ?? null,
+      contact_role: input.contact_role ?? null,
+      contact_email: input.contact_email ?? null,
+      contact_phone: input.contact_phone ?? null,
     })
     .eq('id', id)
     .select()

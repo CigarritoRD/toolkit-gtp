@@ -57,11 +57,31 @@ export type AdminOverviewMetric = {
   total_contributor_ratings: number
 }
 
-function getCountryHint() {
+async function getUserCountry(): Promise<string> {
   try {
-    const locale = Intl.DateTimeFormat().resolvedOptions().locale || ''
-    return locale.split('-')[1] || 'Unknown'
-  } catch {
+    const cached = sessionStorage.getItem('toolkit_country')
+
+    if (cached) {
+      return cached
+    }
+
+    const response = await fetch('https://ipapi.co/json/')
+
+    if (!response.ok) {
+      return 'Unknown'
+    }
+
+    const data = await response.json()
+    const country =
+      typeof data?.country === 'string' && data.country.trim()
+        ? data.country.trim().toUpperCase()
+        : 'Unknown'
+
+    sessionStorage.setItem('toolkit_country', country)
+
+    return country
+  } catch (error) {
+    console.error('getUserCountry error:', error)
     return 'Unknown'
   }
 }
@@ -70,10 +90,12 @@ export async function trackResourceEvent(
   resourceId: string,
   eventType: ResourceEventType,
 ) {
+  const country = await getUserCountry()
+
   const { error } = await supabase.from('resource_events').insert({
     resource_id: resourceId,
     event_type: eventType,
-    country: getCountryHint(),
+    country,
   })
 
   if (error) {
@@ -85,10 +107,12 @@ export async function trackContributorEvent(
   contributorId: string,
   eventType: ContributorEventType,
 ) {
+  const country = await getUserCountry()
+
   const { error } = await supabase.from('contributor_events').insert({
     contributor_id: contributorId,
     event_type: eventType,
-    country: getCountryHint(),
+    country,
   })
 
   if (error) {

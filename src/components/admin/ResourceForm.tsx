@@ -51,7 +51,93 @@ function slugify(value: string) {
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
 }
+function UploadBox({
+  label,
+  helper,
+  accept,
+  file,
+  currentUrl,
+  onChange,
+}: {
+  label: string
+  helper: string
+  accept?: string
+  file: File | null
+  currentUrl?: string | null
+  onChange: (file: File | null) => void
+}) {
+  const previewUrl = useMemo(() => {
+    if (!file) return null
+    return URL.createObjectURL(file)
+  }, [file])
 
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl)
+    }
+  }, [previewUrl])
+
+  const isImage = accept?.includes('image')
+  const displayName = file?.name || (currentUrl ? 'Current file uploaded' : '')
+
+  return (
+    <div className="space-y-3">
+      <label className="block text-sm font-medium text-text-primary">
+        {label}
+      </label>
+
+      <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-surface-border bg-bg-soft px-6 py-8 text-center transition hover:border-brand-primary/60 hover:bg-brand-primary/5">
+        <input
+          type="file"
+          accept={accept}
+          onChange={(e) => onChange(e.target.files?.[0] ?? null)}
+          className="sr-only"
+        />
+
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm">
+          <span className="text-xl">{isImage ? '🖼️' : '📄'}</span>
+        </div>
+
+        <p className="mt-4 text-sm font-medium text-text-primary">
+          Click to upload
+        </p>
+
+        <p className="mt-1 max-w-md text-xs text-text-secondary">
+          {helper}
+        </p>
+
+        {displayName ? (
+          <p className="mt-4 rounded-full bg-white px-4 py-2 text-xs text-text-secondary shadow-sm">
+            {displayName}
+          </p>
+        ) : null}
+      </label>
+
+      {isImage && (previewUrl || currentUrl) ? (
+        <div className="overflow-hidden rounded-2xl border border-surface-border bg-white p-3">
+          <p className="mb-2 text-xs text-text-secondary">
+            {previewUrl ? 'New preview' : 'Current thumbnail'}
+          </p>
+          <img
+            src={previewUrl || currentUrl || ''}
+            alt="Thumbnail preview"
+            className="h-44 w-full rounded-xl object-cover"
+          />
+        </div>
+      ) : null}
+
+      {file ? (
+        <button
+          type="button"
+          onClick={() => onChange(null)}
+          className="text-xs font-medium text-red-600 hover:underline"
+        >
+          Remove selected file
+        </button>
+      ) : null}
+    </div>
+  )
+}
 export default function ResourceForm({
   initialValues,
   onSubmit,
@@ -63,7 +149,7 @@ export default function ResourceForm({
     () => ({
       title: initialValues?.title ?? '',
       slug: initialValues?.slug ?? '',
-      description: initialValues?.description ?? '',
+      full_description: initialValues?.full_description ?? '',
       short_description: initialValues?.short_description ?? '',
       thumbnail_url: initialValues?.thumbnail_url ?? '',
       resource_type: initialValues?.resource_type ?? '',
@@ -157,7 +243,7 @@ export default function ResourceForm({
           ...values,
           title: values.title.trim(),
           slug: values.slug.trim(),
-          description: values.description?.trim() || null,
+          full_description: values.full_description?.trim() || null,
           short_description: values.short_description?.trim() || null,
           thumbnail_url: values.thumbnail_url?.trim() || null,
           resource_type: values.resource_type?.trim() || null,
@@ -257,8 +343,8 @@ export default function ResourceForm({
           <AppTextarea
             label={t('admin.resourceForm.description')}
             rows={6}
-            value={values.description}
-            onChange={(e) => updateField('description', e.target.value)}
+            value={values.full_description}
+            onChange={(e) => updateField('full_description', e.target.value)}
             placeholder={t('admin.resourceForm.descriptionPlaceholder')}
           />
         </div>
@@ -330,14 +416,13 @@ export default function ResourceForm({
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-text-primary">
-              {t('admin.resourceForm.thumbnail')}
-            </label>
-            <input
-              type="file"
+            <UploadBox
+              label={t('admin.resourceForm.thumbnail')}
+              helper="Upload a clear image for resource cards and public previews. JPG, PNG or WebP recommended."
               accept="image/*"
-              onChange={(e) => setThumbnailFile(e.target.files?.[0] ?? null)}
-              className="block w-full rounded-xl border border-surface-border bg-bg-soft px-3 py-2 text-sm text-text-primary"
+              file={thumbnailFile}
+              currentUrl={values.thumbnail_url}
+              onChange={setThumbnailFile}
             />
           </div>
         </div>
@@ -362,13 +447,12 @@ export default function ResourceForm({
           />
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-text-primary">
-              {t('admin.resourceForm.resourceFile')}
-            </label>
-            <input
-              type="file"
-              onChange={(e) => setResourceFile(e.target.files?.[0] ?? null)}
-              className="block w-full rounded-xl border border-surface-border bg-bg-soft px-3 py-2 text-sm text-text-primary"
+            <UploadBox
+              label={t('admin.resourceForm.resourceFile')}
+              helper="Upload the downloadable resource file. PDF is recommended."
+              file={resourceFile}
+              currentUrl={values.file_url}
+              onChange={setResourceFile}
             />
           </div>
         </div>
