@@ -1,5 +1,14 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts'
 import { getCountryLabel } from '@/lib/constants/countries'
 import {
   FileSearch,
@@ -472,18 +481,12 @@ export default function AdminDashboardPage() {
           }))}
         />
 
-        <MetricListCard
-          title={t('admin.analytics.countriesTitle')}
-          subtitle={t('admin.analytics.countriesSubtitle')}
-          emptyText={t('admin.analytics.noCountryData')}
-          items={countryMetrics.map((item, index) => ({
-            key: `${item.country}-${index}`,
-            title: getCountryLabel(item.country),
-            subtitle: '',
-            value: item.total,
-          }))}
-          icon={<Globe2 className="h-4 w-4" />}
-        />
+        <CountryAnalyticsCard
+  title={t('admin.analytics.countriesTitle')}
+  subtitle={t('admin.analytics.countriesSubtitle')}
+  emptyText={t('admin.analytics.noCountryData')}
+  items={countryMetrics}
+/>
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
@@ -680,6 +683,77 @@ function RatingMetricCard({
           ))
         )}
       </div>
+    </SectionCard>
+  )
+}
+function CountryAnalyticsCard({
+  title,
+  subtitle,
+  emptyText,
+  items,
+}: {
+  title: string
+  subtitle: string
+  emptyText: string
+  items: CountryMetric[]
+}) {
+  const chartData = items.map((item) => ({
+    country: getCountryLabel(item.country),
+    total: item.total,
+  }))
+
+  return (
+    <SectionCard className="overflow-hidden">
+      <div className="border-b border-surface-border px-5 py-4">
+        <div className="flex items-center gap-2">
+          <Globe2 className="h-4 w-4 text-brand-primary" />
+          <h2 className="font-heading text-lg text-text-primary">{title}</h2>
+        </div>
+        <p className="text-sm text-text-secondary">{subtitle}</p>
+      </div>
+
+      {items.length === 0 ? (
+        <div className="px-5 py-8 text-sm text-text-secondary">
+          {emptyText}
+        </div>
+      ) : (
+        <div className="space-y-5 p-5">
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData}>
+                <XAxis
+                  dataKey="country"
+                  tick={{ fontSize: 11 }}
+                  interval={0}
+                  angle={-25}
+                  textAnchor="end"
+                  height={70}
+                />
+                <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
+                <Tooltip />
+                <Bar dataKey="total" radius={[8, 8, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="divide-y divide-surface-border rounded-2xl border border-surface-border">
+            {items.map((item, index) => (
+              <div
+                key={`${item.country}-${index}`}
+                className="flex items-center justify-between gap-4 px-4 py-3"
+              >
+                <p className="truncate text-sm font-medium text-text-primary">
+                  {index + 1}. {getCountryLabel(item.country)}
+                </p>
+
+                <span className="rounded-full bg-brand-primary/10 px-3 py-1 text-xs font-semibold text-brand-primary">
+                  {item.total}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </SectionCard>
   )
 }
