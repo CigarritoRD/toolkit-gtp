@@ -515,8 +515,8 @@ const en = {
     communityBody:
       'Explore a library built with real materials and get to know the people who share them.',
     resourcesCount: 'Resources',
-    authorsCount: 'Authors',
-    topicsCount: 'Topics',
+    authorsCount: 'Collaborators',
+    topicsCount: 'Categories',
 
     searchPlaceholder: 'Search resources, topics, or contributors...',
     errorTitle: 'We could not load the home page',

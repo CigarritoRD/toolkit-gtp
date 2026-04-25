@@ -482,10 +482,10 @@ const zh = {
         communityBody:
             '探索一个由真实材料建立的资源库，并认识分享这些材料的人。',
         resourcesCount: '资源',
-        authorsCount: '作者',
-        topicsCount: '主题',
+        authorsCount: '协作者',
+        topicsCount: '分类',
 
-        searchPlaceholder: '搜索资源、主题或贡献者...',
+        searchPlaceholder: '搜索资源、分类或贡献者...',
         errorTitle: '无法加载首页',
 
         exploreByTopic: '按主题探索',

@@ -513,13 +513,13 @@ const es = {
     communityBody:
       'Explora una biblioteca construida con materiales reales y conoce a quienes los comparten.',
     resourcesCount: 'Recursos',
-    authorsCount: 'Autores',
-    topicsCount: 'Temas',
+    authorsCount: 'Colaboradores',
+    topicsCount: 'Categorías',
 
-    searchPlaceholder: 'Buscar recursos, temas o colaboradores...',
+    searchPlaceholder: 'Buscar recursos, categorías o colaboradores...',
     errorTitle: 'No pudimos cargar el inicio',
 
-    exploreByTopic: 'Explora por tema',
+    exploreByTopic: 'Explora por categoría',
     featuredCategories: 'Categorías destacadas',
     explore: 'Explorar',
     exploreCategory: 'Explora recursos de {{category}}.',
