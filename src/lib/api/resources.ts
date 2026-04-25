@@ -161,7 +161,8 @@ export async function uploadResourceThumbnail(
 }
 
 
-export async function uploadResourceFile(file: File, slug: string) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function uploadResourceFile(file: File, slug: string, contributor_id: string) {
   const ext = file.name.split('.').pop() ?? 'pdf'
   const safe = sanitizeFileName(file.name.replace(/\.[^.]+$/, ''))
   const path = `resources/${slug}/${Date.now()}-${safe}.${ext}`
