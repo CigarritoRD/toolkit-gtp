@@ -1,5 +1,6 @@
 const es = {
   admin: {
+
     nav: {
       dashboard: 'Dashboard',
       contributors: 'Colaboradores',
@@ -9,25 +10,25 @@ const es = {
       tags: 'Tags',
     },
     categories: {
-    badge: 'Categorías',
-    title: 'Gestión de categorías',
-    subtitle: 'Administra las categorías disponibles en la plataforma.',
-    newCategory: 'Nueva categoría',
-    total: 'Total',
-    withDescription: 'Con descripción',
-    visible: 'Visibles',
-    searchPlaceholder: 'Buscar categorías...',
-    listTitle: 'Lista de categorías',
-    view: 'Ver',
-    noDescription: 'Sin descripción',
-  },
+      badge: 'Categorías',
+      title: 'Gestión de categorías',
+      subtitle: 'Administra las categorías disponibles en la plataforma.',
+      newCategory: 'Nueva categoría',
+      total: 'Total',
+      withDescription: 'Con descripción',
+      visible: 'Visibles',
+      searchPlaceholder: 'Buscar categorías...',
+      listTitle: 'Lista de categorías',
+      view: 'Ver',
+      noDescription: 'Sin descripción',
+    },
     layout: {
       adminPanel: 'Panel admin',
       signedInAs: 'Sesión iniciada como',
       admin: 'Admin',
       backToSite: 'Volver al sitio',
       signOut: 'Cerrar sesión',
-      footerTitle: 'Toolkit Box Admin Panel',
+      footerTitle: 'Toolkit Admin Panel',
       footerBody: 'Gestiona colaboradores, recursos, categorías y actividad de la plataforma.',
     },
     dashboard: {
@@ -111,7 +112,7 @@ const es = {
       badge: 'Solicitudes',
       title: 'Solicitudes de colaboradores',
       subtitle:
-        'Revisa ministerios y organizaciones antes de aprobar su ingreso a Toolkit Box.',
+        'Revisa ministerios y organizaciones antes de aprobar su ingreso a Toolkit.',
       searchPlaceholder:
         'Buscar por organización, contacto, correo, especialidad o país...',
       pending: 'Pendiente',
@@ -192,7 +193,7 @@ const es = {
       badge: 'Colaboradores',
       title: 'Gestionar colaboradores',
       subtitle:
-        'Administra perfiles públicos de colaboradores y su visibilidad dentro de Toolkit Box.',
+        'Administra perfiles públicos de colaboradores y su visibilidad dentro de Toolkit.',
       newContributor: 'Nuevo colaborador',
       total: 'Total',
       active: 'Activos',
@@ -214,7 +215,7 @@ const es = {
       badge: 'Tags',
       title: 'Gestionar tags',
       subtitle:
-        'Organiza los tags usados para clasificar y encontrar recursos dentro de Toolkit Box.',
+        'Organiza los tags usados para clasificar y encontrar recursos dentro de Toolkit.',
       newTag: 'Nuevo tag',
       total: 'Total',
       withDescription: 'Con descripción',
@@ -263,6 +264,7 @@ const es = {
       },
     },
     resourceForm: {
+      selectResourceType: 'Selecciona un tipo de recurso',
       badge: 'Recursos',
       createTitle: 'Crear recurso',
       createSubtitle:
@@ -426,15 +428,22 @@ const es = {
   },
 
   auth: {
-  nameRequired: 'Escribe tu nombre.',
-  countryRequired: 'Selecciona tu país.',
-  registerSuccess: 'Cuenta creada correctamente 🎉',
-  registerError: 'No se pudo crear la cuenta.',
-    
+    emailRequired: 'Escribe tu correo electrónico.',
+    emailInvalid: 'Ingresa un correo electrónico válido.',
+    didYouMean: '¿Quisiste decir {{email}}?',
+    emailSuggestion: 'Revisa el correo. ¿Quisiste decir {{email}}?',
+    confirmPassword: 'Confirmar contraseña',
+    passwordMinLength: 'La contraseña debe tener al menos 8 caracteres.',
+    passwordsDoNotMatch: 'Las contraseñas no coinciden.',
+    nameRequired: 'Escribe tu nombre.',
+    countryRequired: 'Selecciona tu país.',
+    registerSuccess: 'Cuenta creada correctamente 🎉',
+    registerError: 'No se pudo crear la cuenta.',
+
     loginTitle: 'Iniciar sesión',
     loginSubtitle: 'Accede a tu cuenta para continuar',
     registerTitle: 'Crear cuenta',
-    registerSubtitle: 'Únete a Toolkit Box',
+    registerSubtitle: 'Únete a Toolkit',
     email: 'Correo',
     password: 'Contraseña',
     fullName: 'Nombre',
@@ -446,34 +455,34 @@ const es = {
     alreadyHaveAccount: '¿Ya tienes cuenta?',
   },
   profile: {
-  badge: 'Perfil',
-  title: 'Tu cuenta',
-  subtitle: 'Administra tu información básica y tu imagen dentro de Toolkit Box.',
-  fullName: 'Nombre completo',
-  fullNamePlaceholder: 'Tu nombre',
-  email: 'Correo electrónico',
-  country: 'País',
-  userId: 'ID de usuario',
-  accountStatus: 'Estado de cuenta',
-  active: 'Activa',
-  avatar: 'Avatar',
-  avatarBadge: 'Avatar de perfil',
-  avatarHint: 'PNG, JPG o WEBP',
-  saveSuccess: 'Perfil actualizado correctamente.',
-  saveError: 'No se pudo actualizar el perfil.',
-  missingSession: 'No encontramos tu sesión.',
-  nameRequired: 'Escribe tu nombre.',
-  saving: 'Guardando...',
-  saveChanges: 'Guardar cambios',
-  reset: 'Restablecer',
-},
+    badge: 'Perfil',
+    title: 'Tu cuenta',
+    subtitle: 'Administra tu información básica y tu imagen dentro de Toolkit.',
+    fullName: 'Nombre completo',
+    fullNamePlaceholder: 'Tu nombre',
+    email: 'Correo electrónico',
+    country: 'País',
+    userId: 'ID de usuario',
+    accountStatus: 'Estado de cuenta',
+    active: 'Activa',
+    avatar: 'Avatar',
+    avatarBadge: 'Avatar de perfil',
+    avatarHint: 'PNG, JPG o WEBP',
+    saveSuccess: 'Perfil actualizado correctamente.',
+    saveError: 'No se pudo actualizar el perfil.',
+    missingSession: 'No encontramos tu sesión.',
+    nameRequired: 'Escribe tu nombre.',
+    saving: 'Guardando...',
+    saveChanges: 'Guardar cambios',
+    reset: 'Restablecer',
+  },
 
   selectCountry: 'Selecciona un país',
 
 
   home: {
     titleAccent: 'real',
-    badge: 'Toolkit Box',
+    badge: 'Toolkit',
     title: 'Recursos útiles para aprender, acompañar y crecer en comunidad.',
     subtitle:
       'Explora materiales compartidos por colaboradores, descubre nuevas herramientas y encuentra recursos diseñados para apoyar procesos reales de formación, bienestar y liderazgo.',
@@ -520,7 +529,7 @@ const es = {
     featuredContributors: 'Colaboradores destacados',
 
     contributorCtaBadge: 'Comparte con la comunidad',
-    contributorCtaTitle: '¿Quieres compartir recursos y formar parte de Toolkit Box?',
+    contributorCtaTitle: '¿Quieres compartir recursos y formar parte de Toolkit?',
     contributorCtaSubtitle:
       'Aplica como colaborador para que nuestro equipo revise tu perfil. Si eres aprobado, podrás ser parte de la biblioteca y ayudar a otros con tus materiales.',
     contributorCtaPoint1Title: 'Perfil revisado',
@@ -532,14 +541,14 @@ const es = {
 
     finalCtaTitle: 'Encuentra recursos y descubre a quienes los comparten',
     finalCtaBody:
-      'Toolkit Box no solo reúne materiales útiles. También te conecta con colaboradores, ideas y plataformas que amplían el aprendizaje y el acompañamiento.',
+      'Toolkit no solo reúne materiales útiles. También te conecta con colaboradores, ideas y plataformas que amplían el aprendizaje y el acompañamiento.',
   },
 
   contributors: {
     badge: 'Comunidad',
     title: 'Colaboradores',
     subtitle:
-      'Conoce a las personas, ministerios y organizaciones que comparten recursos dentro de Toolkit Box.',
+      'Conoce a las personas, ministerios y organizaciones que comparten recursos dentro de Toolkit.',
     feature1Title: 'Red de colaboradores',
     feature1Body:
       'Descubre perfiles que aportan materiales, experiencia y perspectiva.',
@@ -573,6 +582,8 @@ const es = {
     viewProfile: 'Ver perfil',
   },
   resources: {
+    typeGuide: 'Guía',
+    typeTemplate: 'Plantilla',
     badge: 'Biblioteca',
     title: 'Explora recursos',
     subtitle:
@@ -653,7 +664,7 @@ const es = {
     badge: 'Aplicación de colaboradores',
     title: 'Conviértete en colaborador',
     subtitle:
-      'Comparte el perfil de tu ministerio u organización para que nuestro equipo pueda revisarlo y considerarlo dentro de Toolkit Box.',
+      'Comparte el perfil de tu ministerio u organización para que nuestro equipo pueda revisarlo y considerarlo dentro de Toolkit.',
     point1Title: 'Perfil revisado',
     point1Body:
       'Cada solicitud es evaluada para mantener una biblioteca confiable y útil.',
@@ -716,10 +727,10 @@ const es = {
     contributeTitle: '¿Quieres compartir tus recursos?',
     contributeBody:
       'Aplica como colaborador y deja que revisemos tu perfil para formar parte de la plataforma.',
-    rights: '© 2026 Toolkit Box. Todos los derechos reservados.',
+    rights: '© 2026 Toolkit. Todos los derechos reservados.',
     madeFor: 'Diseñado para descubrir recursos y conectar colaboradores.',
     poweredBy: 'Powered by',
-    poweredByBody: 'Toolkit Box desarrollado como parte del ecosistema de GTP.',
+    poweredByBody: 'Toolkit desarrollado como parte del ecosistema de GTP.',
   },
   ratings: {
     badge: 'Valoraciones',

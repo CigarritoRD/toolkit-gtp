@@ -3,6 +3,7 @@ import { initReactI18next } from 'react-i18next'
 
 import en from '@/locales/en/common'
 import es from '@/locales/es/common'
+import zh from '@/locales/zh/common'
 
 const savedLanguage =
   typeof window !== 'undefined' ? localStorage.getItem('tb-language') : null
@@ -12,9 +13,12 @@ void i18n.use(initReactI18next).init({
     en: {
       common: en,
     },
-    es: {
-      common: es,
-    },
+      es: {
+        common: es,
+      },
+      zh: {
+        common: zh,
+      },
   },
   lng: savedLanguage || 'es',
   fallbackLng: 'es',

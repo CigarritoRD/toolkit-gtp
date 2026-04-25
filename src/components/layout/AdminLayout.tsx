@@ -102,7 +102,7 @@ export default function AdminLayout() {
 
                 <div>
                   <p className="font-heading text-[1.65rem] leading-none text-text-primary">
-                    Toolkit Box
+                    Toolkit
                   </p>
                   <p className="mt-1 text-[11px] uppercase tracking-[0.22em] text-brand-primary">
                     {t('admin.layout.adminPanel')}
@@ -185,7 +185,7 @@ export default function AdminLayout() {
 
                 <div>
                   <p className="font-heading text-xl leading-none text-text-primary">
-                    Toolkit Box
+                    Toolkit
                   </p>
                   <p className="mt-1 text-[11px] uppercase tracking-[0.22em] text-brand-primary">
                     {t('admin.layout.adminPanel')}

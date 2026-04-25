@@ -37,7 +37,7 @@ export default function DashboardSidebar({
   return (
     <aside className="h-full border-r border-surface-border bg-surface/60 p-6 backdrop-blur-xl">
       <div className="mb-8">
-        <p className="font-heading text-xl text-text-primary">Toolkit Box</p>
+        <p className="font-heading text-xl text-text-primary">Toolkit</p>
         <p className="mt-1 text-sm text-brand-primary">Panel de usuario</p>
       </div>
 

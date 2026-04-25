@@ -92,7 +92,7 @@ export default function PublicNavbar() {
 
           <div className="min-w-0">
             <p className="font-heading text-gl leading-none text-text-primary">
-              Toolkit Box
+              Toolkit
             </p>
             <p className="mt-1 text-[11px] uppercase tracking-[0.22em] text-brand-primary">
               by GTP

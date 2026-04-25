@@ -10,6 +10,30 @@ import AppButton from '@/components/ui/AppButton'
 import CountrySelect from '@/components/ui/CountrySelect'
 import SectionCard from '@/components/ui/SectionCard'
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+function suggestEmailFix(email: string) {
+  const normalized = email.trim().toLowerCase()
+
+  if (normalized.endsWith('.oeg')) {
+    return normalized.replace(/\.oeg$/, '.org')
+  }
+
+  if (normalized.endsWith('@gmail.con')) {
+    return normalized.replace('@gmail.con', '@gmail.com')
+  }
+
+  if (normalized.endsWith('@hotmail.con')) {
+    return normalized.replace('@hotmail.con', '@hotmail.com')
+  }
+
+  if (normalized.endsWith('@outlook.con')) {
+    return normalized.replace('@outlook.con', '@outlook.com')
+  }
+
+  return null
+}
+
 export default function RegisterPage() {
   const navigate = useNavigate()
   const { t } = useTranslation()
@@ -19,13 +43,34 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('')
   const [country, setCountry] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
+
+  const emailSuggestion = suggestEmailFix(email)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!name.trim()) {
+    const normalizedName = name.trim()
+    const normalizedEmail = email.trim().toLowerCase()
+
+    if (!normalizedName) {
       toast.error(t('auth.nameRequired'))
+      return
+    }
+
+    if (!normalizedEmail) {
+      toast.error(t('auth.emailRequired'))
+      return
+    }
+
+    if (!EMAIL_RE.test(normalizedEmail)) {
+      toast.error(t('auth.emailInvalid'))
+      return
+    }
+
+    if (emailSuggestion) {
+      toast.error(t('auth.emailSuggestion', { email: emailSuggestion }))
       return
     }
 
@@ -34,10 +79,20 @@ export default function RegisterPage() {
       return
     }
 
+    if (password.length < 8) {
+      toast.error(t('auth.passwordMinLength'))
+      return
+    }
+
+    if (password !== confirmPassword) {
+      toast.error(t('auth.passwordsDoNotMatch'))
+      return
+    }
+
     try {
       setLoading(true)
 
-      await signUp(email, password, name.trim(), country)
+      await signUp(normalizedEmail, password, normalizedName, country)
 
       toast.success(t('auth.registerSuccess'))
       navigate('/dashboard')
@@ -75,12 +130,24 @@ export default function RegisterPage() {
               onChange={(e) => setName(e.target.value)}
             />
 
-            <AppInput
-              label={t('auth.email')}
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+            <div>
+              <AppInput
+                label={t('auth.email')}
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+
+              {emailSuggestion ? (
+                <button
+                  type="button"
+                  onClick={() => setEmail(emailSuggestion)}
+                  className="mt-2 text-left text-xs font-medium text-brand-primary hover:underline"
+                >
+                  {t('auth.didYouMean', { email: emailSuggestion })}
+                </button>
+              ) : null}
+            </div>
 
             <CountrySelect
               label={t('profile.country')}
@@ -94,6 +161,13 @@ export default function RegisterPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+            />
+
+            <AppInput
+              label={t('auth.confirmPassword')}
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
             />
 
             <AppButton type="submit" disabled={loading} className="w-full">

@@ -23,7 +23,7 @@ export default function CountrySelect({
       <option value="">{placeholder}</option>
       {COUNTRIES.map((country) => (
         <option key={country.code} value={country.code}>
-          {country.flag} {country.name}
+          {country.flagCode} {country.name}
         </option>
       ))}
     </AppSelect>

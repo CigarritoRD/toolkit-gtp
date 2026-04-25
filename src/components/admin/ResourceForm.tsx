@@ -312,12 +312,21 @@ export default function ResourceForm({
             />
           </div>
 
-          <AppInput
+          <AppSelect
             label={t('admin.resourceForm.resourceType')}
             value={values.resource_type}
             onChange={(e) => updateField('resource_type', e.target.value)}
-            placeholder={t('admin.resourceForm.resourceTypePlaceholder')}
-          />
+          >
+            <option value="">{t('admin.resourceForm.selectResourceType')}</option>
+            <option value="pdf">PDF</option>
+            <option value="guide">{t('resources.typeGuide')}</option>
+            <option value="video">{t('resources.typeVideo')}</option>
+            <option value="audio">{t('resources.typeAudio')}</option>
+            <option value="image">{t('resources.typeImage')}</option>
+            <option value="document">{t('resources.typeDocument')}</option>
+            <option value="template">{t('resources.typeTemplate')}</option>
+            <option value="link">{t('resources.typeLink')}</option>
+          </AppSelect>
         </div>
       </SectionCard>
 

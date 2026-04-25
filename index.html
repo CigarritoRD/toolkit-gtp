@@ -8,7 +8,7 @@
      <!-- Anti-FOUC: debe ir aquí, antes de todo -->
     <script>
       (function() {
-        const saved = localStorage.getItem('Toolkit Box-box-theme')
+        const saved = localStorage.getItem('Toolkit-box-theme')
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
         if (saved === 'dark' || (!saved && prefersDark)) {
           document.documentElement.classList.add('dark')

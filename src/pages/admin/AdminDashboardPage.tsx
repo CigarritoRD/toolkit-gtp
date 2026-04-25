@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-
+import CountryFlag from '@/components/ui/CountryFlag'
+import { getCountryLabel } from '@/lib/constants/countries'
 import {
   BarChart,
   Bar,
@@ -9,7 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts'
-import { getCountryLabel } from '@/lib/constants/countries'
+
 import {
   FileSearch,
   FolderKanban,
@@ -698,7 +699,8 @@ function CountryAnalyticsCard({
   items: CountryMetric[]
 }) {
   const chartData = items.map((item) => ({
-    country: getCountryLabel(item.country),
+    country: item.country,
+    label: getCountryLabel(item.country),
     total: item.total,
   }))
 
@@ -723,14 +725,15 @@ function CountryAnalyticsCard({
               <BarChart data={chartData}>
                 <XAxis
                   dataKey="country"
-                  tick={{ fontSize: 11 }}
-                  interval={0}
-                  angle={-25}
-                  textAnchor="end"
-                  height={70}
+                  tick={{ fontSize: 12 }}
                 />
                 <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
-                <Tooltip />
+                <Tooltip
+                  formatter={(value) => [value, 'Events']}
+                  labelFormatter={(_, payload) =>
+                    payload?.[0]?.payload?.label ?? ''
+                  }
+                />
                 <Bar dataKey="total" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -742,9 +745,13 @@ function CountryAnalyticsCard({
                 key={`${item.country}-${index}`}
                 className="flex items-center justify-between gap-4 px-4 py-3"
               >
-                <p className="truncate text-sm font-medium text-text-primary">
-                  {index + 1}. {getCountryLabel(item.country)}
-                </p>
+                <div className="flex min-w-0 items-center gap-3">
+                  <CountryFlag code={item.country} className="text-xl" />
+
+                  <p className="truncate text-sm font-medium text-text-primary">
+                    {index + 1}. {getCountryLabel(item.country)}
+                  </p>
+                </div>
 
                 <span className="rounded-full bg-brand-primary/10 px-3 py-1 text-xs font-semibold text-brand-primary">
                   {item.total}

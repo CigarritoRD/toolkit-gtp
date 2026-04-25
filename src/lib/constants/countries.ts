@@ -1,63 +1,71 @@
 export const COUNTRIES = [
   // América
-  { code: 'AR', name: 'Argentina', flag: '🇦🇷' },
-  { code: 'BO', name: 'Bolivia', flag: '🇧🇴' },
-  { code: 'BR', name: 'Brazil', flag: '🇧🇷' },
-  { code: 'CA', name: 'Canada', flag: '🇨🇦' },
-  { code: 'CL', name: 'Chile', flag: '🇨🇱' },
-  { code: 'CO', name: 'Colombia', flag: '🇨🇴' },
-  { code: 'CR', name: 'Costa Rica', flag: '🇨🇷' },
-  { code: 'CU', name: 'Cuba', flag: '🇨🇺' },
-  { code: 'DO', name: 'Dominican Republic', flag: '🇩🇴' },
-  { code: 'EC', name: 'Ecuador', flag: '🇪🇨' },
-  { code: 'SV', name: 'El Salvador', flag: '🇸🇻' },
-  { code: 'GT', name: 'Guatemala', flag: '🇬🇹' },
-  { code: 'HN', name: 'Honduras', flag: '🇭🇳' },
-  { code: 'MX', name: 'Mexico', flag: '🇲🇽' },
-  { code: 'NI', name: 'Nicaragua', flag: '🇳🇮' },
-  { code: 'PA', name: 'Panama', flag: '🇵🇦' },
-  { code: 'PY', name: 'Paraguay', flag: '🇵🇾' },
-  { code: 'PE', name: 'Peru', flag: '🇵🇪' },
-  { code: 'PR', name: 'Puerto Rico', flag: '🇵🇷' },
-  { code: 'US', name: 'United States', flag: '🇺🇸' },
-  { code: 'UY', name: 'Uruguay', flag: '🇺🇾' },
-  { code: 'VE', name: 'Venezuela', flag: '🇻🇪' },
-
+  { code: 'AR', name: 'Argentina', flagCode:'ar' },
+  { code: 'BO', name: 'Bolivia', flagCode: 'bo' },
+  { code: 'BR', name: 'Brazil', flagCode: 'br' },
+  { code: 'CA', name: 'Canada', flagCode: 'ca' },
+  { code: 'CL', name: 'Chile', flagCode: 'cl' },
+  { code: 'CO', name: 'Colombia', flagCode: 'co' },
+  { code: 'CR', name: 'Costa Rica', flagCode: 'cr' },
+  { code: 'CU', name: 'Cuba', flagCode: 'cu' },
+  { code: 'DO', name: 'Dominican Republic', flagCode:'do' },
+  { code: 'EC', name: 'Ecuador', flagCode: 'ec' },
+  { code: 'SV', name: 'El Salvador', flagCode: 'sv' },
+  { code: 'GT', name: 'Guatemala', flagCode: 'gt' },
+  { code: 'HN', name: 'Honduras', flagCode: 'hn' },
+  { code: 'MX', name: 'Mexico', flagCode: 'mx' },
+  { code: 'NI', name: 'Nicaragua', flagCode: 'ni' },
+  { code: 'PA', name: 'Panama', flagCode: 'pa' },
+  { code: 'PY', name: 'Paraguay', flagCode: 'py' },
+  { code: 'PE', name: 'Peru', flagCode: 'pe' },
+  { code: 'PR', name: 'Puerto Rico', flagCode: 'pr' },
+  { code: 'US', name: 'United States', flagCode: 'us' },
+  { code: 'UY', name: 'Uruguay', flagCode: 'uy' },
+  { code: 'VE', name: 'Venezuela', flagCode: 've' },
+  
   // Europa
-  { code: 'ES', name: 'Spain', flag: '🇪🇸' },
-  { code: 'FR', name: 'France', flag: '🇫🇷' },
-  { code: 'DE', name: 'Germany', flag: '🇩🇪' },
-  { code: 'IT', name: 'Italy', flag: '🇮🇹' },
-  { code: 'PT', name: 'Portugal', flag: '🇵🇹' },
-  { code: 'GB', name: 'United Kingdom', flag: '🇬🇧' },
-  { code: 'NL', name: 'Netherlands', flag: '🇳🇱' },
+  { code: 'ES', name: 'Spain', flagCode: 'es' },
+  { code: 'FR', name: 'France', flagCode: 'fr' },
+  { code: 'DE', name: 'Germany', flagCode: 'de' },
+  { code: 'IT', name: 'Italy', flagCode: 'it' },
+  { code: 'PT', name: 'Portugal', flagCode: 'pt' },
+  { code: 'GB', name: 'United Kingdom', flagCode: 'gb' },
+  { code: 'NL', name: 'Netherlands', flagCode: 'nl' },
 
   // Asia 
-  { code: 'CN', name: 'China', flag: '🇨🇳' },
-  { code: 'JP', name: 'Japan', flag: '🇯🇵' },
-  { code: 'KR', name: 'South Korea', flag: '🇰🇷' },
-  { code: 'IN', name: 'India', flag: '🇮🇳' },
-  { code: 'PH', name: 'Philippines', flag: '🇵🇭' },
-  { code: 'ID', name: 'Indonesia', flag: '🇮🇩' },
-  { code: 'TH', name: 'Thailand', flag: '🇹🇭' },
+  { code: 'CN', name: 'China', flagCode: 'cn' },
+  { code: 'JP', name: 'Japan', flagCode: 'jp' },
+  { code: 'KR', name: 'South Korea', flagCode: 'kr' },
+  { code: 'IN', name: 'India', flagCode: 'in' },
+  { code: 'PH', name: 'Philippines', flagCode: 'ph' },
+  { code: 'ID', name: 'Indonesia', flagCode: 'id' },
+  { code: 'TH', name: 'Thailand', flagCode: 'th' },
+  { code: 'TW', name: 'Taiwan', flagCode: 'tw' },
 
   // África
-  { code: 'ZA', name: 'South Africa', flag: '🇿🇦' },
-  { code: 'NG', name: 'Nigeria', flag: '🇳🇬' },
-  { code: 'EG', name: 'Egypt', flag: '🇪🇬' },
+  { code: 'ZA', name: 'South Africa', flagCode: 'za' },
+  { code: 'NG', name: 'Nigeria', flagCode: 'ng' },
+  { code: 'EG', name: 'Egypt', flagCode: 'eg' },
 
   // Oceanía
-  { code: 'AU', name: 'Australia', flag: '🇦🇺' },
-  { code: 'NZ', name: 'New Zealand', flag: '🇳🇿' },
+  { code: 'AU', name: 'Australia', flagCode: 'au' },
+  { code: 'NZ', name: 'New Zealand', flagCode: 'nz' },
 ]
 
 
+
+export function getCountryByCode(code?: string | null) {
+  if (!code) return null
+
+  return COUNTRIES.find(
+    (country) => country.code.toLowerCase() === code.toLowerCase(),
+  ) ?? null
+}
+
 export function getCountryLabel(code?: string | null) {
-  if (!code) return 'Unknown'
+  const country = getCountryByCode(code)
 
-  const country = COUNTRIES.find(
-    (item) => item.code.toLowerCase() === code.toLowerCase(),
-  )
+  if (!country) return code || 'Unknown'
 
-  return country ? `${country.flag} ${country.name}` : code
+  return country.name
 }

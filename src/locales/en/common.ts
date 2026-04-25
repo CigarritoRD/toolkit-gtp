@@ -1,5 +1,6 @@
 const en = {
   admin: {
+
     nav: {
       dashboard: 'Dashboard',
       contributors: 'Contributors',
@@ -14,7 +15,7 @@ const en = {
       admin: 'Admin',
       backToSite: 'Back to site',
       signOut: 'Sign out',
-      footerTitle: 'Toolkit Box Admin Panel',
+      footerTitle: 'Toolkit Admin Panel',
       footerBody: 'Manage contributors, resources, categories, and platform activity.',
     },
     dashboard: {
@@ -98,7 +99,7 @@ const en = {
       badge: 'Applications',
       title: 'Contributor applications',
       subtitle:
-        'Review ministries and organizations before approving their entry into Toolkit Box.',
+        'Review ministries and organizations before approving their entry into Toolkit.',
       searchPlaceholder:
         'Search by organization, contact, email, specialty, or country...',
       pending: 'Pending',
@@ -179,7 +180,7 @@ const en = {
       badge: 'Contributors',
       title: 'Manage contributors',
       subtitle:
-        'Manage public contributor profiles and their visibility inside Toolkit Box.',
+        'Manage public contributor profiles and their visibility inside Toolkit.',
       newContributor: 'New contributor',
       total: 'Total',
       active: 'Active',
@@ -201,7 +202,7 @@ const en = {
       badge: 'Categories',
       title: 'Manage categories',
       subtitle:
-        'Organize the categories used to classify resources inside Toolkit Box.',
+        'Organize the categories used to classify resources inside Toolkit.',
       newCategory: 'New category',
       total: 'Total',
       withDescription: 'With description',
@@ -219,7 +220,7 @@ const en = {
       badge: 'Tags',
       title: 'Manage tags',
       subtitle:
-        'Organize the tags used to classify and find resources inside Toolkit Box.',
+        'Organize the tags used to classify and find resources inside Toolkit.',
       newTag: 'New tag',
       total: 'Total',
       withDescription: 'With description',
@@ -268,6 +269,7 @@ const en = {
       },
     },
     resourceForm: {
+      selectResourceType: 'Select a resource type',
       badge: 'Resources',
       createTitle: 'Create resource',
       createSubtitle:
@@ -431,6 +433,13 @@ const en = {
   },
 
   auth: {
+    emailRequired: 'Enter your email address.',
+    emailInvalid: 'Enter a valid email address.',
+    didYouMean: 'Did you mean {{email}}?',
+    emailSuggestion: 'Check the email. Did you mean {{email}}?',
+    confirmPassword: 'Confirm password',
+    passwordMinLength: 'Password must be at least 8 characters.',
+    passwordsDoNotMatch: 'Passwords do not match.',
     nameRequired: 'Enter your name.',
     countryRequired: 'Select your country.',
     registerSuccess: 'Account created successfully 🎉',
@@ -439,7 +448,7 @@ const en = {
     loginTitle: 'Log in',
     loginSubtitle: 'Access your account to continue',
     registerTitle: 'Create account',
-    registerSubtitle: 'Join Toolkit Box',
+    registerSubtitle: 'Join Toolkit',
     email: 'Email',
     password: 'Password',
     fullName: 'Name',
@@ -453,7 +462,7 @@ const en = {
   profile: {
     badge: 'Profile',
     title: 'Your account',
-    subtitle: 'Manage your basic information and image inside Toolkit Box.',
+    subtitle: 'Manage your basic information and image inside Toolkit.',
     fullName: 'Full name',
     fullNamePlaceholder: 'Your name',
     email: 'Email address',
@@ -472,10 +481,10 @@ const en = {
     saveChanges: 'Save changes',
     reset: 'Reset',
   },
-  
+
   home: {
     titleAccent: 'that matter',
-    badge: 'Toolkit Box',
+    badge: 'Toolkit',
     title: 'Useful resources to learn, support, and grow in community.',
     subtitle:
       'Explore materials shared by contributors, discover new tools, and find resources designed to support real processes of training, wellbeing, and leadership.',
@@ -522,7 +531,7 @@ const en = {
     featuredContributors: 'Featured contributors',
 
     contributorCtaBadge: 'Share with the community',
-    contributorCtaTitle: 'Would you like to share resources and join Toolkit Box?',
+    contributorCtaTitle: 'Would you like to share resources and join Toolkit?',
     contributorCtaSubtitle:
       'Apply as a contributor so our team can review your profile. If approved, you can become part of the library and help others with your materials.',
     contributorCtaPoint1Title: 'Reviewed profile',
@@ -534,10 +543,12 @@ const en = {
 
     finalCtaTitle: 'Find resources and discover the people who share them',
     finalCtaBody:
-      'Toolkit Box does not only gather useful materials. It also connects you with contributors, ideas, and platforms that expand learning and support.',
+      'Toolkit does not only gather useful materials. It also connects you with contributors, ideas, and platforms that expand learning and support.',
   },
 
   resources: {
+    typeGuide: 'Guide',
+    typeTemplate: 'Template',
     badge: 'Library',
     title: 'Explore resources',
     subtitle:
@@ -609,7 +620,7 @@ const en = {
   },
   descriptionSection: 'Description',
   common: {
-     selectCountry: 'Select a country',
+    selectCountry: 'Select a country',
     loading: 'Loading...',
     save: 'Save',
     saving: 'Saving...',
@@ -627,7 +638,7 @@ const en = {
     badge: 'Community',
     title: 'Contributors',
     subtitle:
-      'Meet the people, ministries, and organizations sharing resources inside Toolkit Box.',
+      'Meet the people, ministries, and organizations sharing resources inside Toolkit.',
     feature1Title: 'Contributor network',
     feature1Body:
       'Discover profiles that bring materials, experience, and perspective.',
@@ -664,7 +675,7 @@ const en = {
     badge: 'Contributor application',
     title: 'Become a contributor',
     subtitle:
-      'Share your ministry or organization profile so our team can review it and consider it for Toolkit Box.',
+      'Share your ministry or organization profile so our team can review it and consider it for Toolkit.',
     point1Title: 'Reviewed profile',
     point1Body:
       'Each application is reviewed to keep the library trustworthy and useful.',
@@ -728,8 +739,8 @@ const en = {
     contributeBody:
       'Apply as a contributor and let us review your profile to become part of the platform.',
     poweredBy: 'Powered by',
-    poweredByBody: 'Toolkit Box developed as part of the GTP ecosystem.',
-    rights: '© 2026 Toolkit Box. All rights reserved.',
+    poweredByBody: 'Toolkit developed as part of the GTP ecosystem.',
+    rights: '© 2026 Toolkit. All rights reserved.',
     madeFor: 'Built to discover resources and connect contributors.',
   },
   ratings: {

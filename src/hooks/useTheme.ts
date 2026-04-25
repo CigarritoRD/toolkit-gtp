@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 
 export type Theme = 'light' | 'dark'
 
-const THEME_KEY = 'Toolkit Box-box-theme'
+const THEME_KEY = 'Toolkit-box-theme'
 
 function getInitialTheme(): Theme {
   if (typeof window === 'undefined') return 'dark'

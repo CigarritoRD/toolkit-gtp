@@ -19,7 +19,7 @@ export default function PublicFooter() {
             </div>
 
             <div>
-              <h3 className="font-heading text-xl text-text-primary">Toolkit Box</h3>
+              <h3 className="font-heading text-xl text-text-primary">Toolkit</h3>
               <p className="mt-1 text-xs uppercase tracking-[0.18em] text-brand-primary">
                 by GTP
               </p>
