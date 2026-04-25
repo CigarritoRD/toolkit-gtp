@@ -1,13 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowRight, Search, Sparkles } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Search, Sparkles } from 'lucide-react'
+import CountUp from 'react-countup'
 import { useTranslation } from 'react-i18next'
+
 import ResourceCard from '@/components/resources/ResourceCard'
 import ContributorCard from '@/components/contributors/ContributorCard'
 import FadeIn from '@/components/ui/FadeIn'
 import SectionCard from '@/components/ui/SectionCard'
+
 import {
   getActiveResourceCategories,
   getFeaturedResources,
@@ -18,6 +21,11 @@ import {
   getContributorRatingSummaries,
   getResourceRatingSummaries,
 } from '@/lib/api/ratings'
+import {
+  getPublicPlatformStats,
+  type PublicPlatformStats,
+} from '@/lib/api/analytics'
+
 import type { ResourceListItem } from '@/types/resources'
 import type { ContributorListItem } from '@/types/contributors'
 
@@ -31,7 +39,19 @@ type RatingMap = Map<
 
 export default function Home() {
   const { t } = useTranslation()
+  const navigate = useNavigate()
+  const categoriesCarouselRef = useRef<HTMLDivElement | null>(null)
 
+  const scrollCategories = (direction: 'left' | 'right') => {
+    const carousel = categoriesCarouselRef.current
+
+    if (!carousel) return
+
+    carousel.scrollBy({
+      left: direction === 'left' ? -320 : 320,
+      behavior: 'smooth',
+    })
+  }
   const [categories, setCategories] = useState<ResourceCategory[]>([])
   const [resources, setResources] = useState<ResourceListItem[]>([])
   const [contributors, setContributors] = useState<ContributorListItem[]>([])
@@ -39,10 +59,15 @@ export default function Home() {
   const [contributorRatings, setContributorRatings] = useState<RatingMap>(
     new Map(),
   )
+
+  const [stats, setStats] = useState<PublicPlatformStats>({
+    resourcesCount: 0,
+    contributorsCount: 0,
+    categoriesCount: 0,
+  })
+
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
-  const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
 
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
@@ -66,11 +91,13 @@ export default function Home() {
         setLoading(true)
         setError(null)
 
-        const [categoriesData, resourcesData, contributorsData] = await Promise.all([
-          getActiveResourceCategories(),
-          getFeaturedResources(),
-          getFeaturedContributors(),
-        ])
+        const [categoriesData, resourcesData, contributorsData, statsData] =
+          await Promise.all([
+            getActiveResourceCategories(),
+            getFeaturedResources(),
+            getFeaturedContributors(),
+            getPublicPlatformStats(),
+          ])
 
         if (!active) return
 
@@ -80,9 +107,14 @@ export default function Home() {
           file_url: resource.file_url ?? '',
         }))
 
-        setCategories(categoriesData.slice(0, 4))
+        setCategories(categoriesData)
         setResources(normalizedResources)
         setContributors(contributorsData)
+
+        setStats({
+          ...statsData,
+          categoriesCount: categoriesData.length,
+        })
 
         const [resourceRatingsMap, contributorRatingsMap] = await Promise.all([
           getResourceRatingSummaries(
@@ -94,12 +126,15 @@ export default function Home() {
         ])
 
         if (!active) return
+
         setResourceRatings(resourceRatingsMap)
         setContributorRatings(contributorRatingsMap)
       } catch (err) {
         if (!active) return
+
         const message =
           err instanceof Error ? err.message : t('home.errorTitle')
+
         setError(message)
       } finally {
         if (active) setLoading(false)
@@ -116,8 +151,10 @@ export default function Home() {
   return (
     <div className="bg-bg text-text-primary">
       <FadeIn>
-        <section className="relative px-6 py-16 md:px-10 lg:px-16 lg:py-20">
+        <section className="relative overflow-hidden px-6 py-16 md:px-10 lg:px-16 lg:py-20">
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-brand-primary/5 via-transparent to-brand-accent/5" />
+          <div className="pointer-events-none absolute -right-24 top-10 h-72 w-72 rounded-full bg-brand-primary/10 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-28 -left-24 h-72 w-72 rounded-full bg-brand-accent/10 blur-3xl" />
 
           <div className="relative mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
             <div>
@@ -126,7 +163,7 @@ export default function Home() {
               </p>
 
               <h1 className="mt-5 max-w-4xl font-heading text-4xl leading-tight md:text-5xl lg:text-6xl">
-                {t('home.title')}{' '}
+                {t('home.title')}
               </h1>
 
               <p className="mt-6 max-w-2xl font-body text-lg leading-8 text-brand-primary">
@@ -152,7 +189,7 @@ export default function Home() {
 
               <form
                 onSubmit={handleSearch}
-                className="mt-10 max-w-2xl rounded-xl border border-surface-border bg-surface p-4 shadow-[var(--shadow-soft)]"
+                className="mt-10 max-w-2xl rounded-2xl border border-surface-border bg-surface/90 p-4 shadow-[var(--shadow-soft)] backdrop-blur"
               >
                 <div className="grid gap-3 md:grid-cols-[1fr_auto]">
                   <div className="relative">
@@ -180,38 +217,26 @@ export default function Home() {
             <div className="grid gap-4">
               <SectionCard className="p-6">
                 <div className="grid gap-6 sm:grid-cols-3 lg:grid-cols-1">
-                  <div>
-                    <p className="text-sm uppercase tracking-[0.18em] text-brand-primary">
-                      {t('home.resourcesCount')}
-                    </p>
-                    <p className="mt-2 font-heading text-4xl text-text-primary">
-                      {resources.length}
-                    </p>
-                  </div>
+                  <StatNumber
+                    label={t('home.resourcesCount')}
+                    value={stats.resourcesCount}
+                  />
 
-                  <div>
-                    <p className="text-sm uppercase tracking-[0.18em] text-brand-primary">
-                      {t('home.authorsCount')}
-                    </p>
-                    <p className="mt-2 font-heading text-4xl text-text-primary">
-                      {contributors.length}
-                    </p>
-                  </div>
+                  <StatNumber
+                    label={t('home.authorsCount')}
+                    value={stats.contributorsCount}
+                  />
 
-                  <div>
-                    <p className="text-sm uppercase tracking-[0.18em] text-brand-primary">
-                      {t('home.topicsCount')}
-                    </p>
-                    <p className="mt-2 font-heading text-4xl text-text-primary">
-                      {categories.length}
-                    </p>
-                  </div>
+                  <StatNumber
+                    label={t('home.topicsCount')}
+                    value={stats.categoriesCount}
+                  />
                 </div>
               </SectionCard>
 
               <SectionCard className="p-6">
                 <div className="flex items-start gap-4">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-primary/10 text-brand-primary">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-primary/10 text-brand-primary">
                     <Sparkles className="h-5 w-5" />
                   </div>
 
@@ -252,17 +277,20 @@ export default function Home() {
                 </h2>
               </div>
 
-              <Link to="/resources" className="text-sm font-semibold text-brand-primary hover:underline">
+              <Link
+                to="/resources"
+                className="text-sm font-semibold text-brand-primary hover:underline"
+              >
                 {t('common.viewAll')}
               </Link>
             </div>
 
             {loading ? (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="flex gap-4 overflow-hidden">
                 {Array.from({ length: 4 }).map((_, index) => (
                   <div
                     key={index}
-                    className="animate-pulse rounded-xl border border-surface-border bg-surface p-6"
+                    className="min-w-[250px] animate-pulse rounded-xl border border-surface-border bg-surface p-6 sm:min-w-[280px]"
                   >
                     <div className="h-6 w-28 rounded bg-bg-soft" />
                     <div className="mt-4 h-4 w-36 rounded bg-bg-soft" />
@@ -270,33 +298,60 @@ export default function Home() {
                 ))}
               </div>
             ) : (
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                {categories.map((category) => (
-                  <Link
-                    key={category.id}
-                    to={`/resources?category=${encodeURIComponent(category.slug)}`}
-                    className="group rounded-xl border border-surface-border bg-surface p-6 shadow-[var(--shadow-soft)] transition hover:bg-surface-hover hover:border-brand-primary"
+              <div className="relative">
+                <div className="mb-4 flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => scrollCategories('left')}
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-surface-border bg-surface text-brand-primary shadow-[var(--shadow-soft)] transition hover:border-brand-primary hover:bg-surface-hover"
+                    aria-label="Scroll categories left"
                   >
-                    <p className="text-sm uppercase tracking-[0.18em] text-brand-primary">
-                      {t('home.explore')}
-                    </p>
+                    <ArrowLeft className="h-4 w-4" />
+                  </button>
 
-                    <h3 className="mt-4 font-heading text-2xl text-text-primary">
-                      {category.name}
-                    </h3>
+                  <button
+                    type="button"
+                    onClick={() => scrollCategories('right')}
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-surface-border bg-surface text-brand-primary shadow-[var(--shadow-soft)] transition hover:border-brand-primary hover:bg-surface-hover"
+                    aria-label="Scroll categories right"
+                  >
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+                </div>
 
-                    <p className="mt-3 text-sm leading-6 text-brand-primary">
-                      {t('home.exploreCategory', {
-                        category: category.name.toLowerCase(),
-                      })}
-                    </p>
+                <div
+                  ref={categoriesCarouselRef}
+                  className="-mx-6 flex snap-x gap-4 overflow-x-auto px-6 pb-4 md:-mx-10 md:px-10 lg:-mx-16 lg:px-16 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+                >
+                  {categories.map((category) => (
+                    <Link
+                      key={category.id}
+                      to={`/resources?category=${encodeURIComponent(
+                        category.slug,
+                      )}`}
+                      className="group min-w-[250px] max-w-[250px] snap-start rounded-2xl border border-surface-border bg-surface p-6 shadow-[var(--shadow-soft)] transition hover:-translate-y-1 hover:border-brand-primary hover:bg-surface-hover sm:min-w-[280px] sm:max-w-[280px]"
+                    >
+                      <p className="text-sm uppercase tracking-[0.18em] text-brand-primary">
+                        {t('home.explore')}
+                      </p>
 
-                    <div className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-brand-accent">
-                      {t('home.explore')}
-                      <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
-                    </div>
-                  </Link>
-                ))}
+                      <h3 className="mt-4 line-clamp-2 font-heading text-2xl text-text-primary">
+                        {category.name}
+                      </h3>
+
+                      <p className="mt-3 line-clamp-3 text-sm leading-6 text-brand-primary">
+                        {t('home.exploreCategory', {
+                          category: category.name.toLowerCase(),
+                        })}
+                      </p>
+
+                      <div className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-brand-accent">
+                        {t('home.explore')}
+                        <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
+                      </div>
+                    </Link>
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -316,7 +371,10 @@ export default function Home() {
                 </h2>
               </div>
 
-              <Link to="/resources" className="text-sm font-semibold text-brand-primary hover:underline">
+              <Link
+                to="/resources"
+                className="text-sm font-semibold text-brand-primary hover:underline"
+              >
                 {t('common.viewAll')}
               </Link>
             </div>
@@ -423,7 +481,7 @@ export default function Home() {
       <FadeIn delay={0.2}>
         <section className="px-6 py-14 md:px-10 lg:px-16">
           <div className="mx-auto max-w-6xl">
-            <SectionCard className="p-8 md:p-10 border-t-2 border-brand-primary">
+            <SectionCard className="border-t-2 border-brand-primary p-8 md:p-10">
               <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
                 <div>
                   <p className="text-sm uppercase tracking-[0.22em] text-brand-primary">
@@ -457,7 +515,7 @@ export default function Home() {
                 </div>
 
                 <div className="grid gap-4">
-                  <div className="rounded-xl border border-surface-border bg-bg-soft p-5 hover:border-brand-primary transition">
+                  <div className="rounded-xl border border-surface-border bg-bg-soft p-5 transition hover:border-brand-primary">
                     <h3 className="font-heading text-2xl text-text-primary">
                       {t('home.contributorCtaPoint1Title')}
                     </h3>
@@ -466,7 +524,7 @@ export default function Home() {
                     </p>
                   </div>
 
-                  <div className="rounded-xl border border-surface-border bg-bg-soft p-5 hover:border-brand-primary transition">
+                  <div className="rounded-xl border border-surface-border bg-bg-soft p-5 transition hover:border-brand-primary">
                     <h3 className="font-heading text-2xl text-text-primary">
                       {t('home.contributorCtaPoint2Title')}
                     </h3>
@@ -480,6 +538,19 @@ export default function Home() {
           </div>
         </section>
       </FadeIn>
+    </div>
+  )
+}
+
+function StatNumber({ label, value }: { label: string; value: number }) {
+  return (
+    <div>
+      <p className="text-sm uppercase tracking-[0.18em] text-brand-primary">
+        {label}
+      </p>
+      <p className="mt-2 font-heading text-4xl text-text-primary">
+        <CountUp end={value} duration={1.4} separator="," />
+      </p>
     </div>
   )
 }

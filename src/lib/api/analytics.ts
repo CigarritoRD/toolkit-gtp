@@ -249,3 +249,38 @@ export async function getAdminOverview(): Promise<AdminOverviewMetric> {
     total_contributor_ratings: Number(data?.total_contributor_ratings ?? 0),
   }
 }
+
+export type PublicPlatformStats = {
+  resourcesCount: number
+  contributorsCount: number
+  categoriesCount: number
+}
+
+export async function getPublicPlatformStats(): Promise<PublicPlatformStats> {
+  const [resourcesRes, contributorsRes, categoriesRes] = await Promise.all([
+    supabase
+      .from('resources')
+      .select('*', { count: 'exact', head: true })
+      .eq('is_published', true),
+
+    supabase
+      .from('contributors')
+      .select('*', { count: 'exact', head: true })
+      .eq('is_active', true),
+
+    supabase
+      .from('resource_categories')
+      .select('*', { count: 'exact', head: true })
+      .eq('is_active', true),
+  ])
+
+  if (resourcesRes.error) throw resourcesRes.error
+  if (contributorsRes.error) throw contributorsRes.error
+  if (categoriesRes.error) throw categoriesRes.error
+
+  return {
+    resourcesCount: resourcesRes.count ?? 0,
+    contributorsCount: contributorsRes.count ?? 0,
+    categoriesCount: categoriesRes.count ?? 0,
+  }
+}

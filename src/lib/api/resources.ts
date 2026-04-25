@@ -160,15 +160,11 @@ export async function uploadResourceThumbnail(
   return data.publicUrl
 }
 
-// SUBE EL ARCHIVO DEL RECURSO Y DEVUELVE LA URL PÚBLICA
-export async function uploadResourceFile(
-  file: File,
-  slug: string,
-  contributorId: string,
-) {
+
+export async function uploadResourceFile(file: File, slug: string) {
   const ext = file.name.split('.').pop() ?? 'pdf'
   const safe = sanitizeFileName(file.name.replace(/\.[^.]+$/, ''))
-  const path = `${contributorId}/${slug}/${Date.now()}-${safe}.${ext}`
+  const path = `resources/${slug}/${Date.now()}-${safe}.${ext}`
 
   const { error } = await supabase.storage
     .from('resources')
@@ -300,7 +296,6 @@ export async function getPublishedResourceBySlug(slug: string) {
       external_url,
       description,
       short_description,
-      full_description,
       thumbnail_url,
       resource_type,
       contributor_id,
