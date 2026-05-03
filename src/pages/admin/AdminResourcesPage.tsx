@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FolderKanban, Plus, TrendingUp } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -71,7 +71,7 @@ export default function AdminResourcesPage() {
   const [search, setSearch] = useState('')
   const [processingId, setProcessingId] = useState<string | null>(null)
 
-  async function loadResources() {
+  const loadResources = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
@@ -84,11 +84,11 @@ export default function AdminResourcesPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [t])
 
   useEffect(() => {
     void loadResources()
-  }, [])
+  }, [loadResources])
 
   const filteredItems = useMemo(() => {
     const term = search.trim().toLowerCase()

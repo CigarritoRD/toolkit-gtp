@@ -315,7 +315,7 @@ export default function ResourceForm({
           <AppSelect
             label={t('admin.resourceForm.resourceType')}
             value={values.resource_type}
-            onChange={(e) => updateField('resource_type', e.target.value)}
+            onChange={(value) => updateField('resource_type', value)}
           >
             <option value="">{t('admin.resourceForm.selectResourceType')}</option>
             <option value="pdf">PDF</option>
@@ -378,7 +378,7 @@ export default function ResourceForm({
                 <AppSelect
                   label={t('admin.resourceForm.contributor')}
                   value={values.contributor_id}
-                  onChange={(e) => updateField('contributor_id', e.target.value)}
+                  onChange={(value) => updateField('contributor_id', value)}
                 >
                   <option value="">{t('admin.resourceForm.selectContributor')}</option>
                   {contributors.map((contributor) => (
@@ -391,7 +391,7 @@ export default function ResourceForm({
                 <AppSelect
                   label={t('admin.resourceForm.category')}
                   value={values.category_id}
-                  onChange={(e) => updateField('category_id', e.target.value)}
+                  onChange={(value) => updateField('category_id', value)}
                 >
                   <option value="">{t('admin.resourceForm.selectCategory')}</option>
                   {categories.map((category) => (

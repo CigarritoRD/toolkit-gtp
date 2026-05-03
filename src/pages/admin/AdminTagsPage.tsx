@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Plus, Tag, Shapes } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -26,7 +26,7 @@ export default function AdminTagsPage() {
   const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState('')
 
-  async function loadTags() {
+  const loadTags = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
@@ -39,11 +39,11 @@ export default function AdminTagsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [t])
 
   useEffect(() => {
     void loadTags()
-  }, [])
+  }, [loadTags])
 
   const filteredItems = useMemo(() => {
     const term = search.trim().toLowerCase()

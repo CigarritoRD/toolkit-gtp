@@ -79,7 +79,7 @@ export default function PublicNavbar() {
   }, [menuOpen])
 
   return (
-    <header className="sticky top-0 z-50 border-b border-surface-border/70 bg-bg/90 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-surface-border/70 bg-bg shadow-[var(--shadow-soft)] backdrop-blur-sm">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 md:px-10 lg:px-16">
         <Link to="/" className="flex items-center gap-3" onClick={closeMobileMenu}>
           <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl border border-surface-border bg-surface shadow-[var(--shadow-soft)]">
@@ -188,7 +188,7 @@ export default function PublicNavbar() {
               </button>
 
               {menuOpen ? (
-                <div className="absolute right-0 mt-2 w-64 overflow-hidden rounded-xl border border-surface-border bg-surface shadow-[var(--shadow-card)]">
+                <div className="absolute right-0 mt-2 w-64 overflow-hidden rounded-xl border border-surface-border bg-bg-soft shadow-[var(--shadow-card)]">
                   <div className="border-b border-surface-border px-4 py-4">
                     <div className="flex items-center gap-3">
                       <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-brand-primary/15 text-sm font-semibold text-brand-primary">

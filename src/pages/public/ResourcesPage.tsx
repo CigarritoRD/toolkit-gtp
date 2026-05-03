@@ -278,7 +278,7 @@ export default function ResourcesPage() {
 
                 <AppSelect
                   value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  onChange={setSelectedCategory}
                 >
                   <option value="all">{t('resources.allCategories')}</option>
                   {categories.map((category) => (
@@ -290,7 +290,7 @@ export default function ResourcesPage() {
 
                 <AppSelect
                   value={selectedType}
-                  onChange={(e) => setSelectedType(e.target.value)}
+                  onChange={setSelectedType}
                 >
                   {typeOptions.map((type) => (
                     <option key={type.value} value={type.value}>

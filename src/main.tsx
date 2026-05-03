@@ -7,7 +7,7 @@ import { AuthProvider } from '@/auth/AuthProvider'
 import 'flag-icons/css/flag-icons.min.css'
 import './index.css'
 import '@/lib/i18n'
-import './index.css'
+
 
 const savedTheme = window.localStorage.getItem('Toolkit-box-theme')
 const initialTheme = savedTheme === 'light' ? 'light' : 'dark'

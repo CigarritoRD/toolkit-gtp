@@ -186,7 +186,7 @@ export default function DashboardResourcesPage() {
 
                 <AppSelect
                   value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  onChange={setSelectedCategory}
                 >
                   <option value="all">Todas las categorías</option>
                   {categories.map((category) => (
@@ -198,7 +198,7 @@ export default function DashboardResourcesPage() {
 
                 <AppSelect
                   value={selectedType}
-                  onChange={(e) => setSelectedType(e.target.value)}
+                  onChange={setSelectedType}
                 >
                   {typeOptions.map((type) => (
                     <option key={type.value} value={type.value}>

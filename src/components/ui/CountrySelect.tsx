@@ -18,7 +18,7 @@ export default function CountrySelect({
     <AppSelect
       label={label}
       value={value}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={onChange}
     >
       <option value="">{placeholder}</option>
       {COUNTRIES.map((country) => (

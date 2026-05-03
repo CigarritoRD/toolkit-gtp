@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Plus, Users, Globe, Star } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -30,7 +30,7 @@ export default function AdminContributorsPage() {
   const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState('')
 
-  async function loadContributors() {
+  const loadContributors = useCallback(async () => {
     try {
       setLoading(true)
       setError(null)
@@ -45,11 +45,11 @@ export default function AdminContributorsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [t])
 
   useEffect(() => {
     void loadContributors()
-  }, [])
+  }, [loadContributors])
 
   const filteredItems = useMemo(() => {
     const term = search.trim().toLowerCase()

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/auth/useAuth'
@@ -43,7 +43,7 @@ export default function RatingPanel({ mode, targetId }: RatingPanelProps) {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
 
-  async function load() {
+  const load = useCallback(async () => {
     try {
       setLoading(true)
 
@@ -69,11 +69,11 @@ export default function RatingPanel({ mode, targetId }: RatingPanelProps) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [mode, targetId])
 
   useEffect(() => {
     void load()
-  }, [mode, targetId])
+  }, [load])
 
   async function handleSave() {
     if (!user) {

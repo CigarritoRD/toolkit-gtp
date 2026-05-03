@@ -566,6 +566,7 @@ const en = {
     filterSubtitle:
       'Refine your search by topic, category, type, or tags to find what you need.',
     searchPlaceholder: 'Search by title, contributor, category, or tag...',
+    quickFilter: 'Refine your search quickly.',
     allCategories: 'All categories',
     clear: 'Clear',
     activeFilters: 'Active filters',
@@ -633,6 +634,12 @@ const en = {
     reject: 'Reject',
     open: 'Open',
     opening: 'Opening...',
+  },
+  dashboardResources: {
+    filters: 'Filters',
+    allCategories: 'All categories',
+    tags: 'Tags',
+    errorTitle: 'We couldn\'t load the resources',
   },
   contributors: {
     badge: 'Community',

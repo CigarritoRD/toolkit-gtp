@@ -18,6 +18,7 @@ import { useAuth } from '@/auth/useAuth'
 import AppButton from '@/components/ui/AppButton'
 import LanguageSwitcher from '@/components/layout/LanguageSwitcher'
 import ThemeToggle from '@/components/layout/ThemeToggle'
+import PageTransition from '@/components/ui/PageTransition'
 import gtpLogo from '@/assets/gtp-logo.png'
 
 type AdminNavItem = {
@@ -276,7 +277,9 @@ export default function AdminLayout() {
           </header>
 
           <main className="flex-1 px-4 py-4 sm:px-6 lg:px-8">
-            <Outlet />
+            <PageTransition>
+              <Outlet />
+            </PageTransition>
           </main>
 
           <footer className="border-t border-surface-border bg-surface">

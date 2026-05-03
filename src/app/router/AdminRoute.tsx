@@ -10,13 +10,6 @@ export default function AdminRoute({ children }: AdminRouteProps) {
   const { user, profile, loading } = useAuth()
   const location = useLocation()
 
-  console.log('AdminRoute', {
-    user,
-    profile,
-    role: profile?.role,
-    loading,
-  })
-
   if (loading) {
     return <div className="p-6">Cargando...</div>
   }
