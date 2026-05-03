@@ -357,7 +357,7 @@ const en = {
       notFound: 'Category not found.',
       missingId: 'Category identifier is missing.',
     },
-    ccontributorForm: {
+    contributorForm: {
       badge: 'Contributors',
       createTitle: 'Create contributor',
       createSubtitle:
@@ -383,6 +383,8 @@ const en = {
       namePlaceholder: 'E.g. Global Trust Partners',
       slug: 'Slug',
       slugPlaceholder: 'global-trust-partners',
+      specialty: 'Specialty',
+      specialtyPlaceholder: 'Leadership, training, discipleship...',
 
       contentTitle: 'Content',
       contentBody: 'Short summary and full contributor biography.',

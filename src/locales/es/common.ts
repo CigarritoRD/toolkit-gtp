@@ -315,7 +315,7 @@ const es = {
       notFound: 'Categoría no encontrada.',
       missingId: 'Falta el identificador de la categoría.',
     },
-    ccontributorForm: {
+    contributorForm: {
       badge: 'Colaboradores',
       createTitle: 'Crear colaborador',
       createSubtitle: 'Agrega un nuevo colaborador o ministerio a la plataforma.',
@@ -338,6 +338,8 @@ const es = {
       namePlaceholder: 'Ej. Global Trust Partners',
       slug: 'Slug',
       slugPlaceholder: 'global-trust-partners',
+      specialty: 'Especialidad',
+      specialtyPlaceholder: 'Liderazgo, formación, discipulado...',
       contentTitle: 'Contenido',
       contentBody: 'Resumen corto y biografía completa del colaborador.',
       shortBio: 'Descripción corta',

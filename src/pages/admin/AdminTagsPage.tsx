@@ -6,6 +6,7 @@ import EmptyState from '@/components/ui/EmptyState'
 import AppButton from '@/components/ui/AppButton'
 import SectionCard from '@/components/ui/SectionCard'
 import SearchInput from '@/components/ui/SearchInput'
+import { AdminTableSkeleton } from '@/components/ui/Skeleton'
 import { getTags } from '@/lib/api/tags'
 
 type AdminTagItem = {
@@ -118,9 +119,7 @@ export default function AdminTagsPage() {
         </div>
 
         {loading ? (
-          <div className="px-4 py-6 text-sm text-text-secondary">
-            {t('common.loading')}
-          </div>
+          <AdminTableSkeleton rows={6} />
         ) : error ? (
           <div className="px-4 py-6 text-sm text-red-600">{error}</div>
         ) : filteredItems.length === 0 ? (

@@ -3,12 +3,10 @@ import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft, ArrowRight, Search, Sparkles } from 'lucide-react'
-import CountUp from 'react-countup'
 import { useTranslation } from 'react-i18next'
 
 import ResourceCard from '@/components/resources/ResourceCard'
 import ContributorCard from '@/components/contributors/ContributorCard'
-import FadeIn from '@/components/ui/FadeIn'
 import SectionCard from '@/components/ui/SectionCard'
 
 import {
@@ -150,8 +148,7 @@ export default function Home() {
 
   return (
     <div className="bg-bg text-text-primary">
-      <FadeIn>
-        <section className="relative overflow-hidden px-6 py-16 md:px-10 lg:px-16 lg:py-20">
+      <section className="relative overflow-hidden px-6 py-16 md:px-10 lg:px-16 lg:py-20">
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-brand-primary/5 via-transparent to-brand-accent/5" />
           <div className="pointer-events-none absolute -right-24 top-10 h-72 w-72 rounded-full bg-brand-primary/10 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-28 -left-24 h-72 w-72 rounded-full bg-brand-accent/10 blur-3xl" />
@@ -253,7 +250,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-      </FadeIn>
 
       {error ? (
         <section className="px-6 pb-10 md:px-10 lg:px-16">
@@ -264,8 +260,7 @@ export default function Home() {
         </section>
       ) : null}
 
-      <FadeIn delay={0.08}>
-        <section className="px-6 py-10 md:px-10 lg:px-16">
+      <section className="px-6 py-10 md:px-10 lg:px-16">
           <div className="mx-auto max-w-6xl">
             <div className="mb-8 flex items-end justify-between gap-4">
               <div>
@@ -356,10 +351,8 @@ export default function Home() {
             )}
           </div>
         </section>
-      </FadeIn>
 
-      <FadeIn delay={0.12}>
-        <section className="px-6 py-10 md:px-10 lg:px-16">
+      <section className="px-6 py-10 md:px-10 lg:px-16">
           <div className="mx-auto max-w-6xl">
             <div className="mb-8 flex items-end justify-between gap-4">
               <div>
@@ -416,10 +409,8 @@ export default function Home() {
             )}
           </div>
         </section>
-      </FadeIn>
 
-      <FadeIn delay={0.16}>
-        <section className="px-6 py-10 md:px-10 lg:px-16">
+      <section className="px-6 py-10 md:px-10 lg:px-16">
           <div className="mx-auto max-w-6xl">
             <div className="mb-8 flex items-end justify-between gap-4">
               <div>
@@ -476,10 +467,8 @@ export default function Home() {
             )}
           </div>
         </section>
-      </FadeIn>
 
-      <FadeIn delay={0.2}>
-        <section className="px-6 py-14 md:px-10 lg:px-16">
+      <section className="px-6 py-14 md:px-10 lg:px-16">
           <div className="mx-auto max-w-6xl">
             <SectionCard className="border-t-2 border-brand-primary p-8 md:p-10">
               <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
@@ -537,19 +526,39 @@ export default function Home() {
             </SectionCard>
           </div>
         </section>
-      </FadeIn>
     </div>
   )
 }
 
 function StatNumber({ label, value }: { label: string; value: number }) {
+  const [count, setCount] = useState(0)
+  const [hasStarted, setHasStarted] = useState(false)
+
+  useEffect(() => {
+    setHasStarted(true)
+    const duration = 1400
+    const steps = 60
+    const increment = value / steps
+    let current = 0
+    const timer = setInterval(() => {
+      current += increment
+      if (current >= value) {
+        setCount(value)
+        clearInterval(timer)
+      } else {
+        setCount(Math.floor(current))
+      }
+    }, duration / steps)
+    return () => clearInterval(timer)
+  }, [value])
+
   return (
     <div>
       <p className="text-sm uppercase tracking-[0.18em] text-brand-primary">
         {label}
       </p>
       <p className="mt-2 font-heading text-4xl text-text-primary">
-        <CountUp end={value} duration={1.4} separator="," />
+        {hasStarted ? count.toLocaleString() : '0'}
       </p>
     </div>
   )

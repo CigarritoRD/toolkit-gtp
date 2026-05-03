@@ -93,3 +93,58 @@ export function ListSkeleton({ items = 5 }: { items?: number }) {
     </div>
   )
 }
+
+export function AdminTableSkeleton({
+  rows = 5,
+}: { rows?: number }) {
+  return (
+    <div className="divide-y divide-surface-border">
+      {Array.from({ length: rows }).map((_, rowIndex) => (
+        <div
+          key={rowIndex}
+          className="flex items-center gap-4 px-4 py-4"
+        >
+          <Skeleton width={44} height={44} variant="circular" />
+          <div className="flex-1 space-y-2">
+            <Skeleton width="40%" height={16} />
+            <Skeleton width="60%" height={14} />
+          </div>
+          <Skeleton width={80} height={24} variant="text" />
+          <Skeleton width={60} height={24} variant="text" />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+export function AdminPageSkeleton() {
+  return (
+    <div className="space-y-8">
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="space-y-2">
+          <Skeleton width={100} height={12} variant="text" />
+          <Skeleton width={200} height={32} />
+          <Skeleton width={300} height={16} />
+        </div>
+        <Skeleton width={140} height={40} />
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="rounded-xl border border-surface-border bg-surface p-4 space-y-2">
+            <Skeleton width={100} height={12} variant="text" />
+            <Skeleton width={60} height={28} />
+          </div>
+        ))}
+      </div>
+
+      <div className="rounded-xl border border-surface-border bg-surface p-4">
+        <Skeleton height={40} />
+      </div>
+
+      <div className="rounded-xl border border-surface-border bg-surface overflow-hidden">
+        <AdminTableSkeleton rows={6} />
+      </div>
+    </div>
+  )
+}

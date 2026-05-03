@@ -329,7 +329,7 @@ const zh = {
             notFound: '未找到分类。',
             missingId: '缺少分类标识符。',
         },
-        ccontributorForm: {
+        contributorForm: {
             badge: '贡献者',
             createTitle: '创建贡献者',
             createSubtitle: '向平台添加新的贡献者或事工。',
@@ -353,6 +353,8 @@ const zh = {
             namePlaceholder: '例如：Global Trust Partners',
             slug: 'Slug',
             slugPlaceholder: 'global-trust-partners',
+            specialty: '专业领域',
+            specialtyPlaceholder: '领导力、培训、门徒训练...',
 
             contentTitle: '内容',
             contentBody: '简短摘要和完整贡献者介绍。',

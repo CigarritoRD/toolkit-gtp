@@ -7,6 +7,7 @@ import AppButton from '@/components/ui/AppButton'
 import SectionCard from '@/components/ui/SectionCard'
 import SearchInput from '@/components/ui/SearchInput'
 import StatusBadge from '@/components/ui/StatusBadge'
+import { AdminTableSkeleton } from '@/components/ui/Skeleton'
 import { getAdminContributors } from '@/lib/api/contributors'
 
 type AdminContributorItem = {
@@ -134,9 +135,7 @@ export default function AdminContributorsPage() {
         </div>
 
         {loading ? (
-          <div className="px-4 py-6 text-sm text-text-secondary">
-            {t('common.loading')}
-          </div>
+          <AdminTableSkeleton rows={6} />
         ) : error ? (
           <div className="px-4 py-6 text-sm text-red-600">{error}</div>
         ) : filteredItems.length === 0 ? (

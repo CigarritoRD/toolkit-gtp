@@ -315,7 +315,7 @@ const zhTW_TW = {
       notFound: '找不到分類。',
       missingId: '分類識別碼遺失。',
     },
-    ccontributorForm: {
+    contributorForm: {
       badge: '協作者',
       createTitle: '建立協作者',
       createSubtitle: '新增新協作者或部門到平台。',
@@ -338,6 +338,8 @@ const zhTW_TW = {
       namePlaceholder: '例如：全球信任夥伴',
       slug: 'Slug',
       slugPlaceholder: 'global-trust-partners',
+      specialty: '專業領域',
+      specialtyPlaceholder: '領導力、培訓、門徒訓練...',
       contentTitle: '內容',
       contentBody: '簡短摘要和完整的協作者傳記。',
       shortBio: '簡短描述',
