@@ -81,3 +81,26 @@ src/
 - Supabase for authentication and database
 - PWA support via vite-plugin-pwa
 - Tailwind CSS v4 with custom theme variables
+
+## Branching Strategy
+
+**Always use branches for new features and fixes, then merge via Pull Request:**
+
+```bash
+# 1. Create branch from main
+git checkout -b fix/translations-animations
+
+# 2. Work and commit changes
+git add .
+git commit -m "fix: description of changes"
+
+# 3. Push branch to remote
+git push -u origin fix/translations-animations
+
+# 4. Create Pull Request on GitHub to merge to main
+```
+
+**Branch naming convention:**
+- `fix/` - For bug fixes (e.g., `fix/translation-keys`)
+- `feat/` - For new features (e.g., `feat/new-dashboard`)
+- `chore/` - For maintenance tasks (e.g., `chore/update-deps`)
