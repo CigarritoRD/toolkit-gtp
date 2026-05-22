@@ -4,13 +4,13 @@ import PageTransition from '@/components/ui/PageTransition'
 
 export default function DashboardLayout() {
   return (
-    <div className="min-h-screen bg-bg">
+    <div className="flex min-h-screen bg-bg">
       <DashboardSidebar />
-      <div className="pl-64">
+      <main className="min-w-0 flex-1">
         <PageTransition>
           <Outlet />
         </PageTransition>
-      </div>
+      </main>
     </div>
   )
 }
