@@ -162,8 +162,7 @@ export async function uploadResourceThumbnail(
 
 
 
-export async function uploadResourceFile(file: File, slug: string, contributor_id: string) {
-  console.log(contributor_id)
+export async function uploadResourceFile(file: File, slug: string) {
   const ext = file.name.split('.').pop() ?? 'pdf'
   const safe = sanitizeFileName(file.name.replace(/\.[^.]+$/, ''))
   const path = `resources/${slug}/${Date.now()}-${safe}.${ext}`
@@ -281,6 +280,7 @@ export async function getPublishedResources() {
     `)
     .eq('is_public', true)
     .eq('is_published', true)
+    .eq('approval_status', 'approved')
     .order('created_at', { ascending: false })
 
   if (error) throw new Error(error.message)
@@ -305,6 +305,7 @@ export async function getPublishedResourceBySlug(slug: string) {
       is_featured,
       is_public,
       is_published,
+      approval_status,
       created_at,
       contributor:contributors (
         id,
@@ -329,8 +330,84 @@ export async function getPublishedResourceBySlug(slug: string) {
     .eq('slug', slug)
     .eq('is_public', true)
     .eq('is_published', true)
+    .eq('approval_status', 'approved')
     .single()
 
   if (error) throw new Error(error.message)
   return data
+}
+
+export type ResourceApprovalStatus = 'draft' | 'pending_review' | 'approved' | 'rejected'
+
+export async function getPendingReviewResources() {
+  const { data, error } = await supabase
+    .from('resources')
+    .select(`
+      id,
+      title,
+      slug,
+      short_description,
+      thumbnail_url,
+      resource_type,
+      contributor_id,
+      created_by,
+      approval_status,
+      rejection_reason,
+      submitted_at,
+      created_at,
+      contributor:contributors (
+        id,
+        name,
+        slug
+      )
+    `)
+    .eq('approval_status', 'pending_review')
+    .order('submitted_at', { ascending: false })
+
+  if (error) throw new Error(error.message)
+  return data ?? []
+}
+
+export async function approveResource(resourceId: string, adminId: string) {
+  const { error } = await supabase
+    .from('resources')
+    .update({
+      approval_status: 'approved',
+      is_published: true,
+      reviewed_by: adminId,
+      reviewed_at: new Date().toISOString(),
+    })
+    .eq('id', resourceId)
+
+  if (error) throw new Error(error.message)
+}
+
+export async function rejectResource(
+  resourceId: string,
+  adminId: string,
+  reason?: string,
+) {
+  const { error } = await supabase
+    .from('resources')
+    .update({
+      approval_status: 'rejected',
+      rejection_reason: reason ?? null,
+      reviewed_by: adminId,
+      reviewed_at: new Date().toISOString(),
+    })
+    .eq('id', resourceId)
+
+  if (error) throw new Error(error.message)
+}
+
+export async function submitResourceForReview(resourceId: string) {
+  const { error } = await supabase
+    .from('resources')
+    .update({
+      approval_status: 'pending_review',
+      submitted_at: new Date().toISOString(),
+    })
+    .eq('id', resourceId)
+
+  if (error) throw new Error(error.message)
 }

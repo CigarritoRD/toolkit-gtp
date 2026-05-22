@@ -3,10 +3,12 @@ import { useEffect, useState } from 'react'
 
 type ThemeMode = 'light' | 'dark'
 
+const THEME_KEY = 'Toolkit-theme'
+
 function getInitialTheme(): ThemeMode {
   if (typeof window === 'undefined') return 'light'
 
-  const stored = window.localStorage.getItem('theme-mode')
+  const stored = window.localStorage.getItem(THEME_KEY)
   if (stored === 'light' || stored === 'dark') return stored
 
   const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches
@@ -22,7 +24,7 @@ function applyTheme(theme: ThemeMode) {
     root.classList.remove('dark')
   }
 
-  window.localStorage.setItem('theme-mode', theme)
+  window.localStorage.setItem(THEME_KEY, theme)
 }
 
 export default function ThemeToggle() {

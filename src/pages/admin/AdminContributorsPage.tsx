@@ -9,6 +9,13 @@ import SearchInput from '@/components/ui/SearchInput'
 import StatusBadge from '@/components/ui/StatusBadge'
 import { AdminTableSkeleton } from '@/components/ui/Skeleton'
 import { getAdminContributors } from '@/lib/api/contributors'
+import {
+  getCachedAdminData,
+  setCachedAdminData,
+} from '@/lib/adminCache'
+
+const CACHE_KEY = 'admin:contributors'
+const CACHE_TTL = 60_000
 
 type AdminContributorItem = {
   id: string
@@ -26,31 +33,46 @@ type AdminContributorItem = {
 export default function AdminContributorsPage() {
   const { t } = useTranslation()
 
-  const [items, setItems] = useState<AdminContributorItem[]>([])
-  const [loading, setLoading] = useState(true)
+  const [items, setItems] = useState<AdminContributorItem[]>(() =>
+    getCachedAdminData<AdminContributorItem[]>(CACHE_KEY) ?? [],
+  )
+  const [loading, setLoading] = useState(() => !getCachedAdminData(CACHE_KEY))
   const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState('')
+  const hasInitialData = getCachedAdminData<AdminContributorItem[]>(CACHE_KEY) !== null
 
-  const loadContributors = useCallback(async () => {
-    try {
-      setLoading(true)
-      setError(null)
-      const data = await getAdminContributors()
-      setItems((data ?? []) as unknown as AdminContributorItem[])
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : t('admin.contributors.errorDescription'),
-      )
-    } finally {
-      setLoading(false)
-    }
-  }, [t])
+  const loadContributors = useCallback(
+    async (silent = false) => {
+      try {
+        if (!silent) {
+          setError(null)
+        }
+        const data = await getAdminContributors()
+        const result = (data ?? []) as unknown as AdminContributorItem[]
+        setItems(result)
+        setCachedAdminData(CACHE_KEY, result, CACHE_TTL)
+      } catch (err) {
+        if (!silent) {
+          setError(
+            err instanceof Error
+              ? err.message
+              : t('admin.contributors.errorDescription'),
+          )
+        }
+      } finally {
+        if (!silent) {
+          setLoading(false)
+        }
+      }
+    },
+    [t],
+  )
 
   useEffect(() => {
-    void loadContributors()
-  }, [loadContributors])
+    if (!hasInitialData) {
+      void loadContributors(false)
+    }
+  }, [hasInitialData, loadContributors])
 
   const filteredItems = useMemo(() => {
     const term = search.trim().toLowerCase()

@@ -6,7 +6,6 @@ import { useAuth } from '@/auth/useAuth'
 import AppButton from '@/components/ui/AppButton'
 import AppInput from '@/components/ui/AppInput'
 import CountrySelect from '@/components/ui/CountrySelect'
-import FadeIn from '@/components/ui/FadeIn'
 import FileInput from '@/components/ui/FileInput'
 import SectionCard from '@/components/ui/SectionCard'
 import {
@@ -123,8 +122,7 @@ export default function DashboardProfilePage() {
 
   return (
     <div className="bg-bg text-text-primary">
-      <FadeIn>
-        <section className="px-0 py-2">
+      <section className="px-0 py-2">
           <div className="mx-auto max-w-5xl">
             <SectionCard className="p-8">
               <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
@@ -139,9 +137,7 @@ export default function DashboardProfilePage() {
             </SectionCard>
           </div>
         </section>
-      </FadeIn>
 
-      <FadeIn delay={0.06}>
         <section className="px-0 py-8">
           <div className="mx-auto max-w-5xl">
             <div className="grid gap-6 md:grid-cols-[220px_1fr]">
@@ -249,7 +245,6 @@ export default function DashboardProfilePage() {
             </div>
           </div>
         </section>
-      </FadeIn>
     </div>
   )
 }

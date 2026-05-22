@@ -1,10 +1,12 @@
 import { Upload, X } from 'lucide-react'
+import { toast } from 'sonner'
 
 type FileInputProps = {
   label?: string
   accept?: string
   fileName?: string | null
   hint?: string
+  maxSize?: number
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   onClear?: () => void
 }
@@ -14,8 +16,23 @@ export default function FileInput({
   accept,
   fileName,
   hint,
+  maxSize,
   onChange,
+  onClear,
 }: FileInputProps) {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0]
+    if (!selected) return
+
+    if (maxSize && selected.size > maxSize) {
+      toast.error(`El archivo excede el tamaño máximo de ${(maxSize / 1024 / 1024).toFixed(0)} MB.`)
+      e.target.value = ''
+      return
+    }
+
+    onChange(e)
+  }
+
   return (
     <div>
       {label ? (
@@ -28,7 +45,7 @@ export default function FileInput({
         <input
           type="file"
           accept={accept}
-          onChange={onChange}
+          onChange={handleChange}
           className="hidden"
         />
 
@@ -51,9 +68,20 @@ export default function FileInput({
         <div className="mt-3 flex items-center justify-between rounded-xl border border-surface-border bg-surface px-4 py-2 text-sm">
           <span className="truncate text-text-primary">{fileName}</span>
 
-          <span className="flex h-6 w-6 items-center justify-center rounded-md text-brand-primary">
-            <X className="h-4 w-4" />
-          </span>
+          {onClear ? (
+            <button
+              type="button"
+              onClick={onClear}
+              className="flex h-6 w-6 items-center justify-center rounded-md text-brand-primary hover:bg-surface-hover"
+              aria-label="Limpiar archivo"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          ) : (
+            <span className="flex h-6 w-6 items-center justify-center rounded-md text-brand-primary">
+              <X className="h-4 w-4" />
+            </span>
+          )}
         </div>
       ) : null}
     </div>

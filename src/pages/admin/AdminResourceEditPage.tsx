@@ -86,7 +86,6 @@ if (files.thumbnailFile) {
       fileUrl = await uploadResourceFile(
         files.resourceFile,
         values.slug,
-        values.contributor_id,
       )
     }
     await updateResource(id, {

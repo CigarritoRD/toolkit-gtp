@@ -35,7 +35,6 @@ export default function AdminResourceCreatePage() {
       fileUrl = await uploadResourceFile(
         files.resourceFile,
         values.slug,
-        values.contributor_id,
       )
     }
 

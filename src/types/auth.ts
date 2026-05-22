@@ -4,10 +4,11 @@ export type Profile = {
   id: string
   full_name: string | null
   email: string | null
-  role: 'user' | 'admin'
+  role: 'user' | 'contributor' | 'admin'
   country: string | null
   organization: string | null
   avatar_url: string | null
+  phone: string | null
   created_at: string
   updated_at: string
 }
@@ -22,6 +23,7 @@ export type AuthContextType = {
     password: string,
     fullName: string,
     country?: string,
+    phone?: string,
   ) => Promise<unknown>
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>

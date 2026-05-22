@@ -1,10 +1,9 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CheckCircle2, Send, Sparkles, Users } from 'lucide-react'
+import { CheckCircle2, Clock, Send, Sparkles, Users } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { useAuth } from '@/auth/useAuth'
-import FadeIn from '@/components/ui/FadeIn'
 import SectionCard from '@/components/ui/SectionCard'
 import AppInput from '@/components/ui/AppInput'
 import AppTextarea from '@/components/ui/AppTextarea'
@@ -14,6 +13,7 @@ import {
   createContributorApplication,
   uploadContributorApplicationAvatar,
 } from '@/lib/api/contributor-applications'
+import { getMyApplication } from '@/lib/api/contributor-applications-admin'
 
 type FormErrors = Partial<Record<
   | 'contactName'
@@ -83,6 +83,29 @@ export default function BecomeContributorPage() {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const { user, profile } = useAuth()
+
+  const [existingApplications, setExistingApplications] = useState<Array<{id: string; status: string; created_at: string; admin_notes: string | null}>>([])
+  const [loadingApplications, setLoadingApplications] = useState(true)
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/login', { replace: true })
+      return
+    }
+
+    if (user?.id) {
+      getMyApplication(user.id)
+        .then(setExistingApplications)
+        .catch(console.error)
+        .finally(() => setLoadingApplications(false))
+    }
+  }, [user, navigate])
+
+  const hasPendingOrApproved = existingApplications.some(
+    (a) => a.status === 'pending_review' || a.status === 'approved',
+  )
+
+  const latestApplication = existingApplications[0]
 
   const initialContactName = useMemo(
     () => profile?.full_name?.trim() || '',
@@ -242,8 +265,7 @@ export default function BecomeContributorPage() {
 
   return (
     <div className="bg-bg text-text-primary">
-      <FadeIn>
-        <section className="relative overflow-hidden px-6 py-14 md:px-10 lg:px-16 lg:py-16">
+      <section className="relative overflow-hidden px-6 py-14 md:px-10 lg:px-16 lg:py-16">
           <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(0,116,115,0.12),transparent_35%),radial-gradient(circle_at_top_right,rgba(0,171,199,0.10),transparent_30%)]" />
           <div className="mx-auto max-w-6xl">
             <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
@@ -290,13 +312,37 @@ export default function BecomeContributorPage() {
             </div>
           </div>
         </section>
-      </FadeIn>
 
-      <FadeIn delay={0.06}>
-        <section className="px-6 pb-16 md:px-10 lg:px-16">
+      <section className="px-6 pb-16 md:px-10 lg:px-16">
           <div className="mx-auto max-w-5xl">
             <SectionCard className="p-6 md:p-8">
-              <form onSubmit={handleSubmit} className="space-y-8" noValidate>
+              {loadingApplications ? null : hasPendingOrApproved ? (
+                <div className="flex flex-col items-center gap-4 py-8 text-center">
+                  {latestApplication?.status === 'approved' ? (
+                    <>
+                      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-green-100 text-green-600">
+                        <CheckCircle2 className="h-7 w-7" />
+                      </div>
+                      <h2 className="font-heading text-xl">{t('contributorApply.alreadyApprovedTitle')}</h2>
+                      <p className="text-sm text-brand-primary">{t('contributorApply.alreadyApprovedBody')}</p>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-yellow-100 text-yellow-600">
+                        <Clock className="h-7 w-7" />
+                      </div>
+                      <h2 className="font-heading text-xl">{t('contributorApply.alreadyPendingTitle')}</h2>
+                      <p className="text-sm text-brand-primary">{t('contributorApply.alreadyPendingBody')}</p>
+                      {latestApplication?.admin_notes ? (
+                        <p className="mt-2 rounded-lg bg-surface px-4 py-3 text-sm text-brand-primary">
+                          <strong>{t('contributorApply.adminFeedback')}:</strong> {latestApplication.admin_notes}
+                        </p>
+                      ) : null}
+                    </>
+                  )}
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-8" noValidate>
                 <div className="space-y-4">
                   <div>
                     <h2 className="font-heading text-xl">
@@ -451,7 +497,8 @@ export default function BecomeContributorPage() {
                     label={t('contributorApply.avatar')}
                     accept="image/*"
                     fileName={avatarFile?.name ?? null}
-                    hint="PNG, JPG o WEBP"
+                    hint="PNG, JPG o WEBP (máx. 2 MB)"
+                    maxSize={2 * 1024 * 1024}
                     onChange={(e) => setAvatarFile(e.target.files?.[0] ?? null)}
                     onClear={() => setAvatarFile(null)}
                   />
@@ -544,10 +591,10 @@ export default function BecomeContributorPage() {
                   </AppButton>
                 </div>
               </form>
+              )}
             </SectionCard>
           </div>
         </section>
-      </FadeIn>
     </div>
   )
 }

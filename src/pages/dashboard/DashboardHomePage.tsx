@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Bookmark, Download, Heart, Sparkles } from 'lucide-react'
 import ResourceCard from '@/components/resources/ResourceCard'
-import FadeIn from '@/components/ui/FadeIn'
 import EmptyState from '@/components/ui/EmptyState'
 import SectionCard from '@/components/ui/SectionCard'
 import StatCard from '@/components/ui/StatCard'
@@ -123,8 +122,7 @@ export default function DashboardHomePage() {
 
   return (
     <div className="bg-bg text-text-primary">
-      <FadeIn>
-        <section className="px-0 py-2">
+      <section className="px-0 py-2">
           <div className="mx-auto max-w-7xl">
             <SectionCard className="p-8">
               <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
@@ -161,9 +159,7 @@ export default function DashboardHomePage() {
             </SectionCard>
           </div>
         </section>
-      </FadeIn>
 
-      <FadeIn delay={0.06}>
         <section className="px-0 py-8">
           <div className="mx-auto max-w-7xl">
             {loading ? (
@@ -205,9 +201,7 @@ export default function DashboardHomePage() {
             )}
           </div>
         </section>
-      </FadeIn>
 
-      <FadeIn delay={0.1}>
         <section className="px-0 py-4">
           <div className="mx-auto max-w-7xl">
             <div className="mb-6 flex items-end justify-between gap-4">
@@ -230,34 +224,30 @@ export default function DashboardHomePage() {
               />
             ) : (
               <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-                {recentLibrary.map((resource, index) => (
-                  <FadeIn key={resource.id} delay={0.02 * (index % 8)}>
-                    <div className="transition-transform duration-200 hover:-translate-y-1">
-                      <ResourceCard
-                        id={resource.id}
-                        title={resource.title}
-                        description={resource.short_description || resource.description}
-                        thumbnailUrl={resource.thumbnail_url}
-                        type={resource.resource_type}
-                        contributorName={resource.contributor?.name ?? null}
-                        slug={resource.slug}
-                        averageRating={
-                          resourceRatings.get(resource.id)?.average_rating ?? 0
-                        }
-                        totalRatings={
-                          resourceRatings.get(resource.id)?.total_ratings ?? 0
-                        }
-                      />
-                    </div>
-                  </FadeIn>
+                {recentLibrary.map((resource) => (
+                  <div key={resource.id} className="transition-transform duration-200 hover:-translate-y-1">
+                    <ResourceCard
+                      id={resource.id}
+                      title={resource.title}
+                      description={resource.short_description || resource.description}
+                      thumbnailUrl={resource.thumbnail_url}
+                      type={resource.resource_type}
+                      contributorName={resource.contributor?.name ?? null}
+                      slug={resource.slug}
+                      averageRating={
+                        resourceRatings.get(resource.id)?.average_rating ?? 0
+                      }
+                      totalRatings={
+                        resourceRatings.get(resource.id)?.total_ratings ?? 0
+                      }
+                    />
+                  </div>
                 ))}
               </div>
             )}
           </div>
         </section>
-      </FadeIn>
 
-      <FadeIn delay={0.14}>
         <section className="px-0 py-10">
           <div className="mx-auto max-w-7xl">
             <div className="mb-6 flex items-end justify-between gap-4">
@@ -280,32 +270,29 @@ export default function DashboardHomePage() {
               />
             ) : (
               <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-                {recentDownloads.map((resource, index) => (
-                  <FadeIn key={resource.id} delay={0.02 * (index % 8)}>
-                    <div className="transition-transform duration-200 hover:-translate-y-1">
-                      <ResourceCard
-                        id={resource.id}
-                        title={resource.title}
-                        description={resource.short_description || resource.description}
-                        thumbnailUrl={resource.thumbnail_url}
-                        type={resource.resource_type}
-                        contributorName={resource.contributor?.name ?? null}
-                        slug={resource.slug}
-                        averageRating={
-                          resourceRatings.get(resource.id)?.average_rating ?? 0
-                        }
-                        totalRatings={
-                          resourceRatings.get(resource.id)?.total_ratings ?? 0
-                        }
-                      />
-                    </div>
-                  </FadeIn>
+                {recentDownloads.map((resource) => (
+                  <div key={resource.id} className="transition-transform duration-200 hover:-translate-y-1">
+                    <ResourceCard
+                      id={resource.id}
+                      title={resource.title}
+                      description={resource.short_description || resource.description}
+                      thumbnailUrl={resource.thumbnail_url}
+                      type={resource.resource_type}
+                      contributorName={resource.contributor?.name ?? null}
+                      slug={resource.slug}
+                      averageRating={
+                        resourceRatings.get(resource.id)?.average_rating ?? 0
+                      }
+                      totalRatings={
+                        resourceRatings.get(resource.id)?.total_ratings ?? 0
+                      }
+                    />
+                  </div>
                 ))}
               </div>
             )}
           </div>
         </section>
-      </FadeIn>
     </div>
   )
 }

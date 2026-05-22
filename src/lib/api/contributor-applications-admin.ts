@@ -110,6 +110,17 @@ export async function getContributorApplications(status?: string) {
   return (data ?? []) as ContributorApplicationRecord[]
 }
 
+export async function getMyApplication(userId: string) {
+  const { data, error } = await supabase
+    .from('contributor_applications')
+    .select(applicationSelect)
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return (data ?? []) as ContributorApplicationRecord[]
+}
+
 export async function getContributorApplicationById(id: string) {
   const { data, error } = await supabase
     .from('contributor_applications')
@@ -133,6 +144,10 @@ export async function approveContributorApplication(
     throw new Error('Esta solicitud ya fue revisada.')
   }
 
+  if (!application.user_id) {
+    throw new Error('La solicitud no tiene usuario asociado.')
+  }
+
   const contributorName =
     clean(application.organization_name) ||
     clean(application.full_name) ||
@@ -142,7 +157,7 @@ export async function approveContributorApplication(
   const slug = await ensureUniqueContributorSlug(contributorName)
 
   const { error: contributorError } = await supabase.from('contributors').insert({
-    user_id: application.user_id ?? null,
+    user_id: application.user_id,
     name: contributorName,
     slug,
     short_bio: clean(application.short_bio),
@@ -158,9 +173,22 @@ export async function approveContributorApplication(
     organization: clean(application.organization || application.organization_name),
     is_featured: false,
     is_active: true,
+    contact_name: clean(application.contact_name),
+    contact_role: clean(application.contact_role),
+    contact_email: clean(application.contact_email),
+    contact_phone: clean(application.contact_phone),
   })
 
   if (contributorError) throw contributorError
+
+  const { error: profileError } = await supabase
+    .from('profiles')
+    .update({ role: 'contributor' })
+    .eq('id', application.user_id)
+
+  if (profileError) {
+    console.error('Failed to update profile role:', profileError)
+  }
 
   const { error: updateError } = await supabase
     .from('contributor_applications')

@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { Search, Sparkles, Users, Globe2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import ContributorCard from '@/components/contributors/ContributorCard'
-import FadeIn from '@/components/ui/FadeIn'
 import EmptyState from '@/components/ui/EmptyState'
 import SearchInput from '@/components/ui/SearchInput'
 import SectionCard from '@/components/ui/SectionCard'
@@ -88,8 +87,7 @@ export default function ContributorsPage() {
 
   return (
     <div className="bg-bg text-text-primary">
-      <FadeIn>
-        <section className="relative px-6 py-14 md:px-10 lg:px-16 lg:py-16">
+      <section className="relative px-6 py-14 md:px-10 lg:px-16 lg:py-16">
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-brand-primary/5 via-transparent to-brand-accent/5" />
           <div className="relative mx-auto max-w-6xl">
             <div className="max-w-3xl">
@@ -143,10 +141,8 @@ export default function ContributorsPage() {
             </div>
           </div>
         </section>
-      </FadeIn>
 
-      <FadeIn delay={0.08}>
-        <section className="px-6 pb-8 md:px-10 lg:px-16">
+      <section className="px-6 pb-8 md:px-10 lg:px-16">
           <div className="mx-auto max-w-6xl">
             <SectionCard className="p-5">
               <div className="mb-4">
@@ -168,9 +164,7 @@ export default function ContributorsPage() {
             </SectionCard>
           </div>
         </section>
-      </FadeIn>
 
-      <FadeIn delay={0.12}>
         <section className="px-6 pb-16 md:px-10 lg:px-16">
           <div className="mx-auto max-w-6xl">
             {loading ? (
@@ -216,32 +210,30 @@ export default function ContributorsPage() {
                 </div>
 
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {filteredContributors.map((contributor, index) => (
-                    <FadeIn key={contributor.id} delay={0.02 * (index % 6)}>
-                      <ContributorCard
-                        name={contributor.name}
-                        slug={contributor.slug}
-                        shortBio={contributor.short_bio}
-                        specialty={contributor.specialty}
-                        avatarUrl={contributor.avatar_url}
-                        websiteUrl={contributor.website_url}
-                        averageRating={
-                          contributorRatings.get(contributor.id)?.average_rating ??
-                          0
-                        }
-                        totalRatings={
-                          contributorRatings.get(contributor.id)?.total_ratings ??
-                          0
-                        }
-                      />
-                    </FadeIn>
+                  {filteredContributors.map((contributor) => (
+                    <ContributorCard
+                      key={contributor.id}
+                      name={contributor.name}
+                      slug={contributor.slug}
+                      shortBio={contributor.short_bio}
+                      specialty={contributor.specialty}
+                      avatarUrl={contributor.avatar_url}
+                      websiteUrl={contributor.website_url}
+                      averageRating={
+                        contributorRatings.get(contributor.id)?.average_rating ??
+                        0
+                      }
+                      totalRatings={
+                        contributorRatings.get(contributor.id)?.total_ratings ??
+                        0
+                      }
+                    />
                   ))}
                 </div>
               </>
             )}
           </div>
         </section>
-      </FadeIn>
     </div>
   )
 }

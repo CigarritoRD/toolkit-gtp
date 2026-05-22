@@ -9,6 +9,11 @@ const navItems = [
   { label: 'Perfil', to: '/dashboard/profile' },
 ]
 
+const contributorNavItems = [
+  { label: 'Mi perfil', to: '/dashboard/contributor/profile' },
+  { label: 'Mis recursos', to: '/dashboard/contributor/resources' },
+]
+
 type DashboardSidebarProps = {
   onNavigate?: () => void
 }
@@ -65,6 +70,33 @@ export default function DashboardSidebar({
             {item.label}
           </NavLink>
         ))}
+
+        {(profile?.role === 'contributor' || profile?.role === 'admin') && (
+          <>
+            <div className="my-2 border-t border-surface-border" />
+            <p className="mb-1 px-4 text-xs font-medium uppercase tracking-wider text-text-secondary">
+              Colaborador
+            </p>
+            {contributorNavItems.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === '/dashboard/contributor'}
+                onClick={onNavigate}
+                className={({ isActive }) =>
+                  [
+                    'rounded-2xl px-4 py-3 text-sm font-medium transition',
+                    isActive
+                      ? 'bg-brand-accent text-white'
+                      : 'text-brand-primary hover:bg-bg-soft hover:text-text-primary',
+                  ].join(' ')
+                }
+              >
+                {item.label}
+              </NavLink>
+            ))}
+          </>
+        )}
       </nav>
 
       <button

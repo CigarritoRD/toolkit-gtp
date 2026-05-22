@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { useAuth } from '@/auth/useAuth'
 import { supabase } from '@/lib/supabaseClient'
-import FadeIn from '@/components/ui/FadeIn'
 import AppInput from '@/components/ui/AppInput'
 import AppButton from '@/components/ui/AppButton'
 import SectionCard from '@/components/ui/SectionCard'
@@ -64,8 +63,7 @@ export default function LoginPage() {
     <div className="relative flex min-h-screen items-center justify-center bg-bg px-6 text-text-primary">
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(0,116,115,0.12),transparent_40%),radial-gradient(circle_at_top_right,rgba(0,171,199,0.10),transparent_35%)]" />
 
-      <FadeIn>
-        <SectionCard className="w-full max-w-md p-8">
+      <SectionCard className="w-full max-w-md p-8">
           <div className="mb-6 text-center">
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary">
               <LogIn className="h-5 w-5" />
@@ -107,7 +105,6 @@ export default function LoginPage() {
             </Link>
           </p>
         </SectionCard>
-      </FadeIn>
     </div>
   )
 }

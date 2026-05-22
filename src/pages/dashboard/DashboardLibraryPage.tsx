@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { Bookmark, Heart, Library, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAuth } from '@/auth/useAuth'
-import FadeIn from '@/components/ui/FadeIn'
 import EmptyState from '@/components/ui/EmptyState'
 import SectionCard from '@/components/ui/SectionCard'
 import AppButton from '@/components/ui/AppButton'
@@ -94,8 +93,7 @@ export default function DashboardLibraryPage() {
 
   return (
     <div className="bg-bg text-text-primary">
-      <FadeIn>
-        <section className="px-0 py-2">
+      <section className="px-0 py-2">
           <div className="mx-auto max-w-7xl">
             <SectionCard className="p-8">
               <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
@@ -111,9 +109,7 @@ export default function DashboardLibraryPage() {
             </SectionCard>
           </div>
         </section>
-      </FadeIn>
 
-      <FadeIn delay={0.06}>
         <section className="px-0 py-8">
           <div className="mx-auto max-w-7xl">
             <div className="mb-6 flex flex-wrap gap-3">
@@ -172,58 +168,55 @@ export default function DashboardLibraryPage() {
               />
             ) : (
               <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-                {filteredItems.map((item, index) => {
+                {filteredItems.map((item) => {
                   const resource = item.resource
                   if (!resource) return null
 
                   const actionKey = `${resource.id}-${item.kind}`
 
                   return (
-                    <FadeIn key={item.library_id} delay={0.02 * (index % 6)}>
-                      <div className="space-y-3">
-                        <div className="overflow-hidden rounded-3xl border border-surface-border bg-surface shadow-[var(--shadow-soft)]">
-                          <div className="relative">
-                            <div className="absolute left-3 top-3 z-10 rounded-full border border-surface-border bg-bg/90 px-3 py-1 text-xs font-medium text-text-primary backdrop-blur">
-                              {item.kind === 'saved' ? 'Guardado' : 'Favorito'}
-                            </div>
-
-                            <ResourceCard
-                              id={resource.id}
-                              title={resource.title}
-                              description={resource.short_description || resource.description}
-                              thumbnailUrl={resource.thumbnail_url}
-                              type={resource.resource_type}
-                              contributorName={resource.contributor?.name ?? null}
-                              slug={resource.slug}
-                            />
+                    <div key={item.library_id} className="space-y-3">
+                      <div className="overflow-hidden rounded-3xl border border-surface-border bg-surface shadow-[var(--shadow-soft)]">
+                        <div className="relative">
+                          <div className="absolute left-3 top-3 z-10 rounded-full border border-surface-border bg-bg/90 px-3 py-1 text-xs font-medium text-text-primary backdrop-blur">
+                            {item.kind === 'saved' ? 'Guardado' : 'Favorito'}
                           </div>
-                        </div>
 
-                        <div className="flex justify-end">
-                          <AppButton
-                            type="button"
-                            variant="secondary"
-                            disabled={updatingKey === actionKey}
-                            onClick={() =>
-                              handleRemove(
-                                resource.id,
-                                item.kind as 'saved' | 'favorite',
-                              )
-                            }
-                          >
-                            <Trash2 className="h-4 w-4" />
-                            {updatingKey === actionKey ? 'Quitando...' : 'Quitar'}
-                          </AppButton>
+                          <ResourceCard
+                            id={resource.id}
+                            title={resource.title}
+                            description={resource.short_description || resource.description}
+                            thumbnailUrl={resource.thumbnail_url}
+                            type={resource.resource_type}
+                            contributorName={resource.contributor?.name ?? null}
+                            slug={resource.slug}
+                          />
                         </div>
                       </div>
-                    </FadeIn>
+
+                      <div className="flex justify-end">
+                        <AppButton
+                          type="button"
+                          variant="secondary"
+                          disabled={updatingKey === actionKey}
+                          onClick={() =>
+                            handleRemove(
+                              resource.id,
+                              item.kind as 'saved' | 'favorite',
+                            )
+                          }
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          {updatingKey === actionKey ? 'Quitando...' : 'Quitar'}
+                        </AppButton>
+                      </div>
+                    </div>
                   )
                 })}
               </div>
             )}
           </div>
         </section>
-      </FadeIn>
     </div>
   )
 }

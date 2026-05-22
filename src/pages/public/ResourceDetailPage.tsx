@@ -12,7 +12,6 @@ import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/auth/useAuth'
 import { useResourceActions } from '@/hooks/useResourceActions'
-import FadeIn from '@/components/ui/FadeIn'
 import EmptyState from '@/components/ui/EmptyState'
 import SectionCard from '@/components/ui/SectionCard'
 import StatusBadge from '@/components/ui/StatusBadge'
@@ -269,8 +268,7 @@ export default function ResourceDetailPage() {
 
   return (
     <div className="bg-bg text-text-primary">
-      <FadeIn>
-        <section className="px-6 py-8 md:px-10 lg:px-16">
+      <section className="px-6 py-8 md:px-10 lg:px-16">
           <div className="mx-auto max-w-6xl">
             <Link
               to="/resources"
@@ -281,10 +279,8 @@ export default function ResourceDetailPage() {
             </Link>
           </div>
         </section>
-      </FadeIn>
 
-      <FadeIn delay={0.04}>
-        <section className="px-6 pb-8 md:px-10 lg:px-16">
+      <section className="px-6 pb-8 md:px-10 lg:px-16">
           <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1.1fr_0.9fr]">
             <SectionCard className="overflow-hidden p-0">
               <div className="aspect-[4/3] bg-bg-soft">
@@ -398,15 +394,12 @@ export default function ResourceDetailPage() {
             </SectionCard>
           </div>
         </section>
-      </FadeIn>
 
-      <FadeIn delay={0.08}>
         <section className="px-6 pb-16 md:px-10 lg:px-16">
           <div className="mx-auto max-w-6xl">
             <RatingPanel mode="resource" targetId={resource.id} />
           </div>
         </section>
-      </FadeIn>
     </div>
   )
 }

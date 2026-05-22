@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Filter, FolderKanban, Tag } from 'lucide-react'
 import ResourceCard from '@/components/resources/ResourceCard'
-import FadeIn from '@/components/ui/FadeIn'
 import EmptyState from '@/components/ui/EmptyState'
 import SearchInput from '@/components/ui/SearchInput'
 import AppSelect from '@/components/ui/AppSelect'
@@ -142,8 +141,7 @@ export default function DashboardResourcesPage() {
 
   return (
     <div className="bg-bg text-text-primary">
-      <FadeIn>
-        <section className="px-0 py-2">
+      <section className="px-0 py-2">
           <div className="mx-auto max-w-7xl">
             <SectionCard className="p-8">
               <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
@@ -159,9 +157,7 @@ export default function DashboardResourcesPage() {
             </SectionCard>
           </div>
         </section>
-      </FadeIn>
 
-      <FadeIn delay={0.06}>
         <section className="px-0 py-8">
           <div className="mx-auto max-w-7xl">
             <SectionCard className="p-5">
@@ -253,9 +249,7 @@ export default function DashboardResourcesPage() {
             </SectionCard>
           </div>
         </section>
-      </FadeIn>
 
-      <FadeIn delay={0.1}>
         <section className="px-0 py-2">
           <div className="mx-auto max-w-7xl">
             {loading ? (
@@ -296,27 +290,24 @@ export default function DashboardResourcesPage() {
                 </div>
 
                 <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-                  {filteredResources.map((resource, index) => (
-                    <FadeIn key={resource.id} delay={0.02 * (index % 8)}>
-                      <div className="transition-transform duration-200 hover:-translate-y-1">
-                        <ResourceCard
-                          id={resource.id}
-                          title={resource.title}
-                          description={resource.short_description || resource.description}
-                          thumbnailUrl={resource.thumbnail_url}
-                          type={resource.resource_type}
-                          contributorName={resource.contributor?.name ?? null}
-                          slug={resource.slug}
-                        />
-                      </div>
-                    </FadeIn>
+                  {filteredResources.map((resource) => (
+                    <div key={resource.id} className="transition-transform duration-200 hover:-translate-y-1">
+                      <ResourceCard
+                        id={resource.id}
+                        title={resource.title}
+                        description={resource.short_description || resource.description}
+                        thumbnailUrl={resource.thumbnail_url}
+                        type={resource.resource_type}
+                        contributorName={resource.contributor?.name ?? null}
+                        slug={resource.slug}
+                      />
+                    </div>
                   ))}
                 </div>
               </>
             )}
           </div>
         </section>
-      </FadeIn>
     </div>
   )
 }

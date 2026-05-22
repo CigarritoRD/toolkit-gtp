@@ -228,7 +228,8 @@ export default function ContributorForm({
           label="Thumbnail"
           accept="image/*"
           fileName={thumbnailFile?.name ?? null}
-          hint="PNG, JPG or WEBP"
+          hint="PNG, JPG or WEBP (máx. 2 MB)"
+          maxSize={2 * 1024 * 1024}
           onChange={(e) => setThumbnailFile(e.target.files?.[0] ?? null)}
           onClear={() => setThumbnailFile(null)}
         />
