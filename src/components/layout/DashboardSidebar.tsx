@@ -2,6 +2,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/auth/useAuth'
+import { useContributorStatus } from '@/hooks/useContributorStatus'
 
 const navItems = [
   { label: 'Inicio', to: '/dashboard' },
@@ -25,6 +26,7 @@ export default function DashboardSidebar({
   const navigate = useNavigate()
   const { user, profile, signOut } = useAuth()
   const { t } = useTranslation()
+  const { status, loading } = useContributorStatus()
 
   const displayName =
     profile?.full_name?.trim() || user?.email?.split('@')[0] || 'Usuario'
@@ -73,7 +75,7 @@ export default function DashboardSidebar({
           </NavLink>
         ))}
 
-        {profile?.role === 'user' && (
+        {loading ? null : status === 'user' && (
           <>
             <div className="my-2 border-t border-surface-border" />
             <p className="mb-1 px-4 text-xs font-medium uppercase tracking-wider text-text-secondary">
@@ -91,7 +93,25 @@ export default function DashboardSidebar({
           </>
         )}
 
-        {(profile?.role === 'contributor' || profile?.role === 'admin') && (
+        {status === 'pending' && (
+          <>
+            <div className="my-2 border-t border-surface-border" />
+            <p className="mb-1 px-4 text-xs font-medium uppercase tracking-wider text-text-secondary">
+              {t('dashboard.title')}
+            </p>
+            <Link
+              to="/become-a-contributor"
+              className="flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-medium text-yellow-600 transition hover:bg-bg-soft hover:text-text-primary"
+            >
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {t('dashboard.contributorCta.pendingShort') ?? t('dashboard.contributorCta.pendingTitle')}
+            </Link>
+          </>
+        )}
+
+        {(status === 'contributor') && (
           <>
             <div className="my-2 border-t border-surface-border" />
             <p className="mb-1 px-4 text-xs font-medium uppercase tracking-wider text-text-secondary">
@@ -115,6 +135,15 @@ export default function DashboardSidebar({
                 {item.label}
               </NavLink>
             ))}
+            <Link
+              to="/dashboard/contributor/resources/new"
+              className="flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-medium text-brand-accent transition hover:bg-bg-soft hover:text-text-primary"
+            >
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              {t('contributorDashboard.newResource')}
+            </Link>
           </>
         )}
       </nav>

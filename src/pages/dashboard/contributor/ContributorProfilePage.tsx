@@ -141,6 +141,7 @@ export default function ContributorProfilePage() {
                 label={t('contributorDashboard.name')}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                placeholder={t('contributorDashboard.namePlaceholder') ?? 'Nombre de ONG, ministerio o iniciativa'}
               />
               <AppInput
                 label={t('contributorDashboard.specialty')}

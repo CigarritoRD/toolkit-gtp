@@ -211,6 +211,11 @@ export default function BecomeContributorPage() {
       return
     }
 
+    if (hasPendingOrApproved) {
+      toast.error('Ya tienes una solicitud en revisión o aprobada.')
+      return
+    }
+
     const normalizedContactName = contactName.trim()
     const normalizedContactEmail = contactEmail.trim().toLowerCase()
     const normalizedOrganizationName = organizationName.trim()

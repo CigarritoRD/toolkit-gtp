@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Bookmark, Download, Heart, Sparkles, Users } from 'lucide-react'
+import { ArrowRight, Bookmark, CheckCircle2, Clock, Download, Heart, Sparkles, Users } from 'lucide-react'
 import ResourceCard from '@/components/resources/ResourceCard'
 import EmptyState from '@/components/ui/EmptyState'
 import SectionCard from '@/components/ui/SectionCard'
@@ -15,6 +15,7 @@ import {
 import { getResourceRatingSummaries } from '@/lib/api/ratings'
 import { useAuth } from '@/auth/useAuth'
 import { useTranslation } from 'react-i18next'
+import { useContributorStatus } from '@/hooks/useContributorStatus'
 import type { ResourceListItem } from '@/types/resources'
 
 type RatingMap = Map<
@@ -57,6 +58,7 @@ function normalizeResource(resource: any): ResourceListItem {
 export default function DashboardHomePage() {
   const { user, profile } = useAuth()
   const { t } = useTranslation()
+  const { status, latestApplication } = useContributorStatus()
 
   const [stats, setStats] = useState<DashboardStats>({
     savedCount: 0,
@@ -205,7 +207,78 @@ export default function DashboardHomePage() {
           </div>
         </section>
 
-        {profile?.role === 'user' && (
+        {status === 'pending' && (
+          <section className="px-0 py-8">
+            <div className="mx-auto max-w-7xl">
+              <SectionCard className="flex flex-col gap-4 border-2 border-yellow-200/50 bg-yellow-50/50 p-6 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-start gap-4">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-yellow-100">
+                    <Clock className="h-5 w-5 text-yellow-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-heading text-lg text-text-primary">
+                      {t('dashboard.contributorCta.pendingTitle')}
+                    </h3>
+                    <p className="mt-1 text-sm text-brand-primary">
+                      {t('dashboard.contributorCta.pendingBody')}
+                    </p>
+                    {latestApplication?.admin_notes && (
+                      <p className="mt-2 rounded-lg bg-surface px-4 py-3 text-sm text-brand-primary">
+                        <strong>{t('contributorApply.adminFeedback')}:</strong> {latestApplication.admin_notes}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <Link to="/become-a-contributor">
+                  <AppButton variant="secondary" className="shrink-0">
+                    {t('common.viewAll')}
+                  </AppButton>
+                </Link>
+              </SectionCard>
+            </div>
+          </section>
+        )}
+
+        {status === 'contributor' && (
+          <section className="px-0 py-8">
+            <div className="mx-auto max-w-7xl">
+              <SectionCard className="flex flex-col gap-4 border-2 border-brand-accent/30 p-6 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-start gap-4">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-accent/10">
+                    <CheckCircle2 className="h-5 w-5 text-brand-accent" />
+                  </div>
+                  <div>
+                    <h3 className="font-heading text-lg text-text-primary">
+                      {t('contributorDashboard.badge')}
+                    </h3>
+                    <p className="mt-1 text-sm text-brand-primary">
+                      {t('contributorDashboard.subtitle')}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex shrink-0 flex-wrap gap-2">
+                  <Link to="/dashboard/contributor/profile">
+                    <AppButton variant="secondary">
+                      {t('contributorDashboard.myProfile')}
+                    </AppButton>
+                  </Link>
+                  <Link to="/dashboard/contributor/resources">
+                    <AppButton variant="secondary">
+                      {t('contributorDashboard.myResources')}
+                    </AppButton>
+                  </Link>
+                  <Link to="/dashboard/contributor/resources/new">
+                    <AppButton>
+                      {t('contributorDashboard.newResource')}
+                    </AppButton>
+                  </Link>
+                </div>
+              </SectionCard>
+            </div>
+          </section>
+        )}
+
+        {status === 'user' && (
           <section className="px-0 py-8">
             <div className="mx-auto max-w-7xl">
               <SectionCard className="flex flex-col gap-4 border-2 border-brand-accent/30 p-6 sm:flex-row sm:items-center sm:justify-between">
