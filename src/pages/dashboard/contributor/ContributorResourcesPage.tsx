@@ -91,7 +91,7 @@ export default function ContributorResourcesPage() {
             {t('contributorDashboard.myResources')}
           </h1>
           <p className="mt-3 text-sm text-text-secondary">
-            {t('contributorDashboard.myResourcesSubtitle')}
+            {t('contributorDashboard.myResourcesDesc')}
           </p>
         </div>
 

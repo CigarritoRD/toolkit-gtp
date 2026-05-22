@@ -242,7 +242,7 @@ export default function ContributorResourceEditPage() {
             <div className="grid gap-4 md:grid-cols-2">
               <div>
                 <AppInput
-                  label={t('contributorDashboard.title')}
+                  label={t('contributorDashboard.resourceTitle')}
                   value={title}
                   onChange={(e) => {
                     setTitle(e.target.value)

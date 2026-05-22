@@ -66,7 +66,7 @@ export default function ContributorHomePage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
         <p className="text-sm uppercase tracking-[0.22em] text-brand-primary">
           {t('contributorDashboard.badge')}
@@ -78,6 +78,32 @@ export default function ContributorHomePage() {
           {t('contributorDashboard.subtitle')}
         </p>
       </div>
+
+      <SectionCard className="flex flex-col gap-4 border-2 border-brand-accent/30 p-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-4">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-accent/10">
+            <svg className="h-5 w-5 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <div>
+            <h3 className="font-heading text-lg text-text-primary">
+              {t('contributorDashboard.badge')}
+            </h3>
+            <p className="mt-1 text-sm text-brand-primary">
+              {t('contributorDashboard.subtitle')}
+            </p>
+          </div>
+        </div>
+        <div className="flex shrink-0 flex-wrap gap-2">
+          <AppButton variant="secondary" onClick={() => navigate('/dashboard/contributor/profile')}>
+            {t('contributorDashboard.myProfile')}
+          </AppButton>
+          <AppButton onClick={() => navigate('/dashboard/contributor/resources/new')}>
+            {t('contributorDashboard.newResource')}
+          </AppButton>
+        </div>
+      </SectionCard>
 
       <div className="grid gap-4 md:grid-cols-2">
         <SectionCard

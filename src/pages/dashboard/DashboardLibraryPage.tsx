@@ -93,130 +93,126 @@ export default function DashboardLibraryPage() {
 
   return (
     <div className="bg-bg text-text-primary">
-      <section className="px-0 py-2">
-          <div className="mx-auto max-w-7xl">
-            <SectionCard className="p-8">
-              <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
-                Librería
-              </p>
-              <h1 className="mt-3 font-heading text-4xl md:text-5xl">
-                Mis recursos
-              </h1>
-              <p className="mt-4 max-w-2xl font-body text-lg text-brand-primary">
-                Aquí encontrarás los recursos que has guardado o marcado como
-                favoritos para volver a ellos cuando los necesites.
-              </p>
-            </SectionCard>
-          </div>
-        </section>
+      <section className="py-2">
+        <SectionCard className="p-8">
+          <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
+            Librería
+          </p>
+          <h1 className="mt-3 font-heading text-4xl md:text-5xl">
+            Mis recursos
+          </h1>
+          <p className="mt-4 max-w-2xl font-body text-lg text-brand-primary">
+            Aquí encontrarás los recursos que has guardado o marcado como
+            favoritos para volver a ellos cuando los necesites.
+          </p>
+        </SectionCard>
+      </section>
 
-        <section className="px-0 py-8">
-          <div className="mx-auto max-w-7xl">
-            <div className="mb-6 flex flex-wrap gap-3">
-              <AppButton
-                type="button"
-                variant={filter === 'all' ? 'primary' : 'secondary'}
-                onClick={() => setFilter('all')}
+      <section className="py-8">
+        <div className="mb-6 flex flex-wrap gap-3">
+          <AppButton
+            type="button"
+            variant={filter === 'all' ? 'primary' : 'secondary'}
+            onClick={() => setFilter('all')}
+          >
+            <Library className="h-4 w-4" />
+            Todos
+          </AppButton>
+
+          <AppButton
+            type="button"
+            variant={filter === 'saved' ? 'primary' : 'secondary'}
+            onClick={() => setFilter('saved')}
+          >
+            <Bookmark className="h-4 w-4" />
+            Guardados
+          </AppButton>
+
+          <AppButton
+            type="button"
+            variant={filter === 'favorite' ? 'primary' : 'secondary'}
+            onClick={() => setFilter('favorite')}
+          >
+            <Heart className="h-4 w-4" />
+            Favoritos
+          </AppButton>
+        </div>
+
+        {loading ? (
+          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div
+                key={index}
+                className="animate-pulse rounded-3xl border border-surface-border bg-surface p-5 shadow-[var(--shadow-soft)]"
               >
-                <Library className="h-4 w-4" />
-                Todos
-              </AppButton>
-
-              <AppButton
-                type="button"
-                variant={filter === 'saved' ? 'primary' : 'secondary'}
-                onClick={() => setFilter('saved')}
-              >
-                <Bookmark className="h-4 w-4" />
-                Guardados
-              </AppButton>
-
-              <AppButton
-                type="button"
-                variant={filter === 'favorite' ? 'primary' : 'secondary'}
-                onClick={() => setFilter('favorite')}
-              >
-                <Heart className="h-4 w-4" />
-                Favoritos
-              </AppButton>
-            </div>
-
-            {loading ? (
-              <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-                {Array.from({ length: 6 }).map((_, index) => (
-                  <div
-                    key={index}
-                    className="animate-pulse rounded-3xl border border-surface-border bg-surface p-5 shadow-[var(--shadow-soft)]"
-                  >
-                    <div className="mb-4 aspect-[4/3] rounded-2xl bg-bg-soft" />
-                    <div className="h-5 w-24 rounded bg-bg-soft" />
-                    <div className="mt-3 h-6 w-3/4 rounded bg-bg-soft" />
-                    <div className="mt-2 h-4 w-full rounded bg-bg-soft" />
-                    <div className="mt-2 h-4 w-2/3 rounded bg-bg-soft" />
-                  </div>
-                ))}
+                <div className="mb-4 aspect-[4/3] rounded-2xl bg-bg-soft" />
+                <div className="h-5 w-24 rounded bg-bg-soft" />
+                <div className="mt-3 h-6 w-3/4 rounded bg-bg-soft" />
+                <div className="mt-2 h-4 w-full rounded bg-bg-soft" />
+                <div className="mt-2 h-4 w-2/3 rounded bg-bg-soft" />
               </div>
-            ) : filteredItems.length === 0 ? (
-              <EmptyState
-                icon={<Library className="h-5 w-5" />}
-                title="Tu librería está vacía"
-                description="Guarda recursos o márcalos como favoritos para encontrarlos aquí."
-                actionLabel="Explorar recursos"
-                onAction={() => {
-                  window.location.href = '/resources'
-                }}
-              />
-            ) : (
-              <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-                {filteredItems.map((item) => {
-                  const resource = item.resource
-                  if (!resource) return null
+            ))}
+          </div>
+        ) : filteredItems.length === 0 ? (
+          <EmptyState
+            icon={<Library className="h-5 w-5" />}
+            title="Tu librería está vacía"
+            description="Guarda recursos o márcalos como favoritos para encontrarlos aquí."
+            actionLabel="Explorar recursos"
+            onAction={() => {
+              window.location.href = '/resources'
+            }}
+          />
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+            {filteredItems.map((item) => {
+              const resource = item.resource
+              if (!resource) return null
 
-                  const actionKey = `${resource.id}-${item.kind}`
+              const actionKey = `${resource.id}-${item.kind}`
 
-                  return (
-                    <div key={item.library_id} className="space-y-3">
-                      <div className="overflow-hidden rounded-3xl border border-surface-border bg-surface shadow-[var(--shadow-soft)]">
-                        <div className="relative">
-                          <div className="absolute left-3 top-3 z-10 rounded-full border border-surface-border bg-bg/90 px-3 py-1 text-xs font-medium text-text-primary backdrop-blur">
-                            {item.kind === 'saved' ? 'Guardado' : 'Favorito'}
-                          </div>
-
-                          <ResourceCard
-                            id={resource.id}
-                            title={resource.title}
-                            description={resource.short_description || resource.description}
-                            thumbnailUrl={resource.thumbnail_url}
-                            type={resource.resource_type}
-                            contributorName={resource.contributor?.name ?? null}
-                            slug={resource.slug}
-                          />
-                        </div>
+              return (
+                <div key={item.library_id} className="space-y-3">
+                  <div className="overflow-hidden rounded-3xl border border-surface-border bg-surface shadow-[var(--shadow-soft)]">
+                    <div className="relative">
+                      <div className="absolute left-3 top-3 z-10 rounded-full border border-surface-border bg-bg/90 px-3 py-1 text-xs font-medium text-text-primary backdrop-blur">
+                        {item.kind === 'saved' ? 'Guardado' : 'Favorito'}
                       </div>
 
-                      <div className="flex justify-end">
-                        <AppButton
-                          type="button"
-                          variant="secondary"
-                          disabled={updatingKey === actionKey}
-                          onClick={() =>
-                            handleRemove(
-                              resource.id,
-                              item.kind as 'saved' | 'favorite',
-                            )
-                          }
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          {updatingKey === actionKey ? 'Quitando...' : 'Quitar'}
-                        </AppButton>
-                      </div>
+                      <ResourceCard
+                        id={resource.id}
+                        title={resource.title}
+                        description={resource.short_description || resource.description}
+                        thumbnailUrl={resource.thumbnail_url}
+                        type={resource.resource_type}
+                        contributorName={resource.contributor?.name ?? null}
+                        slug={resource.slug}
+                      />
                     </div>
-                  )
-                })}
-              </div>
-            )}
+                  </div>
+
+                  <div className="flex justify-end">
+                    <AppButton
+                      type="button"
+                      variant="secondary"
+                      disabled={updatingKey === actionKey}
+                      onClick={() =>
+                        handleRemove(
+                          resource.id,
+                          item.kind as 'saved' | 'favorite',
+                        )
+                      }
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      {updatingKey === actionKey ? 'Quitando...' : 'Quitar'}
+                    </AppButton>
+                  </div>
+                </div>
+              )
+            })}
           </div>
-        </section>
+        )}
+      </section>
     </div>
   )
 }
