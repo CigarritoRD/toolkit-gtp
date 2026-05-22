@@ -640,6 +640,13 @@ const es = {
     myDownloads: 'Mis descargas',
     myResources: 'Mis recursos',
     myAccount: 'Tu cuenta',
+    contributorCta: {
+      title: '¿Quieres compartir recursos?',
+      body: 'Solicita convertirte en colaborador y comparte materiales con la comunidad.',
+      button: 'Solicitar ser colaborador',
+      pendingTitle: 'Solicitud en revisión',
+      pendingBody: 'Tu solicitud está siendo revisada por el equipo. Te notificaremos cuando esté lista.',
+    },
   },
   descriptionSection: 'Descripción',
   dashboardResources: {

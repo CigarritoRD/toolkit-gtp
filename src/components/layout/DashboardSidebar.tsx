@@ -1,5 +1,6 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/auth/useAuth'
 
 const navItems = [
@@ -23,6 +24,7 @@ export default function DashboardSidebar({
 }: DashboardSidebarProps) {
   const navigate = useNavigate()
   const { user, profile, signOut } = useAuth()
+  const { t } = useTranslation()
 
   const displayName =
     profile?.full_name?.trim() || user?.email?.split('@')[0] || 'Usuario'
@@ -70,6 +72,24 @@ export default function DashboardSidebar({
             {item.label}
           </NavLink>
         ))}
+
+        {profile?.role === 'user' && (
+          <>
+            <div className="my-2 border-t border-surface-border" />
+            <p className="mb-1 px-4 text-xs font-medium uppercase tracking-wider text-text-secondary">
+              {t('dashboard.title')}
+            </p>
+            <Link
+              to="/become-a-contributor"
+              className="flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-medium text-brand-accent transition hover:bg-bg-soft hover:text-text-primary"
+            >
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              {t('dashboard.contributorCta.button')}
+            </Link>
+          </>
+        )}
 
         {(profile?.role === 'contributor' || profile?.role === 'admin') && (
           <>

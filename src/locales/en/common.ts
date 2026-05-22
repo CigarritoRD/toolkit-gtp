@@ -709,13 +709,20 @@ download: 'Download',
     favoriteError: 'Could not update favorites.',
   },
 
-  dashboard: {
-    title: 'Dashboard',
+dashboard: {
+    title: 'Panel',
     exploreResources: 'Explore resources',
     myLibrary: 'View my library',
     myDownloads: 'My downloads',
     myResources: 'My resources',
     myAccount: 'Your account',
+    contributorCta: {
+      title: 'Want to share resources?',
+      body: 'Apply to become a contributor and share materials with the community.',
+      button: 'Apply to become a contributor',
+      pendingTitle: 'Application under review',
+      pendingBody: 'Your application is being reviewed by the team. We will notify you when it is ready.',
+    },
   },
   descriptionSection: 'Description',
   dashboardResources: {

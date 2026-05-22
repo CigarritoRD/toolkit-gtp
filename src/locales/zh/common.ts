@@ -670,13 +670,20 @@ const zh = {
         favoriteError: '无法更新收藏。',
     },
 
-    dashboard: {
-        title: '仪表盘',
+dashboard: {
+        title: '面板',
         exploreResources: '探索资源',
-        myLibrary: '查看我的资源库',
+        myLibrary: '查看我的书库',
         myDownloads: '我的下载',
         myResources: '我的资源',
-        myAccount: '你的账户',
+        myAccount: '您的账户',
+        contributorCta: {
+            title: '想要分享资源吗？',
+            body: '申请成为贡献者，与社区分享资料。',
+            button: '申请成为贡献者',
+            pendingTitle: '申请审核中',
+            pendingBody: '您的申请正在由团队审核。审核完成后我们会通知您。',
+        },
     },
     descriptionSection: '描述',
     dashboardResources: {

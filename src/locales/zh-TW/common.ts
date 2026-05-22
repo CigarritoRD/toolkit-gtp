@@ -633,13 +633,20 @@ nav: {
     favoriteRemoved: '資源已從收藏移除。',
     favoriteError: '無法更新收藏。',
   },
-  dashboard: {
-    title: '儀表板',
+dashboard: {
+    title: '面板',
     exploreResources: '探索資源',
-    myLibrary: '查看我的圖書館',
+    myLibrary: '查看我的書庫',
     myDownloads: '我的下載',
     myResources: '我的資源',
     myAccount: '您的帳戶',
+    contributorCta: {
+      title: '想要分享資源嗎？',
+      body: '申請成為貢獻者，與社區分享資料。',
+      button: '申請成為貢獻者',
+      pendingTitle: '申請審核中',
+      pendingBody: '您的申請正在由團隊審核。審核完成後我們會通知您。',
+    },
   },
   descriptionSection: '描述',
   dashboardResources: {
