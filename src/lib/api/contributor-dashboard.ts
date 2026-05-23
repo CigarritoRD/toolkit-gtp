@@ -23,6 +23,7 @@ export type ContributorProfile = {
   country: string | null
   organization: string | null
   created_at: string
+  access_type: 'account' | 'external'
 }
 
 export type ContributorResourceListItem = {

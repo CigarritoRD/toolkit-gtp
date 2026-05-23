@@ -148,6 +148,16 @@ export async function approveContributorApplication(
     throw new Error('La solicitud no tiene usuario asociado.')
   }
 
+  const { data: existingContributor } = await supabase
+    .from('contributors')
+    .select('id, user_id, name')
+    .eq('user_id', application.user_id)
+    .maybeSingle()
+
+  if (existingContributor) {
+    throw new Error('Este usuario ya tiene un perfil contributor vinculado.')
+  }
+
   const contributorName =
     clean(application.organization_name) ||
     clean(application.full_name) ||

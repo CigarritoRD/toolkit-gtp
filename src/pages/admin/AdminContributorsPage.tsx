@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Users, Globe, Star } from 'lucide-react'
+import { Plus, Users, UserCheck, UserX } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import EmptyState from '@/components/ui/EmptyState'
 import AppButton from '@/components/ui/AppButton'
@@ -9,6 +9,7 @@ import SearchInput from '@/components/ui/SearchInput'
 import StatusBadge from '@/components/ui/StatusBadge'
 import { AdminTableSkeleton } from '@/components/ui/Skeleton'
 import { getAdminContributors } from '@/lib/api/contributors'
+import type { ContributorListItemAdmin } from '@/types/contributors'
 import {
   getCachedAdminData,
   setCachedAdminData,
@@ -17,29 +18,16 @@ import {
 const CACHE_KEY = 'admin:contributors'
 const CACHE_TTL = 60_000
 
-type AdminContributorItem = {
-  id: string
-  name: string
-  slug: string
-  short_bio?: string | null
-  specialty?: string | null
-  avatar_url?: string | null
-  website_url?: string | null
-  is_featured: boolean
-  is_active: boolean
-  created_at?: string
-}
-
 export default function AdminContributorsPage() {
   const { t } = useTranslation()
 
-  const [items, setItems] = useState<AdminContributorItem[]>(() =>
-    getCachedAdminData<AdminContributorItem[]>(CACHE_KEY) ?? [],
+  const [items, setItems] = useState<ContributorListItemAdmin[]>(() =>
+    getCachedAdminData<ContributorListItemAdmin[]>(CACHE_KEY) ?? [],
   )
   const [loading, setLoading] = useState(() => !getCachedAdminData(CACHE_KEY))
   const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState('')
-  const hasInitialData = getCachedAdminData<AdminContributorItem[]>(CACHE_KEY) !== null
+  const hasInitialData = getCachedAdminData<ContributorListItemAdmin[]>(CACHE_KEY) !== null
 
   const loadContributors = useCallback(
     async (silent = false) => {
@@ -48,9 +36,8 @@ export default function AdminContributorsPage() {
           setError(null)
         }
         const data = await getAdminContributors()
-        const result = (data ?? []) as unknown as AdminContributorItem[]
-        setItems(result)
-        setCachedAdminData(CACHE_KEY, result, CACHE_TTL)
+        setItems(data)
+        setCachedAdminData(CACHE_KEY, data, CACHE_TTL)
       } catch (err) {
         if (!silent) {
           setError(
@@ -90,8 +77,8 @@ export default function AdminContributorsPage() {
 
   const total = items.length
   const active = items.filter((item) => item.is_active).length
-  const featured = items.filter((item) => item.is_featured).length
-  const withWebsite = items.filter((item) => !!item.website_url).length
+  const withAccount = items.filter((item) => item.access_type === 'account').length
+  const externalProfiles = items.filter((item) => item.access_type === 'external').length
 
   return (
     <div className="space-y-8">
@@ -111,7 +98,7 @@ export default function AdminContributorsPage() {
         <Link to="/admin/contributors/new">
           <AppButton>
             <Plus className="h-4 w-4" />
-            {t('admin.contributors.newContributor')}
+            {t('admin.contributors.newProfile')}
           </AppButton>
         </Link>
       </div>
@@ -128,14 +115,14 @@ export default function AdminContributorsPage() {
           icon={<Users className="h-4 w-4" />}
         />
         <MetricCard
-          label={t('admin.contributors.featured')}
-          value={featured}
-          icon={<Star className="h-4 w-4" />}
+          label={t('admin.contributors.withAccount')}
+          value={withAccount}
+          icon={<UserCheck className="h-4 w-4" />}
         />
         <MetricCard
-          label={t('admin.contributors.websites')}
-          value={withWebsite}
-          icon={<Globe className="h-4 w-4" />}
+          label={t('admin.contributors.externalProfiles')}
+          value={externalProfiles}
+          icon={<UserX className="h-4 w-4" />}
         />
       </div>
 
@@ -200,6 +187,18 @@ export default function AdminContributorsPage() {
                           tone="warning"
                         />
                       ) : null}
+
+                      {item.access_type === 'account' ? (
+                        <StatusBadge
+                          label={t('admin.contributors.withAccountBadge')}
+                          tone="success"
+                        />
+                      ) : (
+                        <StatusBadge
+                          label={t('admin.contributors.externalBadge')}
+                          tone="muted"
+                        />
+                      )}
 
                       <StatusBadge
                         label={
