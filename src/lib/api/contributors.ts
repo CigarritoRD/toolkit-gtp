@@ -311,42 +311,13 @@ export async function linkContributorToUser(
   contributorId: string,
   userId: string,
 ) {
-  const { data: contributor, error: fetchError } = await supabase
-    .from('contributors')
-    .select('id, user_id, name')
-    .eq('id', contributorId)
-    .single()
+  const { data, error } = await supabase.rpc('link_contributor_to_user', {
+    p_contributor_id: contributorId,
+    p_user_id: userId,
+  })
 
-  if (fetchError) throw new Error(fetchError.message)
-
-  if (contributor.user_id && contributor.user_id !== userId) {
-    throw new Error('Este contributor ya está vinculado a otro usuario.')
-  }
-
-  if (contributor.user_id === userId) {
-    throw new Error('Este contributor ya está vinculado a este usuario.')
-  }
-
-  const { error: linkError } = await supabase
-    .from('contributors')
-    .update({
-      user_id: userId,
-      access_type: 'account',
-    })
-    .eq('id', contributorId)
-
-  if (linkError) throw new Error(linkError.message)
-
-  const { error: profileError } = await supabase
-    .from('profiles')
-    .update({ role: 'contributor' })
-    .eq('id', userId)
-
-  if (profileError) {
-    console.error('Failed to update profile role:', profileError)
-  }
-
-  return { id: contributorId, name: contributor.name, userId }
+  if (error) throw new Error(error.message)
+  return data as { id: string; name: string; userId: string }
 }
 
 export async function unlinkContributorUser(contributorId: string) {
