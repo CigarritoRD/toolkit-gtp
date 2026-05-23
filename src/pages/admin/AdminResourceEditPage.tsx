@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import ResourceForm, { type ResourceFormValues } from '@/components/admin/ResourceForm'
+import ResourceForm, { type ResourceFormData } from '@/components/admin/ResourceForm'
 import {
   getResourceById,
   updateResource,
@@ -61,7 +61,7 @@ export default function AdminResourceEditPage() {
   }, [id, t])
 
   async function handleSubmit(
-    values: ResourceFormValues,
+    values: ResourceFormData,
     files: {
       thumbnailFile: File | null
       resourceFile: File | null

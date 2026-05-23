@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import ResourceForm, { type ResourceFormValues } from '@/components/admin/ResourceForm'
+import ResourceForm, { type ResourceFormData } from '@/components/admin/ResourceForm'
 import {
   createResource,
   uploadResourceFile,
@@ -14,7 +14,7 @@ export default function AdminResourceCreatePage() {
   const { t } = useTranslation()
 
   async function handleSubmit(
-    values: ResourceFormValues,
+    values: ResourceFormData,
     files: {
       thumbnailFile: File | null
       resourceFile: File | null
