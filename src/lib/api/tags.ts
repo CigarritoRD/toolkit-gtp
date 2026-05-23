@@ -102,25 +102,12 @@ export async function updateTag(
 }
 
 export async function setResourceTags(resourceId: string, tagIds: string[]) {
-  const { error: deleteError } = await supabase
-    .from('resource_tags')
-    .delete()
-    .eq('resource_id', resourceId)
+  const { error } = await supabase.rpc('set_resource_tags', {
+    p_resource_id: resourceId,
+    p_tag_ids: tagIds,
+  })
 
-  if (deleteError) throw deleteError
-
-  if (tagIds.length === 0) return
-
-  const rows = tagIds.map((tagId) => ({
-    resource_id: resourceId,
-    tag_id: tagId,
-  }))
-
-  const { error: insertError } = await supabase
-    .from('resource_tags')
-    .insert(rows)
-
-  if (insertError) throw insertError
+  if (error) throw new Error(error.message)
 }
 
 export async function getResourceTagIds(resourceId: string) {
