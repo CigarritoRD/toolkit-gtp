@@ -35,9 +35,11 @@ export async function getRecentLibraryResources(
   }
 
   return (data ?? [])
-    .map((item: { resource: ResourceListItem }) => item.resource)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .map((item: any) => item.resource?.[0])
     .filter(Boolean)
-    .map((resource) => normalizeResource(resource))
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .map((resource: any) => normalizeResource(resource as Parameters<typeof normalizeResource>[0]))
 }
 export type DashboardLibraryItem = {
   library_id: string
@@ -116,7 +118,11 @@ export type RecentDownloadItem = {
 }
 
 export type DashboardResourceItem = {
-  category: null
+  category: {
+    id: string
+    name: string
+    slug: string
+  } | null
   id: string
   title: string
   slug: string

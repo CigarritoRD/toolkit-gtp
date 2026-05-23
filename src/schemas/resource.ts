@@ -25,7 +25,7 @@ export const resourceFormSchema = z.object({
   is_featured: z.boolean(),
   is_public: z.boolean(),
   is_published: z.boolean(),
-  tagIds: z.array(z.string()).default([]),
+  tagIds: z.array(z.string()),
 })
 
 export type ResourceFormData = z.infer<typeof resourceFormSchema>

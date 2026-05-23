@@ -30,6 +30,7 @@ type AppSelectProps = {
   children?: ReactNode
   className?: string
   disabled?: boolean
+  name?: string
 }
 
 const EMPTY_OPTIONS: AppSelectOption[] = []

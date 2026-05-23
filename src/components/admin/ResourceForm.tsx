@@ -2,7 +2,11 @@ import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { toast } from 'sonner'
 import { resourceFormSchema, type ResourceFormData, generateSlug } from '@/schemas/resource'
+
+export type { ResourceFormData as ResourceFormValues }
+export { generateSlug }
 import { getActiveContributors } from '@/lib/api/contributors'
 import { getActiveCategories } from '@/lib/api/categories'
 import { getActiveTags, type TagRecord } from '@/lib/api/tags'
@@ -166,7 +170,8 @@ export default function ResourceForm({
 
           <AppSelect
             label={t('admin.resourceForm.resourceType')}
-            {...register('resource_type')}
+            value={watch('resource_type') || ''}
+            onChange={(val) => setValue('resource_type', val, { shouldValidate: true })}
             error={errors.resource_type?.message}
           >
             <option value="">{t('admin.resourceForm.selectResourceType')}</option>
@@ -229,7 +234,8 @@ export default function ResourceForm({
               <div className="grid gap-4 md:grid-cols-2">
                 <AppSelect
                   label={t('admin.resourceForm.contributor')}
-                  {...register('contributor_id')}
+                  value={watch('contributor_id') || ''}
+                  onChange={(val) => setValue('contributor_id', val, { shouldValidate: true })}
                   error={errors.contributor_id?.message}
                 >
                   <option value="">{t('admin.resourceForm.selectContributor')}</option>
@@ -242,7 +248,8 @@ export default function ResourceForm({
 
                 <AppSelect
                   label={t('admin.resourceForm.category')}
-                  {...register('category_id')}
+                  value={watch('category_id') || ''}
+                  onChange={(val) => setValue('category_id', val, { shouldValidate: true })}
                   error={errors.category_id?.message}
                 >
                   <option value="">{t('admin.resourceForm.selectCategory')}</option>
