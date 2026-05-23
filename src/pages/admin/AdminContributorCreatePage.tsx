@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useState } from 'react'
 import { toast } from 'sonner'
 import ContributorForm from '@/components/admin/ContributorForm'
 import type { ContributorFormValues } from '@/schemas/contributor'
@@ -8,16 +9,19 @@ import {
   createContributor,
   uploadContributorAvatar,
 } from '@/lib/api/contributors'
+import { parseSubmitError, getSubmitErrorMessage } from '@/lib/formErrors'
 
 export default function AdminContributorCreatePage() {
   const navigate = useNavigate()
   const { t } = useTranslation()
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   async function handleSubmit(
     values: ContributorFormValues,
     files: { thumbnailFile: File | null },
   ) {
     try {
+      setSubmitError(null)
       let avatarUrl = values.avatar_url || null
 
       if (files.thumbnailFile) {
@@ -33,7 +37,12 @@ export default function AdminContributorCreatePage() {
       navigate('/admin/contributors')
     } catch (error) {
       console.error(error)
-      toast.error(t('admin.contributorForm.createError'))
+      const errorType = parseSubmitError(error)
+      const message = getSubmitErrorMessage(
+        errorType,
+        t('admin.contributorForm.errors.saveFailed'),
+      )
+      setSubmitError(message)
     }
   }
 
@@ -55,6 +64,8 @@ export default function AdminContributorCreatePage() {
         <ContributorForm
           onSubmit={handleSubmit}
           submitLabel={t('admin.contributorForm.createAction')}
+          submitError={submitError}
+          onClearSubmitError={() => setSubmitError(null)}
         />
       </SectionCard>
     </div>

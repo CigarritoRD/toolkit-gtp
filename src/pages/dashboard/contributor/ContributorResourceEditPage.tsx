@@ -17,6 +17,7 @@ import AppTextarea from '@/components/ui/AppTextarea'
 import AppSelect from '@/components/ui/AppSelect'
 import AppButton from '@/components/ui/AppButton'
 import FileInput from '@/components/ui/FileInput'
+import { parseSubmitError, getSubmitErrorMessage } from '@/lib/formErrors'
 
 function slugify(value: string) {
   return value
@@ -48,6 +49,7 @@ export default function ContributorResourceEditPage() {
   const [loading, setLoading] = useState(!!id)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [submitError, setSubmitError] = useState<string | null>(null)
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([])
 
   const [title, setTitle] = useState('')
@@ -185,7 +187,13 @@ export default function ContributorResourceEditPage() {
         navigate(`/dashboard/contributor/resources/${newResource.id}/edit`)
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('common.error'))
+      console.error(err)
+      const errorType = parseSubmitError(err)
+      const message = getSubmitErrorMessage(
+        errorType,
+        t('admin.resourceForm.errors.saveFailed'),
+      )
+      setSubmitError(message)
     } finally {
       setSaving(false)
     }
@@ -345,6 +353,12 @@ export default function ContributorResourceEditPage() {
             </label>
           </div>
         </SectionCard>
+
+        {submitError && (
+          <SectionCard className="border-red-200 bg-red-50 p-4">
+            <p className="text-sm text-red-700">{submitError}</p>
+          </SectionCard>
+        )}
 
         {error && (
           <SectionCard className="border-red-200 bg-red-50 p-4">

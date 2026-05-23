@@ -39,12 +39,18 @@ type ResourceFormProps = {
     },
   ) => Promise<void>
   submitLabel?: string
+  submitError?: string | null
+  onClearSubmitError?: () => void
+  loadOptionsError?: string | null
 }
 
 export default function ResourceForm({
   initialValues,
   onSubmit,
   submitLabel,
+  submitError,
+  onClearSubmitError,
+  loadOptionsError,
 }: ResourceFormProps) {
   const { t } = useTranslation()
 
@@ -140,6 +146,20 @@ export default function ResourceForm({
 
   return (
     <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
+      {submitError && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4">
+          <p className="text-sm text-red-700">{submitError}</p>
+          {onClearSubmitError && (
+            <button
+              type="button"
+              onClick={onClearSubmitError}
+              className="mt-2 text-xs text-red-600 hover:text-red-800"
+            >
+              {t('common.close')}
+            </button>
+          )}
+        </div>
+      )}
       <SectionCard className="p-6">
         <div className="space-y-4">
           <div>
@@ -227,7 +247,13 @@ export default function ResourceForm({
           </div>
 
           {loadingOptions ? (
-            <p className="text-sm text-text-secondary">{t('common.loading')}</p>
+            loadOptionsError ? (
+              <div className="rounded-xl border border-red-200 bg-red-50 p-4">
+                <p className="text-sm text-red-700">{loadOptionsError}</p>
+              </div>
+            ) : (
+              <p className="text-sm text-text-secondary">{t('common.loading')}</p>
+            )
           ) : (
             <>
               <div className="grid gap-4 md:grid-cols-2">

@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useState } from 'react'
 import { toast } from 'sonner'
 import ResourceForm from '@/components/admin/ResourceForm'
 import type { ResourceFormData } from '@/schemas/resource'
@@ -9,10 +10,13 @@ import {
   uploadResourceThumbnail,
 } from '@/lib/api/resources'
 import { setResourceTags } from '@/lib/api/tags'
+import { parseSubmitError, getSubmitErrorMessage } from '@/lib/formErrors'
 
 export default function AdminResourceCreatePage() {
   const navigate = useNavigate()
   const { t } = useTranslation()
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  const [loadOptionsError, setLoadOptionsError] = useState<string | null>(null)
 
   async function handleSubmit(
     values: ResourceFormData,
@@ -21,34 +25,48 @@ export default function AdminResourceCreatePage() {
       resourceFile: File | null
     },
   ) {
-    let thumbnailUrl = values.thumbnail_url ?? null
-    let fileUrl = values.file_url ?? null
+    try {
+      setSubmitError(null)
+      let thumbnailUrl = values.thumbnail_url ?? null
+      let fileUrl = values.file_url ?? null
 
-    if (files.thumbnailFile) {
-      thumbnailUrl = await uploadResourceThumbnail(
-        files.thumbnailFile,
-        values.slug,
-        values.contributor_id,
+      if (files.thumbnailFile) {
+        thumbnailUrl = await uploadResourceThumbnail(
+          files.thumbnailFile,
+          values.slug,
+          values.contributor_id,
+        )
+      }
+
+      if (files.resourceFile) {
+        fileUrl = await uploadResourceFile(
+          files.resourceFile,
+          values.slug,
+        )
+      }
+
+      const created = await createResource({
+        ...values,
+        thumbnail_url: thumbnailUrl,
+        file_url: fileUrl,
+      })
+
+      await setResourceTags(created.id, values.tagIds)
+
+      toast.success(t('admin.resourceForm.createSuccess'))
+      navigate('/admin/resources')
+    } catch (error) {
+      console.error(error)
+      const errorType = parseSubmitError(error)
+      const message = getSubmitErrorMessage(
+        errorType,
+        t('admin.resourceForm.errors.saveFailed'),
       )
+      setSubmitError(message)
+      if (errorType === 'loadOptionsFailed') {
+        setLoadOptionsError(message)
+      }
     }
-
-    if (files.resourceFile) {
-      fileUrl = await uploadResourceFile(
-        files.resourceFile,
-        values.slug,
-      )
-    }
-
-    const created = await createResource({
-      ...values,
-      thumbnail_url: thumbnailUrl,
-      file_url: fileUrl,
-    })
-
-    await setResourceTags(created.id, values.tagIds)
-
-    toast.success(t('admin.resourceForm.createSuccess'))
-    navigate('/admin/resources')
   }
 
   return (
@@ -68,6 +86,9 @@ export default function AdminResourceCreatePage() {
       <ResourceForm
         onSubmit={handleSubmit}
         submitLabel={t('admin.resourceForm.createAction')}
+        submitError={submitError}
+        onClearSubmitError={() => setSubmitError(null)}
+        loadOptionsError={loadOptionsError}
       />
     </div>
   )

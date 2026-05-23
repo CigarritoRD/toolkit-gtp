@@ -16,6 +16,7 @@ import {
   getUserByEmail,
 } from '@/lib/api/contributors'
 import { useAuth } from '@/auth/useAuth'
+import { parseSubmitError, getSubmitErrorMessage } from '@/lib/formErrors'
 
 type ContributorRecord = {
   id: string
@@ -49,6 +50,7 @@ export default function AdminContributorEditPage() {
   const [contributor, setContributor] = useState<ContributorRecord | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const [linkEmail, setLinkEmail] = useState('')
   const [linkLoading, setLinkLoading] = useState(false)
@@ -87,11 +89,12 @@ export default function AdminContributorEditPage() {
     files: { thumbnailFile: File | null },
   ) {
     if (!id) {
-      toast.error(t('admin.contributorForm.missingId'))
+      setSubmitError(t('admin.contributorForm.missingId'))
       return
     }
 
     try {
+      setSubmitError(null)
       let avatarUrl = values.avatar_url || null
 
       if (files.thumbnailFile) {
@@ -107,7 +110,12 @@ export default function AdminContributorEditPage() {
       navigate('/admin/contributors')
     } catch (error) {
       console.error(error)
-      toast.error(t('admin.contributorForm.updateError'))
+      const errorType = parseSubmitError(error)
+      const message = getSubmitErrorMessage(
+        errorType,
+        t('admin.contributorForm.errors.saveFailed'),
+      )
+      setSubmitError(message)
     }
   }
 
@@ -265,6 +273,8 @@ export default function AdminContributorEditPage() {
             }}
             onSubmit={handleSubmit}
             submitLabel={t('admin.contributorForm.editAction')}
+            submitError={submitError}
+            onClearSubmitError={() => setSubmitError(null)}
           />
         </SectionCard>
       </div>

@@ -18,12 +18,16 @@ type ContributorFormProps = {
     },
   ) => Promise<void>
   submitLabel?: string
+  submitError?: string | null
+  onClearSubmitError?: () => void
 }
 
 export default function ContributorForm({
   initialValues,
   onSubmit,
   submitLabel,
+  submitError,
+  onClearSubmitError,
 }: ContributorFormProps) {
   const { t } = useTranslation()
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null)
@@ -101,6 +105,20 @@ export default function ContributorForm({
 
   return (
     <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
+      {submitError && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4">
+          <p className="text-sm text-red-700">{submitError}</p>
+          {onClearSubmitError && (
+            <button
+              type="button"
+              onClick={onClearSubmitError}
+              className="mt-2 text-xs text-red-600 hover:text-red-800"
+            >
+              {t('common.close')}
+            </button>
+          )}
+        </div>
+      )}
       <div className="space-y-4">
         <div>
           <h2 className="font-heading text-lg text-text-primary">

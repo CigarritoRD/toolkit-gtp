@@ -362,6 +362,14 @@ const zh = {
             loadError: '加载此资源时发生错误。',
             loadOptionsError: '无法加载表单选项。',
             submitError: '保存资源时发生错误。',
+            errors: {
+                duplicateSlug: '已存在使用该 slug 的资源。请使用其他 slug。',
+                permissionDenied: '您没有权限执行此操作。',
+                uploadFailed: '无法上传文件。请检查大小和格式。',
+                loadOptionsFailed: '无法加载选项。请刷新页面。',
+                unknown: '发生意外错误。请重试。',
+                saveFailed: '无法保存。请重试。',
+            },
             missingId: '缺少资源标识符。',
 
             basicInfoTitle: '基本信息',
@@ -447,6 +455,15 @@ const zh = {
             notFound: '未找到贡献者。',
             missingId: '缺少贡献者标识符。',
             submitError: '保存贡献者时发生错误。',
+
+            errors: {
+                duplicateSlug: '已存在使用该 slug 的记录。请使用其他 slug。',
+                permissionDenied: '您没有权限执行此操作。',
+                uploadFailed: '无法上传文件。请检查大小和格式。',
+                loadOptionsFailed: '无法加载选项。请刷新页面。',
+                unknown: '发生意外错误。请重试。',
+                saveFailed: '无法保存。请重试。',
+            },
 
             basicInfoTitle: '基本信息',
             basicInfoBody: '公开的贡献者名称和 slug。',
@@ -803,6 +820,14 @@ dashboard: {
         submitting: '正在提交...',
         success: '你的申请已成功提交。',
         error: '无法提交你的申请。',
+        errors: {
+            duplicateSlug: '已存在使用该 slug 的记录。请使用其他 slug。',
+            permissionDenied: '您没有权限执行此操作。',
+            uploadFailed: '无法上传文件。请检查大小和格式。',
+            loadOptionsFailed: '无法加载选项。请刷新页面。',
+            unknown: '发生意外错误。请重试。',
+            saveFailed: '无法保存。请重试。',
+        },
         alreadyApprovedTitle: '你已经是贡献者',
         alreadyApprovedBody: '你的申请已通过。现在你可以为 Toolkit 贡献资源。',
         alreadyPendingTitle: '申请审核中',

@@ -13,6 +13,7 @@ import {
 } from '@/lib/api/resources'
 import SectionCard from '@/components/ui/SectionCard'
 import { getResourceTagIds, setResourceTags } from '@/lib/api/tags'
+import { parseSubmitError, getSubmitErrorMessage } from '@/lib/formErrors'
 
 type ResourceRecord = AdminResourceInput & {
   id: string
@@ -29,6 +30,7 @@ export default function AdminResourceEditPage() {
   const [tagIds, setTagIds] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   useEffect(() => {
     async function loadResource() {
@@ -69,36 +71,48 @@ export default function AdminResourceEditPage() {
     },
   ) {
     if (!id) {
-      throw new Error(t('admin.resourceForm.missingId'))
+      setSubmitError(t('admin.resourceForm.missingId'))
+      return
     }
 
-    let thumbnailUrl = values.thumbnail_url ?? resource?.thumbnail_url ?? null
-    let fileUrl = values.file_url ?? resource?.file_url ?? null
+    try {
+      setSubmitError(null)
+      let thumbnailUrl = values.thumbnail_url ?? resource?.thumbnail_url ?? null
+      let fileUrl = values.file_url ?? resource?.file_url ?? null
 
-if (files.thumbnailFile) {
-      thumbnailUrl = await uploadResourceThumbnail(
-        files.thumbnailFile,
-        values.slug,
-        values.contributor_id,
+      if (files.thumbnailFile) {
+        thumbnailUrl = await uploadResourceThumbnail(
+          files.thumbnailFile,
+          values.slug,
+          values.contributor_id,
+        )
+      }
+
+      if (files.resourceFile) {
+        fileUrl = await uploadResourceFile(
+          files.resourceFile,
+          values.slug,
+        )
+      }
+      await updateResource(id, {
+        ...values,
+        thumbnail_url: thumbnailUrl,
+        file_url: fileUrl,
+      })
+
+      await setResourceTags(id, values.tagIds)
+
+      toast.success(t('admin.resourceForm.updateSuccess'))
+      navigate('/admin/resources')
+    } catch (error) {
+      console.error(error)
+      const errorType = parseSubmitError(error)
+      const message = getSubmitErrorMessage(
+        errorType,
+        t('admin.resourceForm.errors.saveFailed'),
       )
+      setSubmitError(message)
     }
-
-    if (files.resourceFile) {
-      fileUrl = await uploadResourceFile(
-        files.resourceFile,
-        values.slug,
-      )
-    }
-    await updateResource(id, {
-      ...values,
-      thumbnail_url: thumbnailUrl,
-      file_url: fileUrl,
-    })
-
-    await setResourceTags(id, values.tagIds)
-
-    toast.success(t('admin.resourceForm.updateSuccess'))
-    navigate('/admin/resources')
   }
 
   if (loading) {
@@ -155,6 +169,8 @@ if (files.thumbnailFile) {
         }}
         onSubmit={handleSubmit}
         submitLabel={t('admin.resourceForm.editAction')}
+        submitError={submitError}
+        onClearSubmitError={() => setSubmitError(null)}
       />
     </div>
   )

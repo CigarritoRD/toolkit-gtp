@@ -14,6 +14,7 @@ import {
   uploadContributorApplicationAvatar,
 } from '@/lib/api/contributor-applications'
 import { getMyApplication } from '@/lib/api/contributor-applications-admin'
+import { parseSubmitError, getSubmitErrorMessage } from '@/lib/formErrors'
 
 type FormErrors = Partial<Record<
   | 'contactName'
@@ -57,26 +58,6 @@ function isValidUrl(value: string) {
   } catch {
     return false
   }
-}
-
-function getFriendlyError(
-  error: unknown,
-  fallback: string,
-  requiredFieldMessage: string,
-) {
-  if (!error || typeof error !== 'object') return fallback
-
-  const maybeError = error as { message?: string; details?: string; code?: string }
-  const raw = `${maybeError.message ?? ''} ${maybeError.details ?? ''}`.toLowerCase()
-
-  if (raw.includes('full_name')) return requiredFieldMessage
-  if (raw.includes('contact_email') || raw.includes('email')) return requiredFieldMessage
-  if (raw.includes('organization_name')) return requiredFieldMessage
-  if (raw.includes('duplicate') || raw.includes('unique')) {
-    return 'Ya existe una solicitud similar. Si crees que es un error, contáctanos.'
-  }
-
-  return fallback
 }
 
 export default function BecomeContributorPage() {
@@ -135,6 +116,7 @@ export default function BecomeContributorPage() {
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
   const [errors, setErrors] = useState<FormErrors>({})
   const [loading, setLoading] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const validate = () => {
     const nextErrors: FormErrors = {}
@@ -256,13 +238,12 @@ export default function BecomeContributorPage() {
       navigate('/')
     } catch (error) {
       console.error(error)
-      toast.error(
-        getFriendlyError(
-          error,
-          t('contributorApply.error'),
-          'Faltan campos obligatorios en la solicitud. Revisa nombre, correo y organización.',
-        ),
+      const errorType = parseSubmitError(error)
+      const message = getSubmitErrorMessage(
+        errorType,
+        t('contributorApply.error'),
       )
+      setSubmitError(message)
     } finally {
       setLoading(false)
     }
@@ -348,6 +329,11 @@ export default function BecomeContributorPage() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-8" noValidate>
+                {submitError && (
+                  <div className="rounded-xl border border-red-200 bg-red-50 p-4">
+                    <p className="text-sm text-red-700">{submitError}</p>
+                  </div>
+                )}
                 <div className="space-y-4">
                   <div>
                     <h2 className="font-heading text-xl">
