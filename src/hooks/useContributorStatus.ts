@@ -7,6 +7,7 @@ export type ContributorStatus =
   | 'user'
   | 'pending'
   | 'contributor'
+  | 'rejected'
 
 export function useContributorStatus() {
   const { user, profile, refreshProfile } = useAuth()
@@ -57,7 +58,9 @@ export function useContributorStatus() {
       ? 'contributor'
       : latestApplication?.status === 'pending_review'
         ? 'pending'
-        : 'user'
+        : latestApplication?.status === 'rejected'
+          ? 'rejected'
+          : 'user'
 
   return {
     status,

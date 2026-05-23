@@ -30,6 +30,26 @@ function normalizeOptionalUrl(value?: string | null) {
 export async function createContributorApplication(
   values: ContributorApplicationInput,
 ) {
+  if (values.user_id) {
+    const { data: existing, error: checkError } = await supabase
+      .from('contributor_applications')
+      .select('id, status')
+      .eq('user_id', values.user_id)
+      .in('status', ['pending_review', 'approved'])
+      .maybeSingle()
+
+    if (checkError) throw checkError
+
+    if (existing) {
+      if (existing.status === 'pending_review') {
+        throw new Error('Ya tienes una solicitud en revisión.')
+      }
+      if (existing.status === 'approved') {
+        throw new Error('Ya tienes un perfil contributor aprobado.')
+      }
+    }
+  }
+
   const payload = {
     user_id: values.user_id ?? null,
     full_name: values.organization_name.trim(),

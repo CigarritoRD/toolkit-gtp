@@ -1,6 +1,8 @@
 import { supabase } from '@/lib/supabaseClient'
-import type { ContributorListItem } from '@/types/contributors'
+import type { ContributorListItem, ContributorDetail, ContributorListItemAdmin } from '@/types/contributors'
 import type { ResourceListItem } from '@/types/resources'
+
+export type { ContributorDetail } from '@/types/contributors'
 
 export async function getActiveContributors(): Promise<ContributorListItem[]> {
   const { data, error } = await supabase
@@ -27,23 +29,7 @@ export async function getActiveContributors(): Promise<ContributorListItem[]> {
 
   return (data ?? []) as ContributorListItem[]
 }
-export type ContributorDetail = {
-  id: string
-  name: string
-  slug: string
-  short_bio: string | null
-  full_bio: string | null
-  specialty: string | null
-  avatar_url: string | null
-  website_url: string | null
-  instagram_url: string | null
-  facebook_url: string | null
-  linkedin_url: string | null
-  youtube_url: string | null
-  is_featured: boolean
-  is_active: boolean
-  created_at: string
-}
+
 export async function deactivateContributor(id: string) {
   const { error } = await supabase
     .from('contributors')
@@ -185,7 +171,7 @@ export type AdminContributorInput = {
   is_active?: boolean
 }
 
-export async function getAdminContributors() {
+export async function getAdminContributors(): Promise<ContributorListItemAdmin[]> {
   const { data, error } = await supabase
     .from('contributors')
     .select(`
@@ -198,43 +184,51 @@ export async function getAdminContributors() {
       website_url,
       is_featured,
       is_active,
-      created_at
+      created_at,
+      user_id,
+      access_type
     `)
     .order('created_at', { ascending: false })
 
   if (error) throw new Error(error.message)
-  return data ?? []
+  return (data ?? []) as ContributorListItemAdmin[]
 }
 
-export async function getContributorById(id: string) {
+export async function getContributorById(id: string): Promise<ContributorDetail | null> {
   const { data, error } = await supabase
     .from('contributors')
     .select(`
-  id,
-  name,
-  slug,
-  short_bio,
-  full_bio,
-  specialty,
-  avatar_url,
-  website_url,
-  instagram_url,
-  facebook_url,
-  linkedin_url,
-  youtube_url,
-  is_featured,
-  is_active,
-  created_at,
-  contact_name,
-  contact_role,
-  contact_email,
-  contact_phone
-`)
+      id,
+      name,
+      slug,
+      short_bio,
+      full_bio,
+      specialty,
+      avatar_url,
+      website_url,
+      instagram_url,
+      facebook_url,
+      linkedin_url,
+      youtube_url,
+      is_featured,
+      is_active,
+      created_at,
+      user_id,
+      access_type,
+      contact_name,
+      contact_role,
+      contact_email,
+      contact_phone
+    `)
     .eq('id', id)
     .single()
 
-  if (error) throw new Error(error.message)
-  return data
+  if (error) {
+    if (error.code === 'PGRST116') return null
+    throw new Error(error.message)
+  }
+
+  return data as ContributorDetail
 }
 
 export async function createContributor(input: AdminContributorInput) {
@@ -258,6 +252,8 @@ export async function createContributor(input: AdminContributorInput) {
       contact_role: input.contact_role ?? null,
       contact_email: input.contact_email ?? null,
       contact_phone: input.contact_phone ?? null,
+      access_type: 'external',
+      user_id: null,
     })
     .select()
     .single()
@@ -296,7 +292,74 @@ export async function updateContributor(id: string, input: AdminContributorInput
   return data
 }
 
+export async function getUserByEmail(email: string): Promise<{ id: string; email: string; full_name: string | null } | null> {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, email, full_name')
+    .eq('email', email.toLowerCase())
+    .single()
 
+  if (error) {
+    if (error.code === 'PGRST116') return null
+    throw new Error(error.message)
+  }
+
+  return data as { id: string; email: string; full_name: string | null }
+}
+
+export async function linkContributorToUser(
+  contributorId: string,
+  userId: string,
+) {
+  const { data: contributor, error: fetchError } = await supabase
+    .from('contributors')
+    .select('id, user_id, name')
+    .eq('id', contributorId)
+    .single()
+
+  if (fetchError) throw new Error(fetchError.message)
+
+  if (contributor.user_id && contributor.user_id !== userId) {
+    throw new Error('Este contributor ya está vinculado a otro usuario.')
+  }
+
+  if (contributor.user_id === userId) {
+    throw new Error('Este contributor ya está vinculado a este usuario.')
+  }
+
+  const { error: linkError } = await supabase
+    .from('contributors')
+    .update({
+      user_id: userId,
+      access_type: 'account',
+    })
+    .eq('id', contributorId)
+
+  if (linkError) throw new Error(linkError.message)
+
+  const { error: profileError } = await supabase
+    .from('profiles')
+    .update({ role: 'contributor' })
+    .eq('id', userId)
+
+  if (profileError) {
+    console.error('Failed to update profile role:', profileError)
+  }
+
+  return { id: contributorId, name: contributor.name, userId }
+}
+
+export async function unlinkContributorUser(contributorId: string) {
+  const { error } = await supabase
+    .from('contributors')
+    .update({
+      user_id: null,
+      access_type: 'external',
+    })
+    .eq('id', contributorId)
+
+  if (error) throw new Error(error.message)
+}
 
 function sanitizeFileName(fileName: string) {
   return fileName
