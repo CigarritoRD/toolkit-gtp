@@ -2,15 +2,21 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
+import { Link2, UserCheck, AlertCircle } from 'lucide-react'
 import ContributorForm, {
   type ContributorFormValues,
 } from '@/components/admin/ContributorForm'
 import SectionCard from '@/components/ui/SectionCard'
+import AppButton from '@/components/ui/AppButton'
+import StatusBadge from '@/components/ui/StatusBadge'
 import {
   getContributorById,
   updateContributor,
   uploadContributorAvatar,
+  linkContributorToUser,
+  getUserByEmail,
 } from '@/lib/api/contributors'
+import { useAuth } from '@/auth/useAuth'
 
 type ContributorRecord = {
   id: string
@@ -31,16 +37,23 @@ type ContributorRecord = {
   contact_phone?: string | null
   is_active: boolean
   is_featured: boolean
+  user_id: string | null
+  access_type: 'account' | 'external'
 }
 
 export default function AdminContributorEditPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { t } = useTranslation()
+  const { user: adminUser } = useAuth()
 
   const [contributor, setContributor] = useState<ContributorRecord | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  const [linkEmail, setLinkEmail] = useState('')
+  const [linkLoading, setLinkLoading] = useState(false)
+  const [linkError, setLinkError] = useState<string | null>(null)
 
   useEffect(() => {
     async function loadContributor() {
@@ -99,6 +112,33 @@ export default function AdminContributorEditPage() {
     }
   }
 
+  async function handleLinkUser(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    if (!id || !adminUser?.id || !linkEmail.trim()) return
+
+    setLinkError(null)
+    setLinkLoading(true)
+
+    try {
+      const user = await getUserByEmail(linkEmail.trim())
+      if (!user) {
+        setLinkError('No se encontró ningún usuario con ese email.')
+        return
+      }
+
+      await linkContributorToUser(id, user.id)
+      toast.success('Usuario vinculado correctamente.')
+
+      const data = await getContributorById(id)
+      setContributor(data as unknown as ContributorRecord)
+      setLinkEmail('')
+    } catch (err) {
+      setLinkError(err instanceof Error ? err.message : 'Error al vincular.')
+    } finally {
+      setLinkLoading(false)
+    }
+  }
+
   if (loading) {
     return (
       <SectionCard className="p-6">
@@ -134,31 +174,101 @@ export default function AdminContributorEditPage() {
         </p>
       </div>
 
-      <SectionCard className="p-6">
-        <ContributorForm
-          initialValues={{
-            name: contributor.name,
-            slug: contributor.slug,
-            specialty: contributor.specialty ?? '',
-            short_bio: contributor.short_bio ?? '',
-            full_bio: contributor.full_bio ?? '',
-            avatar_url: contributor.avatar_url ?? '',
-            website_url: contributor.website_url ?? '',
-            instagram_url: contributor.instagram_url ?? '',
-            facebook_url: contributor.facebook_url ?? '',
-            linkedin_url: contributor.linkedin_url ?? '',
-            youtube_url: contributor.youtube_url ?? '',
-            contact_name: contributor.contact_name ?? '',
-            contact_role: contributor.contact_role ?? '',
-            contact_email: contributor.contact_email ?? '',
-            contact_phone: contributor.contact_phone ?? '',
-            is_active: contributor.is_active,
-            is_featured: contributor.is_featured,
-          }}
-          onSubmit={handleSubmit}
-          submitLabel={t('admin.contributorForm.editAction')}
-        />
-      </SectionCard>
+      <div className="grid gap-6 lg:grid-cols-[1fr_1.5fr]">
+        <div className="space-y-6">
+          <SectionCard className="p-6">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="font-heading text-lg">{t('admin.contributorForm.accessTitle')}</h2>
+              {contributor.access_type === 'account' ? (
+                <StatusBadge
+                  label={t('admin.contributorForm.withAccountBadge')}
+                  tone="success"
+                />
+              ) : (
+                <StatusBadge
+                  label={t('admin.contributorForm.externalBadge')}
+                  tone="muted"
+                />
+              )}
+            </div>
+
+            {contributor.access_type === 'account' ? (
+              <div className="space-y-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+                <div className="flex items-center gap-2 font-medium">
+                  <UserCheck className="h-4 w-4" />
+                  {t('admin.contributorForm.linkedTitle')}
+                </div>
+                <p>{t('admin.contributorForm.linkedDescription')}</p>
+                <p className="text-xs text-emerald-600">
+                  ID de usuario: {contributor.user_id}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="space-y-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+                  <div className="flex items-center gap-2 font-medium">
+                    <AlertCircle className="h-4 w-4" />
+                    {t('admin.contributorForm.externalTitle')}
+                  </div>
+                  <p>{t('admin.contributorForm.externalDescription')}</p>
+                </div>
+
+                <form onSubmit={handleLinkUser} className="space-y-3">
+                  <label className="block">
+                    <span className="text-sm font-medium text-text-primary">
+                      {t('admin.contributorForm.linkUserLabel')}
+                    </span>
+                    <input
+                      type="email"
+                      value={linkEmail}
+                      onChange={(e) => setLinkEmail(e.target.value)}
+                      placeholder="email@ejemplo.com"
+                      className="mt-1 w-full rounded-xl border border-surface-border bg-bg px-4 py-2 text-sm"
+                    />
+                  </label>
+
+                  {linkError && (
+                    <p className="text-xs text-red-600">{linkError}</p>
+                  )}
+
+                  <AppButton type="submit" disabled={linkLoading || !linkEmail.trim()}>
+                    <Link2 className="h-4 w-4" />
+                    {linkLoading
+                      ? t('admin.contributorForm.linking')
+                      : t('admin.contributorForm.linkButton')}
+                  </AppButton>
+                </form>
+              </div>
+            )}
+          </SectionCard>
+        </div>
+
+        <SectionCard className="p-6">
+          <ContributorForm
+            initialValues={{
+              name: contributor.name,
+              slug: contributor.slug,
+              specialty: contributor.specialty ?? '',
+              short_bio: contributor.short_bio ?? '',
+              full_bio: contributor.full_bio ?? '',
+              avatar_url: contributor.avatar_url ?? '',
+              website_url: contributor.website_url ?? '',
+              instagram_url: contributor.instagram_url ?? '',
+              facebook_url: contributor.facebook_url ?? '',
+              linkedin_url: contributor.linkedin_url ?? '',
+              youtube_url: contributor.youtube_url ?? '',
+              contact_name: contributor.contact_name ?? '',
+              contact_role: contributor.contact_role ?? '',
+              contact_email: contributor.contact_email ?? '',
+              contact_phone: contributor.contact_phone ?? '',
+              is_active: contributor.is_active,
+              is_featured: contributor.is_featured,
+            }}
+            onSubmit={handleSubmit}
+            submitLabel={t('admin.contributorForm.editAction')}
+          />
+        </SectionCard>
+      </div>
     </div>
   )
 }
