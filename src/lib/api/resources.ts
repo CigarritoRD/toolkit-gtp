@@ -79,6 +79,7 @@ export async function createResource(input: AdminResourceInput) {
       is_featured: input.is_featured ?? false,
       is_public: input.is_public ?? true,
       is_published: input.is_published ?? true,
+      approval_status: 'approved',
     })
     .select()
     .single()

@@ -113,20 +113,6 @@ export default function Home() {
           ...statsData,
           categoriesCount: categoriesData.length,
         })
-
-        const [resourceRatingsMap, contributorRatingsMap] = await Promise.all([
-          getResourceRatingSummaries(
-            normalizedResources.map((resource: any) => resource.id),
-          ),
-          getContributorRatingSummaries(
-            contributorsData.map((contributor: any) => contributor.id),
-          ),
-        ])
-
-        if (!active) return
-
-        setResourceRatings(resourceRatingsMap)
-        setContributorRatings(contributorRatingsMap)
       } catch (err) {
         if (!active) return
 
@@ -145,6 +131,40 @@ export default function Home() {
       active = false
     }
   }, [t])
+
+  useEffect(() => {
+    if (resources.length === 0 || contributors.length === 0) return
+
+    let active = true
+
+    const loadRatings = async () => {
+      try {
+        const [resourceRatingsMap, contributorRatingsMap] = await Promise.all([
+          getResourceRatingSummaries(
+             
+            resources.map((resource: any) => resource.id),
+          ),
+          getContributorRatingSummaries(
+             
+            contributors.map((contributor: any) => contributor.id),
+          ),
+        ])
+
+        if (active) {
+          setResourceRatings(resourceRatingsMap)
+          setContributorRatings(contributorRatingsMap)
+        }
+      } catch {
+        // non-blocking: ratings fail silently
+      }
+    }
+
+    void loadRatings()
+
+    return () => {
+      active = false
+    }
+  }, [resources, contributors])
 
   return (
     <div className="bg-bg text-text-primary">

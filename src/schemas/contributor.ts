@@ -38,6 +38,8 @@ export const contributorFormSchema = z.object({
 
 export type ContributorFormData = z.infer<typeof contributorFormSchema>
 
+export type ContributorFormValues = ContributorFormData
+
 export function generateSlug(name: string): string {
   return slugify(name)
 }

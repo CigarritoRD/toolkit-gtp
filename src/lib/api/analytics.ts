@@ -283,7 +283,7 @@ export async function getPublicPlatformStats(): Promise<PublicPlatformStats> {
       .eq('is_active', true),
 
     supabase
-      .from('resource_categories')
+      .from('categories')
       .select('*', { count: 'exact', head: true })
       .eq('is_active', true),
   ])

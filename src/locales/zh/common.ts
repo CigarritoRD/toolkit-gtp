@@ -279,6 +279,9 @@ const zh = {
             view: '查看',
             withAccountBadge: '有账户',
             externalBadge: '外部资料',
+            filterAll: '全部',
+            filterWithAccount: '有账户',
+            filterExternalProfile: '外部资料',
         },
         categories: {
             badge: '分类',

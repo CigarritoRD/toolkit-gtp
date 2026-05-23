@@ -273,6 +273,9 @@ nav: {
       view: '查看',
       withAccountBadge: '有帳戶',
       externalBadge: '外部資料',
+      filterAll: '全部',
+      filterWithAccount: '有帳戶',
+      filterExternalProfile: '外部資料',
     },
     categories: {
       badge: '分類',

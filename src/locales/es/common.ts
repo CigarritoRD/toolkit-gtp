@@ -273,6 +273,9 @@ const es = {
       view: 'Ver',
       withAccountBadge: 'Con cuenta',
       externalBadge: 'Perfil externo',
+      filterAll: 'Todos',
+      filterWithAccount: 'Con cuenta',
+      filterExternalProfile: 'Perfil público',
     },
     categories: {
       badge: 'Categorías',

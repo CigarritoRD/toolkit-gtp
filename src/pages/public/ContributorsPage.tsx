@@ -31,7 +31,7 @@ export default function ContributorsPage() {
   useEffect(() => {
     let active = true
 
-    const loadContributors = async () => {
+const loadContributors = async () => {
       try {
         setLoading(true)
         setError(null)
@@ -40,14 +40,6 @@ export default function ContributorsPage() {
         if (!active) return
 
         setContributors(data)
-
-        const ratingsMap = await getContributorRatingSummaries(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          data.map((contributor: any) => contributor.id),
-        )
-
-        if (!active) return
-        setContributorRatings(ratingsMap)
       } catch (err) {
         if (!active) return
 
@@ -66,6 +58,30 @@ export default function ContributorsPage() {
       active = false
     }
   }, [t])
+
+  useEffect(() => {
+    if (contributors.length === 0) return
+
+    let active = true
+
+    const loadRatings = async () => {
+      try {
+        const ratingsMap = await getContributorRatingSummaries(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          contributors.map((contributor: any) => contributor.id),
+        )
+        if (active) setContributorRatings(ratingsMap)
+      } catch {
+        // non-blocking: ratings fail silently
+      }
+    }
+
+    void loadRatings()
+
+    return () => {
+      active = false
+    }
+  }, [contributors])
 
   const filteredContributors = useMemo(() => {
     const normalized = query.trim().toLowerCase()

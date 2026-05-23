@@ -7,6 +7,7 @@ import AppButton from '@/components/ui/AppButton'
 import SectionCard from '@/components/ui/SectionCard'
 import SearchInput from '@/components/ui/SearchInput'
 import StatusBadge from '@/components/ui/StatusBadge'
+import AppSelect from '@/components/ui/AppSelect'
 import { AdminTableSkeleton } from '@/components/ui/Skeleton'
 import { getAdminContributors } from '@/lib/api/contributors'
 import type { ContributorListItemAdmin } from '@/types/contributors'
@@ -27,6 +28,7 @@ export default function AdminContributorsPage() {
   const [loading, setLoading] = useState(() => !getCachedAdminData(CACHE_KEY))
   const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState('')
+  const [filterAccess, setFilterAccess] = useState<'all' | 'account' | 'external'>('all')
   const hasInitialData = getCachedAdminData<ContributorListItemAdmin[]>(CACHE_KEY) !== null
 
   const loadContributors = useCallback(
@@ -63,17 +65,23 @@ export default function AdminContributorsPage() {
 
   const filteredItems = useMemo(() => {
     const term = search.trim().toLowerCase()
-    if (!term) return items
 
     return items.filter((item) => {
-      return (
+      const matchesSearch =
+        !term ||
         item.name.toLowerCase().includes(term) ||
         item.slug.toLowerCase().includes(term) ||
         (item.specialty ?? '').toLowerCase().includes(term) ||
         (item.short_bio ?? '').toLowerCase().includes(term)
-      )
+
+      const matchesAccess =
+        filterAccess === 'all' ||
+        (filterAccess === 'account' && item.access_type === 'account') ||
+        (filterAccess === 'external' && item.access_type === 'external')
+
+      return matchesSearch && matchesAccess
     })
-  }, [items, search])
+  }, [items, search, filterAccess])
 
   const total = items.length
   const active = items.filter((item) => item.is_active).length
@@ -127,12 +135,23 @@ export default function AdminContributorsPage() {
       </div>
 
       <SectionCard className="p-4">
-        <div className="max-w-md">
-          <SearchInput
-            value={search}
-            onChange={setSearch}
-            placeholder={t('admin.contributors.searchPlaceholder')}
-          />
+        <div className="flex flex-col gap-4 md:flex-row md:items-end">
+          <div className="flex-1">
+            <SearchInput
+              value={search}
+              onChange={setSearch}
+              placeholder={t('admin.contributors.searchPlaceholder')}
+            />
+          </div>
+
+          <AppSelect
+            value={filterAccess}
+            onChange={(val) => setFilterAccess(val as 'all' | 'account' | 'external')}
+          >
+            <option value="all">{t('admin.contributors.filterAll')}</option>
+            <option value="account">{t('admin.contributors.filterWithAccount')}</option>
+            <option value="external">{t('admin.contributors.filterExternalProfile')}</option>
+          </AppSelect>
         </div>
       </SectionCard>
 

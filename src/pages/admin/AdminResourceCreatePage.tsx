@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import ResourceForm, { type ResourceFormData } from '@/components/admin/ResourceForm'
+import ResourceForm from '@/components/admin/ResourceForm'
+import type { ResourceFormData } from '@/schemas/resource'
 import {
   createResource,
   uploadResourceFile,

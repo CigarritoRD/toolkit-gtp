@@ -30,6 +30,8 @@ export const resourceFormSchema = z.object({
 
 export type ResourceFormData = z.infer<typeof resourceFormSchema>
 
+export type ResourceFormValues = ResourceFormData
+
 export function generateSlug(title: string): string {
   return slugify(title)
 }

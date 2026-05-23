@@ -3,10 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
-import { resourceFormSchema, type ResourceFormData, generateSlug } from '@/schemas/resource'
-
-export type { ResourceFormData }
-export { generateSlug }
+import { resourceFormSchema, generateSlug } from '@/schemas/resource'
+import type { ResourceFormData } from '@/schemas/resource'
 
 import { getActiveContributors } from '@/lib/api/contributors'
 import { getActiveCategories } from '@/lib/api/categories'

@@ -3,9 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { Link2, UserCheck, AlertCircle } from 'lucide-react'
-import ContributorForm, {
-  type ContributorFormValues,
-} from '@/components/admin/ContributorForm'
+import ContributorForm from '@/components/admin/ContributorForm'
+import type { ContributorFormValues } from '@/schemas/contributor'
 import SectionCard from '@/components/ui/SectionCard'
 import AppButton from '@/components/ui/AppButton'
 import StatusBadge from '@/components/ui/StatusBadge'

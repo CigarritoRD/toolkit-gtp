@@ -90,14 +90,6 @@ export default function ResourcesPage() {
         setResources(resourceData as unknown as ResourceWithTags[])
         setCategories(categoryData)
         setTags(tagsData)
-
-        const ratingsMap = await getResourceRatingSummaries(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          resourceData.map((resource: any) => resource.id),
-        )
-
-        if (!active) return
-        setResourceRatings(ratingsMap)
       } catch (err) {
         if (!active) return
 
@@ -116,6 +108,30 @@ export default function ResourcesPage() {
       active = false
     }
   }, [t])
+
+  useEffect(() => {
+    if (resources.length === 0) return
+
+    let active = true
+
+    const loadRatings = async () => {
+      try {
+        const ratingsMap = await getResourceRatingSummaries(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          resources.map((resource: any) => resource.id),
+        )
+        if (active) setResourceRatings(ratingsMap)
+      } catch {
+        // non-blocking: ratings fail silently
+      }
+    }
+
+    void loadRatings()
+
+    return () => {
+      active = false
+    }
+  }, [resources])
 
   useEffect(() => {
     const nextParams = new URLSearchParams()
