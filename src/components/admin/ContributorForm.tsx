@@ -3,6 +3,9 @@ import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { contributorFormSchema, type ContributorFormData, generateSlug } from '@/schemas/contributor'
+
+export type { ContributorFormData as ContributorFormValues }
+export { generateSlug }
 import AppButton from '@/components/ui/AppButton'
 import AppInput from '@/components/ui/AppInput'
 import AppTextarea from '@/components/ui/AppTextarea'

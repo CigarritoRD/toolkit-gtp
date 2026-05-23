@@ -5,7 +5,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 import { resourceFormSchema, type ResourceFormData, generateSlug } from '@/schemas/resource'
 
-export type { ResourceFormData as ResourceFormValues }
+export type { ResourceFormData }
+export { generateSlug }
+
 import { getActiveContributors } from '@/lib/api/contributors'
 import { getActiveCategories } from '@/lib/api/categories'
 import { getActiveTags, type TagRecord } from '@/lib/api/tags'
