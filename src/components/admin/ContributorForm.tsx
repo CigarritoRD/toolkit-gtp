@@ -1,50 +1,22 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { contributorFormSchema, type ContributorFormData, generateSlug } from '@/schemas/contributor'
 import AppButton from '@/components/ui/AppButton'
 import AppInput from '@/components/ui/AppInput'
 import AppTextarea from '@/components/ui/AppTextarea'
 import FileInput from '@/components/ui/FileInput'
 
-export type ContributorFormValues = {
-  name: string
-  slug: string
-  specialty?: string
-  short_bio?: string
-  full_bio?: string
-  avatar_url?: string
-  website_url?: string
-  instagram_url?: string
-  facebook_url?: string
-  linkedin_url?: string
-  youtube_url?: string
-  contact_name?: string
-  contact_role?: string
-  contact_email?: string
-  contact_phone?: string
-  is_active: boolean
-  is_featured: boolean
-}
-
 type ContributorFormProps = {
-  initialValues?: Partial<ContributorFormValues>
+  initialValues?: Partial<ContributorFormData>
   onSubmit: (
-    values: ContributorFormValues,
+    values: ContributorFormData,
     files: {
       thumbnailFile: File | null
     },
   ) => Promise<void>
   submitLabel?: string
-}
-
-function slugify(value: string) {
-  return value
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9\s-]/g, '')
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
 }
 
 export default function ContributorForm({
@@ -53,105 +25,81 @@ export default function ContributorForm({
   submitLabel,
 }: ContributorFormProps) {
   const { t } = useTranslation()
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null)
 
-  const defaults = useMemo<ContributorFormValues>(
+  const defaultValues = useMemo<ContributorFormData>(
     () => ({
       name: initialValues?.name ?? '',
       slug: initialValues?.slug ?? '',
       specialty: initialValues?.specialty ?? '',
+      contact_name: initialValues?.contact_name ?? '',
+      contact_role: initialValues?.contact_role ?? '',
+      contact_email: initialValues?.contact_email ?? '',
+      contact_phone: initialValues?.contact_phone ?? '',
       short_bio: initialValues?.short_bio ?? '',
       full_bio: initialValues?.full_bio ?? '',
-      avatar_url: initialValues?.avatar_url ?? '',
       website_url: initialValues?.website_url ?? '',
       instagram_url: initialValues?.instagram_url ?? '',
       facebook_url: initialValues?.facebook_url ?? '',
       linkedin_url: initialValues?.linkedin_url ?? '',
       youtube_url: initialValues?.youtube_url ?? '',
-      contact_name: initialValues?.contact_name ?? '',
-      contact_role: initialValues?.contact_role ?? '',
-      contact_email: initialValues?.contact_email ?? '',
-      contact_phone: initialValues?.contact_phone ?? '',
       is_active: initialValues?.is_active ?? true,
       is_featured: initialValues?.is_featured ?? false,
+      avatar_url: initialValues?.avatar_url ?? '',
     }),
     [initialValues],
   )
 
-  const [values, setValues] = useState<ContributorFormValues>(defaults)
-  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<ContributorFormData>({
+    resolver: zodResolver(contributorFormSchema),
+    defaultValues,
+    mode: 'onBlur',
+  })
+
+  const watchedName = watch('name')
+  const watchedSlug = watch('slug')
 
   useEffect(() => {
-    setValues(defaults)
-  }, [defaults])
+    reset(defaultValues)
+  }, [defaultValues, reset])
 
-  function updateField<K extends keyof ContributorFormValues>(
-    key: K,
-    value: ContributorFormValues[K],
-  ) {
-    setValues((prev) => ({ ...prev, [key]: value }))
-  }
-
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    setError(null)
-
-    if (!values.name.trim()) {
-      setError(t('admin.contributorForm.validation.name'))
-      return
+  useEffect(() => {
+    const currentSlugMatchesName = !watchedSlug || watchedSlug === generateSlug(watchedName)
+    if (currentSlugMatchesName && watchedName) {
+      setValue('slug', generateSlug(watchedName), { shouldValidate: false })
     }
+  }, [watchedName, watchedSlug, setValue])
 
-    if (!values.slug.trim()) {
-      setError(t('admin.contributorForm.validation.slug'))
-      return
+  async function onFormSubmit(data: ContributorFormData) {
+    const trimmedData: ContributorFormData = {
+      ...data,
+      name: data.name.trim(),
+      slug: data.slug.trim(),
+      specialty: data.specialty?.trim() || '',
+      contact_name: data.contact_name?.trim() || '',
+      contact_role: data.contact_role?.trim() || '',
+      contact_email: data.contact_email?.trim().toLowerCase() || '',
+      contact_phone: data.contact_phone?.trim() || '',
+      short_bio: data.short_bio?.trim() || '',
+      full_bio: data.full_bio?.trim() || '',
+      website_url: data.website_url?.trim() || '',
+      instagram_url: data.instagram_url?.trim() || '',
+      facebook_url: data.facebook_url?.trim() || '',
+      linkedin_url: data.linkedin_url?.trim() || '',
+      youtube_url: data.youtube_url?.trim() || '',
     }
-
-    try {
-      setIsSubmitting(true)
-
-      await onSubmit(
-        {
-          ...values,
-          name: values.name.trim(),
-          slug: values.slug.trim(),
-          specialty: values.specialty?.trim() || '',
-          short_bio: values.short_bio?.trim() || '',
-          full_bio: values.full_bio?.trim() || '',
-          avatar_url: values.avatar_url?.trim() || '',
-          website_url: values.website_url?.trim() || '',
-          instagram_url: values.instagram_url?.trim() || '',
-          facebook_url: values.facebook_url?.trim() || '',
-          linkedin_url: values.linkedin_url?.trim() || '',
-          youtube_url: values.youtube_url?.trim() || '',
-          contact_name: values.contact_name?.trim() || '',
-          contact_role: values.contact_role?.trim() || '',
-          contact_email: values.contact_email?.trim().toLowerCase() || '',
-          contact_phone: values.contact_phone?.trim() || '',
-        },
-        {
-          thumbnailFile,
-        },
-      )
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : t('admin.contributorForm.submitError'),
-      )
-    } finally {
-      setIsSubmitting(false)
-    }
+    await onSubmit(trimmedData, { thumbnailFile })
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {error ? (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {error}
-        </div>
-      ) : null}
-
+    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
       <div className="space-y-4">
         <div>
           <h2 className="font-heading text-lg text-text-primary">
@@ -165,32 +113,22 @@ export default function ContributorForm({
         <div className="grid gap-4 md:grid-cols-2">
           <AppInput
             label={t('admin.contributorForm.name')}
-            value={values.name}
-            onChange={(e) => {
-              const nextName = e.target.value
-              const currentSlugMatchesName =
-                !values.slug || values.slug === slugify(values.name)
-
-              updateField('name', nextName)
-
-              if (currentSlugMatchesName) {
-                updateField('slug', slugify(nextName))
-              }
-            }}
+            {...register('name')}
+            error={errors.name?.message}
             placeholder={t('admin.contributorForm.namePlaceholder')}
           />
 
           <AppInput
             label={t('admin.contributorForm.slug')}
-            value={values.slug}
-            onChange={(e) => updateField('slug', slugify(e.target.value))}
+            {...register('slug')}
+            error={errors.slug?.message}
             placeholder={t('admin.contributorForm.slugPlaceholder')}
           />
 
           <AppInput
             label={t('admin.contributorForm.specialty')}
-            value={values.specialty || ''}
-            onChange={(e) => updateField('specialty', e.target.value)}
+            {...register('specialty')}
+            error={errors.specialty?.message}
             placeholder={t('admin.contributorForm.specialtyPlaceholder')}
           />
         </div>
@@ -198,28 +136,22 @@ export default function ContributorForm({
 
       <div className="space-y-4">
         <div>
-          <h2 className="font-heading text-lg text-text-primary">
-            Thumbnail
-          </h2>
+          <h2 className="font-heading text-lg text-text-primary">Thumbnail</h2>
           <p className="mt-1 text-sm text-text-secondary">
             Image shown on contributor cards and public profile.
           </p>
         </div>
 
-        {values.avatar_url ? (
+        {defaultValues.avatar_url ? (
           <div className="flex items-center gap-4 rounded-2xl border border-surface-border bg-bg-soft p-4">
             <img
-              src={values.avatar_url}
-              alt={values.name || 'Contributor thumbnail'}
+              src={defaultValues.avatar_url}
+              alt={defaultValues.name || 'Contributor thumbnail'}
               className="h-20 w-20 rounded-2xl object-cover"
             />
             <div>
-              <p className="text-sm font-medium text-text-primary">
-                Current thumbnail
-              </p>
-              <p className="text-xs text-text-secondary">
-                Upload a new image to replace it.
-              </p>
+              <p className="text-sm font-medium text-text-primary">Current thumbnail</p>
+              <p className="text-xs text-text-secondary">Upload a new image to replace it.</p>
             </div>
           </div>
         ) : null}
@@ -247,16 +179,16 @@ export default function ContributorForm({
 
         <AppTextarea
           label={t('admin.contributorForm.shortBio')}
-          value={values.short_bio || ''}
-          onChange={(e) => updateField('short_bio', e.target.value)}
+          {...register('short_bio')}
+          error={errors.short_bio?.message}
           placeholder={t('admin.contributorForm.shortBioPlaceholder')}
           rows={3}
         />
 
         <AppTextarea
           label={t('admin.contributorForm.fullBio')}
-          value={values.full_bio || ''}
-          onChange={(e) => updateField('full_bio', e.target.value)}
+          {...register('full_bio')}
+          error={errors.full_bio?.message}
           placeholder={t('admin.contributorForm.fullBioPlaceholder')}
           rows={6}
         />
@@ -264,9 +196,7 @@ export default function ContributorForm({
 
       <div className="space-y-4">
         <div>
-          <h2 className="font-heading text-lg text-text-primary">
-            Private contact
-          </h2>
+          <h2 className="font-heading text-lg text-text-primary">Private contact</h2>
           <p className="mt-1 text-sm text-text-secondary">
             Internal information only. This will not be shown publicly.
           </p>
@@ -275,30 +205,30 @@ export default function ContributorForm({
         <div className="grid gap-4 md:grid-cols-2">
           <AppInput
             label="Contact name"
-            value={values.contact_name || ''}
-            onChange={(e) => updateField('contact_name', e.target.value)}
+            {...register('contact_name')}
+            error={errors.contact_name?.message}
             placeholder="Main contact person"
           />
 
           <AppInput
             label="Contact role"
-            value={values.contact_role || ''}
-            onChange={(e) => updateField('contact_role', e.target.value)}
+            {...register('contact_role')}
+            error={errors.contact_role?.message}
             placeholder="Director, coordinator, representative..."
           />
 
           <AppInput
             label="Contact email"
             type="email"
-            value={values.contact_email || ''}
-            onChange={(e) => updateField('contact_email', e.target.value)}
+            {...register('contact_email')}
+            error={errors.contact_email?.message}
             placeholder="contact@email.com"
           />
 
           <AppInput
             label="Contact phone"
-            value={values.contact_phone || ''}
-            onChange={(e) => updateField('contact_phone', e.target.value)}
+            {...register('contact_phone')}
+            error={errors.contact_phone?.message}
             placeholder="+1..."
           />
         </div>
@@ -317,36 +247,36 @@ export default function ContributorForm({
         <div className="grid gap-4 md:grid-cols-2">
           <AppInput
             label={t('admin.contributorForm.website')}
-            value={values.website_url || ''}
-            onChange={(e) => updateField('website_url', e.target.value)}
+            {...register('website_url')}
+            error={errors.website_url?.message}
             placeholder="https://..."
           />
 
           <AppInput
             label={t('admin.contributorForm.instagram')}
-            value={values.instagram_url || ''}
-            onChange={(e) => updateField('instagram_url', e.target.value)}
+            {...register('instagram_url')}
+            error={errors.instagram_url?.message}
             placeholder="https://instagram.com/..."
           />
 
           <AppInput
             label={t('admin.contributorForm.facebook')}
-            value={values.facebook_url || ''}
-            onChange={(e) => updateField('facebook_url', e.target.value)}
+            {...register('facebook_url')}
+            error={errors.facebook_url?.message}
             placeholder="https://facebook.com/..."
           />
 
           <AppInput
             label={t('admin.contributorForm.linkedin')}
-            value={values.linkedin_url || ''}
-            onChange={(e) => updateField('linkedin_url', e.target.value)}
+            {...register('linkedin_url')}
+            error={errors.linkedin_url?.message}
             placeholder="https://linkedin.com/in/..."
           />
 
           <AppInput
             label={t('admin.contributorForm.youtube')}
-            value={values.youtube_url || ''}
-            onChange={(e) => updateField('youtube_url', e.target.value)}
+            {...register('youtube_url')}
+            error={errors.youtube_url?.message}
             placeholder="https://youtube.com/..."
           />
         </div>
@@ -364,20 +294,12 @@ export default function ContributorForm({
 
         <div className="grid gap-3 md:grid-cols-2">
           <label className="flex items-center gap-3 rounded-xl border border-surface-border bg-bg-soft px-4 py-3 text-sm text-text-primary">
-            <input
-              type="checkbox"
-              checked={values.is_active}
-              onChange={(e) => updateField('is_active', e.target.checked)}
-            />
+            <input type="checkbox" {...register('is_active')} />
             {t('admin.contributorForm.active')}
           </label>
 
           <label className="flex items-center gap-3 rounded-xl border border-surface-border bg-bg-soft px-4 py-3 text-sm text-text-primary">
-            <input
-              type="checkbox"
-              checked={values.is_featured}
-              onChange={(e) => updateField('is_featured', e.target.checked)}
-            />
+            <input type="checkbox" {...register('is_featured')} />
             {t('admin.contributorForm.featured')}
           </label>
         </div>
