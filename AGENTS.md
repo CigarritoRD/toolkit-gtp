@@ -104,3 +104,34 @@ git push -u origin fix/translations-animations
 - `fix/` - For bug fixes (e.g., `fix/translation-keys`)
 - `feat/` - For new features (e.g., `feat/new-dashboard`)
 - `chore/` - For maintenance tasks (e.g., `chore/update-deps`)
+
+## Skills System
+
+This project uses OpenCode's skill system for specialized guidance. Skills are located in `.agents/skills/`.
+
+**Rule:** Before implementing any change, check if a relevant skill exists. If a skill applies, follow its guidelines. If no skill applies, note it explicitly.
+
+**Skill quick reference:**
+
+| Skill | Use when |
+|-------|----------|
+| `react-best-practices` | React components, hooks, state, rendering |
+| `vercel-react-best-practices` | Vercel deployment, SSR, ISR for React |
+| `composition-patterns` | Component composition, compound components, props design |
+| `react-hook-form` | Form handling with react-hook-form |
+| `zod` | Schema validation, form validation |
+| `tailwind-css-patterns` | Tailwind utility classes, responsive design |
+| `accessibility` | WCAG compliance, a11y patterns |
+| `vite` | Vite config, build optimization, plugins |
+| `vitest` | Testing with Vitest |
+| `supabase-postgres-best-practices` | Database schema, RLS, performance, queries |
+| `typescript-advanced-types` | Advanced TypeScript types, generics |
+| `seo` | Meta tags, structured data, SEO |
+| `frontend-design` | Visual design decisions, CSS, layout |
+| `nodejs-best-practices` | Node.js backend patterns |
+| `nodejs-backend-patterns` | Advanced server patterns |
+| `deploy-to-vercel` | Vercel deployment scripts |
+| `web-design-guidelines` | General web design principles |
+| `customize-opencode` | Configuring OpenCode itself, skills, agents, plugins |
+
+**Config:** `opencode.json` registers the skills path. Restart OpenCode after modifying it.
