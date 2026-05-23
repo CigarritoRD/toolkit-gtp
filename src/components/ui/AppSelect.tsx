@@ -3,6 +3,7 @@ import {
   useState,
   useRef,
   useEffect,
+  useId,
   type ReactNode,
   type ReactElement,
   isValidElement,
@@ -44,10 +45,16 @@ export default function AppSelect({
   className = '',
   disabled = false,
 }: AppSelectProps) {
+  const generatedId = useId()
+  const labelId = label ? `select-label-${generatedId}` : undefined
+  const listboxId = `select-listbox-${generatedId}`
+  const errorId = `select-error-${generatedId}`
+
   const [isOpen, setIsOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState(-1)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const listboxRef = useRef<HTMLDivElement>(null)
+  const activeOptionRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -63,6 +70,12 @@ export default function AppSelect({
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  useEffect(() => {
+    if (isOpen && activeIndex >= 0 && activeOptionRef.current) {
+      activeOptionRef.current.focus()
+    }
+  }, [activeIndex, isOpen])
 
   const flatChildren = Children.toArray(children ?? [])
   const childOptions = flatChildren.filter(
@@ -102,6 +115,7 @@ export default function AppSelect({
           handleSelect(optVal)
         } else {
           setIsOpen(true)
+          setActiveIndex(0)
         }
         break
 
@@ -141,14 +155,25 @@ export default function AppSelect({
         setIsOpen(false)
         setActiveIndex(-1)
         break
+
+      case 'Home':
+        if (isOpen) {
+          e.preventDefault()
+          setActiveIndex(0)
+        }
+        break
+
+      case 'End':
+        if (isOpen) {
+          e.preventDefault()
+          setActiveIndex(optionsList.length - 1)
+        }
+        break
     }
   }
 
-  const labelId = label
-    ? `select-label-${label.toLowerCase().replace(/\s+/g, '-')}`
-    : undefined
-  const listboxId = label
-    ? `select-${label.toLowerCase().replace(/\s+/g, '-')}`
+  const activeDescendantId = isOpen && activeIndex >= 0
+    ? `select-option-${activeIndex}`
     : undefined
 
   return (
@@ -169,6 +194,8 @@ export default function AppSelect({
           aria-controls={listboxId}
           aria-disabled={disabled}
           aria-labelledby={labelId}
+          aria-invalid={error ? 'true' : undefined}
+          aria-describedby={error ? errorId : undefined}
           onClick={() => !disabled && setIsOpen(!isOpen)}
           onKeyDown={handleKeyDown}
           className={[
@@ -192,6 +219,7 @@ export default function AppSelect({
               'h-4 w-4 text-text-secondary transition-transform duration-200',
               isOpen ? 'rotate-180' : '',
             ].join(' ')}
+            aria-hidden="true"
           />
         </button>
 
@@ -201,6 +229,7 @@ export default function AppSelect({
           aria-label={label || placeholder}
           aria-labelledby={labelId}
           id={listboxId}
+          aria-activedescendant={activeDescendantId}
           tabIndex={-1}
           className={[
             'absolute left-0 right-0 top-full z-50 mt-2 max-h-60 overflow-auto rounded-xl border border-surface-border bg-surface py-1 shadow-lg',
@@ -221,10 +250,12 @@ export default function AppSelect({
             return (
               <button
                 key={optionValue === '' ? '__placeholder__' : optionValue}
+                id={`select-option-${index}`}
                 type="button"
                 role="option"
                 aria-selected={isSelected}
                 disabled={disabled}
+                ref={isActive ? activeOptionRef : undefined}
                 onClick={() => handleSelect(optionValue)}
                 onMouseEnter={() => setActiveIndex(index)}
                 className={[
@@ -237,14 +268,18 @@ export default function AppSelect({
                 ].join(' ')}
               >
                 <span>{optionLabel}</span>
-                {isSelected && <Check className="h-4 w-4 text-brand-primary" />}
+                {isSelected && <Check className="h-4 w-4 text-brand-primary" aria-hidden="true" />}
               </button>
             )
           })}
         </div>
       </div>
 
-      {error ? <span className="text-sm text-red-600">{error}</span> : null}
+      {error ? (
+        <span id={errorId} role="alert" className="text-sm text-red-600">
+          {error}
+        </span>
+      ) : null}
     </div>
   )
 }
