@@ -3,7 +3,8 @@ import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/auth/useAuth'
 import { useContributorStatus } from '@/hooks/useContributorStatus'
-import { Home, Library, Download, User, Plus, UserCircle, FileText, Clock, Sparkles, LogOut } from 'lucide-react'
+import { Home, Library, Download, User, Plus, UserCircle, FileText, Clock, LogOut } from 'lucide-react'
+import gtpLogo from '@/assets/gtp-logo.png'
 
 const navItems = [
   { label: 'Inicio', to: '/dashboard', icon: Home },
@@ -48,9 +49,7 @@ export default function DashboardSidebar({
     <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col border-r border-surface-border bg-surface/60 backdrop-blur-xl">
       <div className="px-6 pt-6">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-primary text-white">
-            <Sparkles className="h-4 w-4" />
-          </div>
+          <img src={gtpLogo} alt="GTP" className="h-9 w-9 rounded-xl object-contain" />
           <div>
             <p className="font-heading text-base font-semibold text-text-primary">Toolkit</p>
             <p className="text-xs text-brand-primary">Panel de usuario</p>

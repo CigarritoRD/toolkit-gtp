@@ -13,6 +13,35 @@ import {
 import { getActiveTags, type TagRecord } from '@/lib/api/tags'
 import type { ResourceListItem } from '@/types/resources'
 
+type ResourceWithTags = ResourceListItem & {
+  resource_tags?: Array<{
+    tag?: {
+      id: string
+      name: string
+      slug: string
+    } | null
+  }> | null
+}
+
+type ApiResource = Omit<ResourceListItem, 'contributor' | 'category'> & {
+  contributor: ResourceListItem['contributor'] | null
+  category: ResourceListItem['category'] | null
+  resource_tags?: Array<{
+    tag?: {
+      id: string
+      name: string
+      slug: string
+    } | null
+  }> | null
+}
+
+function normalizeApiResource(raw: ApiResource): ResourceWithTags {
+  return {
+    ...raw,
+    resource_tags: raw.resource_tags ?? null,
+  }
+}
+
 const typeOptions = [
   { label: 'Todos', value: 'all' },
   { label: 'PDF', value: 'pdf' },
@@ -23,16 +52,6 @@ const typeOptions = [
   { label: 'Enlace', value: 'link' },
   { label: 'Descarga', value: 'download' },
 ]
-
-type ResourceWithTags = ResourceListItem & {
-  resource_tags?: Array<{
-    tag?: {
-      id: string
-      name: string
-      slug: string
-    } | null
-  }>
-}
 
 export default function DashboardResourcesPage() {
   const [resources, setResources] = useState<ResourceWithTags[]>([])
@@ -60,7 +79,7 @@ export default function DashboardResourcesPage() {
 
         if (!active) return
 
-        setResources(resourcesData as unknown as ResourceWithTags[])
+        setResources(resourcesData.map((r) => normalizeApiResource(r as unknown as ApiResource)))
         setCategories(categoriesData)
         setTags(tagsData)
       } catch (err) {

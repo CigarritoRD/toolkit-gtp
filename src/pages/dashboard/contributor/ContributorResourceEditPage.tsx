@@ -44,6 +44,7 @@ export default function ContributorResourceEditPage() {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const { user } = useAuth()
+  const userId = user?.id
 
   const [loading, setLoading] = useState(!!id)
   const [saving, setSaving] = useState(false)
@@ -79,12 +80,15 @@ export default function ContributorResourceEditPage() {
   }, [])
 
   useEffect(() => {
-    if (!id || !user?.id) return
+    if (!id || !userId) return
+
+    const resourceId = id
+    const ownerId = userId
 
     async function loadResource() {
       try {
         setLoading(true)
-        const data = await getMyContributorResourceById(user!.id, id!)
+        const data = await getMyContributorResourceById(ownerId, resourceId)
         if (!data) {
           setError(t('admin.resourceForm.loadError'))
           return
@@ -107,7 +111,7 @@ export default function ContributorResourceEditPage() {
     }
 
     void loadResource()
-  }, [id, user?.id, t])
+  }, [id, userId, t])
 
   function updateSlugFromTitle() {
     if (!isEditing && !slug) {
@@ -117,7 +121,7 @@ export default function ContributorResourceEditPage() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    if (!user?.id) return
+    if (!userId) return
 
     if (!title.trim()) {
       setError(t('admin.resourceForm.validation.title'))
@@ -145,7 +149,7 @@ export default function ContributorResourceEditPage() {
       let finalFileUrl = fileUrl
 
       if (thumbnailFile) {
-        finalThumbnailUrl = await uploadResourceThumbnail(thumbnailFile, finalSlug, user.id)
+        finalThumbnailUrl = await uploadResourceThumbnail(thumbnailFile, finalSlug, userId)
       }
 
       if (resourceFile) {
@@ -153,7 +157,7 @@ export default function ContributorResourceEditPage() {
       }
 
       if (isEditing && id) {
-        await updateContributorResource(user.id, id, {
+        await updateContributorResource(userId, id, {
           title: title.trim(),
           slug: finalSlug,
           short_description: shortDescription.trim() || null,
@@ -168,7 +172,7 @@ export default function ContributorResourceEditPage() {
         toast.success(t('admin.resourceForm.updateSuccess'))
         navigate('/dashboard/contributor/resources')
       } else {
-        const newResource = await createContributorResource(user.id, {
+        const newResource = await createContributorResource(userId, {
           title: title.trim(),
           slug: finalSlug,
           short_description: shortDescription.trim() || null,

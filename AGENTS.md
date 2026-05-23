@@ -34,6 +34,13 @@
 - Fixed `react-countup` compatibility issue with React 19
 - Replaced with custom counter component in `src/pages/public/Home.tsx`
 
+### 5. Skills & OpenCode Integration (This Session)
+- Created `opencode.json` to register `.agents/skills` for OpenCode skill loading
+- Converted root `SKILL.md` into `gtp-toolkit` project skill with conventions, API patterns, and accessibility guidelines
+- Fixed `DashboardSidebar` logo: replaced `Sparkles` icon with proper `gtp-logo.png` import + `alt="GTP"`
+- Fixed type safety in `DashboardResourcesPage`: removed `as unknown as` cast, added `normalizeApiResource()` helper and `ApiResource` type
+- Fixed `useEffect` dependency warning in `ContributorResourceEditPage`: extracted `userId` as stable variable to avoid ESLint hook dependency warning
+
 ## Project Structure
 
 ```
