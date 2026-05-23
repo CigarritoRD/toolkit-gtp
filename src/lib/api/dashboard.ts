@@ -35,15 +35,9 @@ export async function getRecentLibraryResources(
   }
 
   return (data ?? [])
-    .map((item: unknown) => (item as { resource: unknown }).resource)
+    .map((item: { resource: ResourceListItem }) => item.resource)
     .filter(Boolean)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    .map((resource: any) => ({
-      ...resource,
-      contributor: Array.isArray(resource.contributor)
-        ? resource.contributor[0] ?? null
-        : resource.contributor ?? null,
-    }))
+    .map((resource) => normalizeResource(resource))
 }
 export type DashboardLibraryItem = {
   library_id: string
@@ -122,8 +116,7 @@ export type RecentDownloadItem = {
 }
 
 export type DashboardResourceItem = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  category: any
+  category: null
   id: string
   title: string
   slug: string
