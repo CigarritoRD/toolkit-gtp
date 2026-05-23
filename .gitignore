@@ -37,3 +37,4 @@ docs/
 *.ntvs*
 *.njsproj
 *.sln
+.vercel
