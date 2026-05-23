@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FileSearch, ShieldCheck, XCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import FadeIn from '@/components/ui/FadeIn'
 import EmptyState from '@/components/ui/EmptyState'
 import SectionCard from '@/components/ui/SectionCard'
 import AppButton from '@/components/ui/AppButton'
@@ -151,71 +150,64 @@ export default function AdminContributorApplicationsPage() {
           description={t('admin.applications.emptyDescription')}
         />
       ) : (
-        <div className="grid gap-4">
-          {filtered.map((item, index) => (
-            <FadeIn key={item.id} delay={0.02 * (index % 6)}>
-              <SectionCard className="p-5">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                  <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="font-heading text-xl text-text-primary">
-                        {item.organization_name ||
-                          item.full_name ||
-                          t('admin.applications.unnamed')}
-                      </h2>
+<div className="grid gap-4">
+          {filtered.map((item) => (
+            <SectionCard key={item.id} className="p-5">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h2 className="font-heading text-xl text-text-primary">
+                      {item.organization_name ||
+                        item.full_name ||
+                        t('admin.applications.unnamed')}
+                    </h2>
 
-                      {item.status === 'pending_review' ? (
-                        <span className="inline-flex items-center gap-1 rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700">
-                          <FileSearch className="h-3.5 w-3.5" />
-                          {t('admin.applications.pending')}
-                        </span>
-                      ) : null}
+                    {item.status === 'pending_review' ? (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700">
+                        <FileSearch className="h-3.5 w-3.5" />
+                        {t('admin.applications.pending')}
+                      </span>
+                    ) : null}
 
-                      {item.status === 'approved' ? (
-                        <span className="inline-flex items-center gap-1 rounded-full border border-emerald-300 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
-                          <ShieldCheck className="h-3.5 w-3.5" />
-                          {t('admin.applications.approved')}
-                        </span>
-                      ) : null}
+                    {item.status === 'approved' ? (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-emerald-300 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
+                        <ShieldCheck className="h-3.5 w-3.5" />
+                        {t('admin.applications.approved')}
+                      </span>
+                    ) : null}
 
-                      {item.status === 'rejected' ? (
-                        <span className="inline-flex items-center gap-1 rounded-full border border-rose-300 bg-rose-50 px-3 py-1 text-xs font-medium text-rose-700">
-                          <XCircle className="h-3.5 w-3.5" />
-                          {t('admin.applications.rejected')}
-                        </span>
-                      ) : null}
-                    </div>
-
-                    <p className="mt-2 text-sm text-text-secondary">
-                      {t('admin.applications.contact')}: {item.contact_name || t('admin.applications.notAvailable')}
-                      {item.contact_role ? ` • ${item.contact_role}` : ''}
-                    </p>
-
-                    <p className="mt-1 text-sm text-text-secondary">
-                      {item.contact_email || t('admin.applications.notAvailable')}
-                      {item.country ? ` • ${item.country}` : ''}
-                      {item.organization ? ` • ${item.organization}` : ''}
-                    </p>
-
-                    {item.specialty ? (
-                      <p className="mt-2 text-sm text-text-secondary">
-                        {item.specialty}
-                      </p>
+                    {item.status === 'rejected' ? (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-red-300 bg-red-50 px-3 py-1 text-xs font-medium text-red-700">
+                        <XCircle className="h-3.5 w-3.5" />
+                        {t('admin.applications.rejected')}
+                      </span>
                     ) : null}
                   </div>
 
-                  <div>
-                    <Link to={`/admin/contributor-applications/${item.id}`}>
-                      <AppButton type="button">
-                        {t('common.review')}
-                      </AppButton>
-                    </Link>
-                  </div>
+                  {item.full_name ? (
+                    <p className="mt-1 text-sm text-text-secondary">
+                      {item.full_name}
+                    </p>
+                  ) : null}
+
+                  {item.specialty ? (
+                    <p className="mt-2 text-sm text-text-secondary">
+                      {item.specialty}
+                    </p>
+                  ) : null}
                 </div>
-              </SectionCard>
-            </FadeIn>
+
+                <div>
+                  <Link to={`/admin/contributor-applications/${item.id}`}>
+                    <AppButton type="button">
+                      {t('common.review')}
+                    </AppButton>
+                  </Link>
+                </div>
+              </div>
+            </SectionCard>
           ))}
-        </div>
+</div>
       )}
     </div>
   )

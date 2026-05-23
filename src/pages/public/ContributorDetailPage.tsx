@@ -12,7 +12,6 @@ import {
   BookOpen,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import FadeIn from '@/components/ui/FadeIn'
 import EmptyState from '@/components/ui/EmptyState'
 import SectionCard from '@/components/ui/SectionCard'
 import ResourceCard from '@/components/resources/ResourceCard'
@@ -185,8 +184,7 @@ export default function ContributorDetailPage() {
 
   return (
     <div className="bg-bg text-text-primary">
-      <FadeIn>
-        <section className="px-6 py-8 md:px-10 lg:px-16">
+      <section className="px-6 py-8 md:px-10 lg:px-16">
           <div className="mx-auto max-w-6xl">
             <Link
               to="/contributors"
@@ -197,10 +195,8 @@ export default function ContributorDetailPage() {
             </Link>
           </div>
         </section>
-      </FadeIn>
 
-      <FadeIn delay={0.04}>
-        <section className="px-6 pb-8 md:px-10 lg:px-16">
+      <section className="px-6 pb-8 md:px-10 lg:px-16">
           <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[1.15fr_0.85fr]">
             <SectionCard className="p-6 md:p-8">
               <div className="flex flex-col gap-6 md:flex-row md:items-start">
@@ -291,11 +287,9 @@ export default function ContributorDetailPage() {
             </SectionCard>
           </div>
         </section>
-      </FadeIn>
 
       {contributor.full_bio ? (
-        <FadeIn delay={0.08}>
-          <section className="px-6 pb-8 md:px-10 lg:px-16">
+        <section className="px-6 pb-8 md:px-10 lg:px-16">
             <div className="mx-auto max-w-6xl">
               <SectionCard className="p-6 md:p-8">
                 <h2 className="font-heading text-2xl text-text-primary">
@@ -307,18 +301,14 @@ export default function ContributorDetailPage() {
               </SectionCard>
             </div>
           </section>
-        </FadeIn>
-      ) : null}
+        ) : null}
 
-      <FadeIn delay={0.1}>
         <section className="px-6 pb-8 md:px-10 lg:px-16">
           <div className="mx-auto max-w-6xl">
             <RatingPanel mode="contributor" targetId={contributor.id} />
           </div>
         </section>
-      </FadeIn>
 
-      <FadeIn delay={0.12}>
         <section className="px-6 pb-16 md:px-10 lg:px-16">
           <div className="mx-auto max-w-6xl">
             <div className="mb-6 flex items-end justify-between gap-4">
@@ -340,32 +330,29 @@ export default function ContributorDetailPage() {
               />
             ) : (
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {resources.map((resource, index) => (
-                  <FadeIn key={resource.id} delay={0.02 * (index % 6)}>
-                    <div className="transition-transform duration-200 hover:-translate-y-1">
-                      <ResourceCard
-                        id={resource.id}
-                        title={resource.title}
-                        description={resource.short_description || resource.description}
-                        thumbnailUrl={resource.thumbnail_url}
-                        type={resource.resource_type}
-                        contributorName={contributor.name}
-                        slug={resource.slug}
-                        averageRating={
-                          resourceRatings.get(resource.id)?.average_rating ?? 0
-                        }
-                        totalRatings={
-                          resourceRatings.get(resource.id)?.total_ratings ?? 0
-                        }
-                      />
-                    </div>
-                  </FadeIn>
+                {resources.map((resource) => (
+                  <div key={resource.id} className="transition-transform duration-200 hover:-translate-y-1">
+                    <ResourceCard
+                      id={resource.id}
+                      title={resource.title}
+                      description={resource.short_description || resource.description}
+                      thumbnailUrl={resource.thumbnail_url}
+                      type={resource.resource_type}
+                      contributorName={contributor.name}
+                      slug={resource.slug}
+                      averageRating={
+                        resourceRatings.get(resource.id)?.average_rating ?? 0
+                      }
+                      totalRatings={
+                        resourceRatings.get(resource.id)?.total_ratings ?? 0
+                      }
+                    />
+                  </div>
                 ))}
               </div>
             )}
           </div>
         </section>
-      </FadeIn>
     </div>
   )
 }

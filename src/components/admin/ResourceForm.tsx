@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 import type { AdminResourceInput } from '@/lib/api/resources'
 import { getActiveContributors } from '@/lib/api/contributors'
 import { getActiveCategories } from '@/lib/api/categories'
@@ -58,6 +59,7 @@ function UploadBox({
   file,
   currentUrl,
   onChange,
+  maxSize,
 }: {
   label: string
   helper: string
@@ -65,6 +67,7 @@ function UploadBox({
   file: File | null
   currentUrl?: string | null
   onChange: (file: File | null) => void
+  maxSize?: number
 }) {
   const previewUrl = useMemo(() => {
     if (!file) return null
@@ -80,6 +83,21 @@ function UploadBox({
   const isImage = accept?.includes('image')
   const displayName = file?.name || (currentUrl ? 'Current file uploaded' : '')
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0] ?? null
+    if (!selected) {
+      onChange(null)
+      return
+    }
+
+    if (maxSize && selected.size > maxSize) {
+      toast.error(`El archivo excede el tamaño máximo de ${(maxSize / 1024 / 1024).toFixed(0)} MB.`)
+      return
+    }
+
+    onChange(selected)
+  }
+
   return (
     <div className="space-y-3">
       <label className="block text-sm font-medium text-text-primary">
@@ -90,7 +108,7 @@ function UploadBox({
         <input
           type="file"
           accept={accept}
-          onChange={(e) => onChange(e.target.files?.[0] ?? null)}
+          onChange={handleChange}
           className="sr-only"
         />
 
@@ -427,11 +445,12 @@ export default function ResourceForm({
           <div className="space-y-2">
             <UploadBox
               label={t('admin.resourceForm.thumbnail')}
-              helper="Upload a clear image for resource cards and public previews. JPG, PNG or WebP recommended."
+              helper={`Upload a clear image for resource cards and public previews. JPG, PNG or WebP recommended. Max 2 MB.`}
               accept="image/*"
               file={thumbnailFile}
               currentUrl={values.thumbnail_url}
               onChange={setThumbnailFile}
+              maxSize={2 * 1024 * 1024}
             />
           </div>
         </div>
@@ -458,10 +477,11 @@ export default function ResourceForm({
           <div className="space-y-2">
             <UploadBox
               label={t('admin.resourceForm.resourceFile')}
-              helper="Upload the downloadable resource file. PDF is recommended."
+              helper="Upload the downloadable resource file. PDF recommended. Max 25 MB."
               file={resourceFile}
               currentUrl={values.file_url}
               onChange={setResourceFile}
+              maxSize={25 * 1024 * 1024}
             />
           </div>
         </div>

@@ -90,12 +90,19 @@ export async function trackResourceEvent(
   resourceId: string,
   eventType: ResourceEventType,
 ) {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) return
+
   const country = await getUserCountry()
 
   const { error } = await supabase.from('resource_events').insert({
     resource_id: resourceId,
     event_type: eventType,
     country,
+    user_id: user.id,
   })
 
   if (error) {
@@ -107,12 +114,19 @@ export async function trackContributorEvent(
   contributorId: string,
   eventType: ContributorEventType,
 ) {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) return
+
   const country = await getUserCountry()
 
   const { error } = await supabase.from('contributor_events').insert({
     contributor_id: contributorId,
     event_type: eventType,
     country,
+    user_id: user.id,
   })
 
   if (error) {

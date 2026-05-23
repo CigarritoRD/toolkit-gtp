@@ -128,31 +128,39 @@ export default function RatingPanel({ mode, targetId }: RatingPanelProps) {
         <StarRating value={Math.round(summary.average_rating)} readOnly size="lg" />
       </div>
 
-      <div className="mt-6 rounded-xl border border-surface-border bg-bg-soft p-4">
-        <p className="text-sm font-medium text-text-primary">
-          {t('ratings.yourRating')}
-        </p>
-
-        <div className="mt-3">
-          <StarRating value={myRating} onChange={setMyRating} size="lg" />
+      {!user ? (
+        <div className="mt-6 rounded-xl border border-surface-border bg-bg-soft p-4 text-center">
+          <p className="text-sm text-text-secondary">
+            {t('ratings.loginRequired')}
+          </p>
         </div>
+      ) : (
+        <div className="mt-6 rounded-xl border border-surface-border bg-bg-soft p-4">
+          <p className="text-sm font-medium text-text-primary">
+            {t('ratings.yourRating')}
+          </p>
 
-        <div className="mt-4">
-          <AppTextarea
-            label={t('ratings.review')}
-            rows={4}
-            value={reviewText}
-            onChange={(e) => setReviewText(e.target.value)}
-            placeholder={t('ratings.reviewPlaceholder')}
-          />
-        </div>
+          <div className="mt-3">
+            <StarRating value={myRating} onChange={setMyRating} size="lg" />
+          </div>
 
-        <div className="mt-4">
-          <AppButton onClick={handleSave} disabled={saving}>
-            {saving ? t('common.saving') : t('ratings.submit')}
-          </AppButton>
+          <div className="mt-4">
+            <AppTextarea
+              label={t('ratings.review')}
+              rows={4}
+              value={reviewText}
+              onChange={(e) => setReviewText(e.target.value)}
+              placeholder={t('ratings.reviewPlaceholder')}
+            />
+          </div>
+
+          <div className="mt-4">
+            <AppButton onClick={handleSave} disabled={saving}>
+              {saving ? t('common.saving') : t('ratings.submit')}
+            </AppButton>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="mt-6 space-y-4">
         <h3 className="font-heading text-lg text-text-primary">

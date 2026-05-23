@@ -6,7 +6,6 @@ import { useAuth } from '@/auth/useAuth'
 import AppButton from '@/components/ui/AppButton'
 import AppInput from '@/components/ui/AppInput'
 import CountrySelect from '@/components/ui/CountrySelect'
-import FadeIn from '@/components/ui/FadeIn'
 import FileInput from '@/components/ui/FileInput'
 import SectionCard from '@/components/ui/SectionCard'
 import {
@@ -123,28 +122,22 @@ export default function DashboardProfilePage() {
 
   return (
     <div className="bg-bg text-text-primary">
-      <FadeIn>
-        <section className="px-0 py-2">
-          <div className="mx-auto max-w-5xl">
-            <SectionCard className="p-8">
-              <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
-                {t('profile.badge')}
-              </p>
-              <h1 className="mt-3 font-heading text-4xl md:text-5xl">
-                {t('profile.title')}
-              </h1>
-              <p className="mt-4 max-w-2xl font-body text-lg text-brand-primary">
-                {t('profile.subtitle')}
-              </p>
-            </SectionCard>
-          </div>
-        </section>
-      </FadeIn>
+      <section className="py-2">
+        <SectionCard className="p-8">
+          <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
+            {t('profile.badge')}
+          </p>
+          <h1 className="mt-3 font-heading text-4xl md:text-5xl">
+            {t('profile.title')}
+          </h1>
+          <p className="mt-4 max-w-2xl font-body text-lg text-brand-primary">
+            {t('profile.subtitle')}
+          </p>
+        </SectionCard>
+      </section>
 
-      <FadeIn delay={0.06}>
-        <section className="px-0 py-8">
-          <div className="mx-auto max-w-5xl">
-            <div className="grid gap-6 md:grid-cols-[220px_1fr]">
+      <section className="py-8">
+        <div className="grid gap-6 md:grid-cols-[220px_1fr]">
               <SectionCard className="p-6 text-center">
                 <div className="mx-auto flex h-28 w-28 items-center justify-center overflow-hidden rounded-3xl bg-bg-soft shadow-[var(--shadow-soft)]">
                   {currentAvatar ? (
@@ -247,9 +240,7 @@ export default function DashboardProfilePage() {
                 </form>
               </SectionCard>
             </div>
-          </div>
-        </section>
-      </FadeIn>
+          </section>
     </div>
   )
 }

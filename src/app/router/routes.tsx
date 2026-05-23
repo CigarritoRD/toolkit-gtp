@@ -24,6 +24,11 @@ import DashboardLibraryPage from '@/pages/dashboard/DashboardLibraryPage'
 import DashboardDownloadsPage from '@/pages/dashboard/DashboardDownloadsPage'
 import DashboardProfilePage from '@/pages/dashboard/DashboardProfilePage'
 
+import ContributorHomePage from '@/pages/dashboard/contributor/ContributorHomePage'
+import ContributorProfilePage from '@/pages/dashboard/contributor/ContributorProfilePage'
+import ContributorResourcesPage from '@/pages/dashboard/contributor/ContributorResourcesPage'
+import ContributorResourceEditPage from '@/pages/dashboard/contributor/ContributorResourceEditPage'
+
 import AdminDashboardPage from '@/pages/admin/AdminDashboardPage'
 import AdminResourcesPage from '@/pages/admin/AdminResourcesPage'
 import AdminResourceCreatePage from '@/pages/admin/AdminResourceCreatePage'
@@ -36,9 +41,10 @@ import AdminContributorEditPage from '@/pages/admin/AdminContributorEditPage'
 import AdminContributorCreatePage from '@/pages/admin/AdminContributorCreatePage'
 import AdminContributorApplicationsPage from '@/pages/admin/AdminContributorApplicationsPage'
 import AdminContributorApplicationDetailPage from '@/pages/admin/AdminContributorApplicationDetailPage'
-import AdminTagsPage from '@/pages/admin/AdminTagsPage'
 import AdminTagCreatePage from '@/pages/admin/AdminTagCreatePage'
 import AdminTagEditPage from '@/pages/admin/AdminTagEditPage'
+import AdminTagsPage from '@/pages/admin/AdminTagsPage'
+import AdminMetricsPage from '@/pages/admin/AdminMetricsPage'
 
 export const router = createBrowserRouter([
   {
@@ -77,6 +83,12 @@ export const router = createBrowserRouter([
       { path: 'library', element: <DashboardLibraryPage /> },
       { path: 'downloads', element: <DashboardDownloadsPage /> },
       { path: 'profile', element: <DashboardProfilePage /> },
+
+      { path: 'contributor', element: <ContributorHomePage /> },
+      { path: 'contributor/profile', element: <ContributorProfilePage /> },
+      { path: 'contributor/resources', element: <ContributorResourcesPage /> },
+      { path: 'contributor/resources/new', element: <ContributorResourceEditPage /> },
+      { path: 'contributor/resources/:id/edit', element: <ContributorResourceEditPage /> },
     ],
   },
 
@@ -107,7 +119,9 @@ export const router = createBrowserRouter([
 
       { path: 'tags', element: <AdminTagsPage /> },
       { path: 'tags/new', element: <AdminTagCreatePage /> },
-      { path: 'tags/:id/edit', element: <AdminTagEditPage /> }
+      { path: 'tags/:id/edit', element: <AdminTagEditPage /> },
+
+      { path: 'metrics', element: <AdminMetricsPage /> }
     ],
   },
 

@@ -12,8 +12,20 @@ import {
   activateResource,
   deactivateResource,
   getAdminResources,
+  getPendingReviewResources,
+  approveResource,
+  rejectResource,
 } from '@/lib/api/resources'
 import { confirmAction } from '@/lib/api/confirm'
+import {
+  getCachedAdminData,
+  setCachedAdminData,
+  invalidateAdminCache,
+} from '@/lib/adminCache'
+import { toast } from 'sonner'
+
+const CACHE_KEY = 'admin:resources'
+const CACHE_TTL = 60_000
 
 type ResourceListItem = {
   id: string
@@ -27,6 +39,8 @@ type ResourceListItem = {
   is_featured: boolean
   is_public: boolean
   is_published: boolean
+  approval_status?: string | null
+  rejection_reason?: string | null
   created_at: string
   contributor?: {
     id: string
@@ -39,6 +53,16 @@ type ResourceListItem = {
     slug: string
   } | null
 }
+
+type ApprovalFilter = 'all' | 'pending_review' | 'approved' | 'rejected' | 'draft'
+
+const APPROVAL_TABS: { value: ApprovalFilter; labelKey: string }[] = [
+  { value: 'all', labelKey: 'admin.resources.filterAll' },
+  { value: 'pending_review', labelKey: 'admin.resources.filterPending' },
+  { value: 'approved', labelKey: 'admin.resources.filterApproved' },
+  { value: 'rejected', labelKey: 'admin.resources.filterRejected' },
+  { value: 'draft', labelKey: 'admin.resources.filterDraft' },
+]
 
 function formatTypeLabel(type: string | null | undefined, t: (key: string) => string) {
   const normalized = (type || '').toLowerCase()
@@ -66,36 +90,75 @@ function formatTypeLabel(type: string | null | undefined, t: (key: string) => st
 export default function AdminResourcesPage() {
   const { t } = useTranslation()
 
-  const [items, setItems] = useState<ResourceListItem[]>([])
-  const [loading, setLoading] = useState(true)
+  const [items, setItems] = useState<ResourceListItem[]>(() =>
+    getCachedAdminData<ResourceListItem[]>(CACHE_KEY) ?? [],
+  )
+  const [loading, setLoading] = useState(() => !getCachedAdminData(CACHE_KEY))
   const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState('')
   const [processingId, setProcessingId] = useState<string | null>(null)
+  const [approvalFilter, setApprovalFilter] = useState<ApprovalFilter>('all')
+  const hasInitialData = getCachedAdminData<ResourceListItem[]>(CACHE_KEY) !== null
 
-  const loadResources = useCallback(async () => {
-    try {
-      setLoading(true)
-      setError(null)
-      const data = await getAdminResources()
-      setItems((data ?? []) as unknown as ResourceListItem[])
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : t('admin.resources.errorDescription'),
-      )
-    } finally {
-      setLoading(false)
-    }
-  }, [t])
+  const loadResources = useCallback(
+    async (silent = false) => {
+      try {
+        if (!silent) {
+          setError(null)
+        }
+        const [data, pendingData] = await Promise.all([
+          getAdminResources(),
+          getPendingReviewResources(),
+        ])
+
+        const approvedResources = (data ?? []) as unknown as ResourceListItem[]
+        const pendingResources = (pendingData ?? []) as unknown as ResourceListItem[]
+
+        const allResources = [...approvedResources, ...pendingResources]
+
+        const seen = new Set<string>()
+        const unique = allResources.filter((r) => {
+          if (seen.has(r.id)) return false
+          seen.add(r.id)
+          return true
+        })
+
+        setItems(unique as ResourceListItem[])
+        setCachedAdminData(CACHE_KEY, unique, CACHE_TTL)
+      } catch (err) {
+        if (!silent) {
+          setError(
+            err instanceof Error
+              ? err.message
+              : t('admin.resources.errorDescription'),
+          )
+        }
+      } finally {
+        if (!silent) {
+          setLoading(false)
+        }
+      }
+    },
+    [t],
+  )
 
   useEffect(() => {
-    void loadResources()
-  }, [loadResources])
+    if (!hasInitialData) {
+      void loadResources(false)
+    }
+  }, [hasInitialData, loadResources])
 
   const filteredItems = useMemo(() => {
     const term = search.trim().toLowerCase()
-    if (!term) return items
+    let result = items
 
-    return items.filter((item) => {
+    if (approvalFilter !== 'all') {
+      result = result.filter((item) => item.approval_status === approvalFilter)
+    }
+
+    if (!term) return result
+
+    return result.filter((item) => {
       return (
         item.title.toLowerCase().includes(term) ||
         item.slug.toLowerCase().includes(term) ||
@@ -104,7 +167,7 @@ export default function AdminResourcesPage() {
         (item.category?.name ?? '').toLowerCase().includes(term)
       )
     })
-  }, [items, search])
+  }, [items, search, approvalFilter])
 
   async function handleTogglePublished(item: ResourceListItem) {
     const action = item.is_published ? 'unpublish' : 'publish'
@@ -130,11 +193,50 @@ export default function AdminResourcesPage() {
         await activateResource(item.id)
       }
 
-      await loadResources()
+      invalidateAdminCache(CACHE_KEY)
+      await loadResources(false)
     } catch (err) {
       setError(
         err instanceof Error ? err.message : t('admin.resources.updateError'),
       )
+    } finally {
+      setProcessingId(null)
+    }
+  }
+
+  async function handleApproveResource(item: ResourceListItem) {
+    const confirmed = await confirmAction({
+      title: t('admin.resources.confirmApproveTitle'),
+      text: item.title,
+      confirmText: t('admin.resources.approve'),
+    })
+    if (!confirmed) return
+
+    try {
+      setProcessingId(item.id)
+      await approveResource(item.id, 'admin')
+      invalidateAdminCache(CACHE_KEY)
+      await loadResources(false)
+      toast.success(t('admin.resources.approveSuccess'))
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t('admin.resources.updateError'))
+    } finally {
+      setProcessingId(null)
+    }
+  }
+
+  async function handleRejectResource(item: ResourceListItem) {
+    const reason = window.prompt(t('admin.resources.rejectReasonPrompt'))
+    if (reason === null) return
+
+    try {
+      setProcessingId(item.id)
+      await rejectResource(item.id, 'admin', reason || undefined)
+      invalidateAdminCache(CACHE_KEY)
+      await loadResources(false)
+      toast.success(t('admin.resources.rejectSuccess'))
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t('admin.resources.updateError'))
     } finally {
       setProcessingId(null)
     }
@@ -200,6 +302,22 @@ export default function AdminResourcesPage() {
           />
         </div>
       </SectionCard>
+
+      <div className="flex flex-wrap gap-2">
+        {APPROVAL_TABS.map((tab) => (
+          <button
+            key={tab.value}
+            onClick={() => setApprovalFilter(tab.value)}
+            className={`rounded-full border px-4 py-1.5 text-sm transition-colors ${
+              approvalFilter === tab.value
+                ? 'border-brand-primary bg-brand-primary text-white'
+                : 'border-surface-border bg-surface text-brand-primary hover:border-brand-primary'
+            }`}
+          >
+            {t(tab.labelKey)}
+          </button>
+        ))}
+      </div>
 
       <SectionCard className="overflow-hidden">
         <div className="border-b border-surface-border px-4 py-3">
@@ -268,6 +386,31 @@ export default function AdminResourcesPage() {
                           tone="info"
                         />
                       ) : null}
+
+                      {item.approval_status === 'pending_review' && (
+                        <StatusBadge
+                          label={t('admin.resources.statusPending')}
+                          tone="warning"
+                        />
+                      )}
+                      {item.approval_status === 'rejected' && (
+                        <StatusBadge
+                          label={t('admin.resources.statusRejected')}
+                          tone="danger"
+                        />
+                      )}
+                      {item.approval_status === 'approved' && (
+                        <StatusBadge
+                          label={t('admin.resources.statusApproved')}
+                          tone="success"
+                        />
+                      )}
+                      {item.approval_status === 'draft' && (
+                        <StatusBadge
+                          label={t('admin.resources.statusDraft')}
+                          tone="muted"
+                        />
+                      )}
                     </div>
 
                     <p className="mt-0.5 text-sm text-text-secondary">@{item.slug}</p>
@@ -299,19 +442,40 @@ export default function AdminResourcesPage() {
                     </AppButton>
                   </Link>
 
-                  <AppButton
-                    variant={item.is_published ? 'danger' : 'success'}
-                    disabled={processingId === item.id}
-                    onClick={() => void handleTogglePublished(item)}
-                  >
-                    {processingId === item.id
-                      ? item.is_published
-                        ? t('admin.resources.unpublishing')
-                        : t('admin.resources.publishing')
-                      : item.is_published
-                        ? t('admin.resources.unpublish')
-                        : t('admin.resources.publish')}
-                  </AppButton>
+                  {item.approval_status === 'pending_review' && (
+                    <>
+                      <AppButton
+                        variant="success"
+                        disabled={processingId === item.id}
+                        onClick={() => void handleApproveResource(item)}
+                      >
+                        {t('admin.resources.approve')}
+                      </AppButton>
+                      <AppButton
+                        variant="danger"
+                        disabled={processingId === item.id}
+                        onClick={() => void handleRejectResource(item)}
+                      >
+                        {t('admin.resources.reject')}
+                      </AppButton>
+                    </>
+                  )}
+
+                  {item.approval_status !== 'pending_review' && (
+                    <AppButton
+                      variant={item.is_published ? 'danger' : 'success'}
+                      disabled={processingId === item.id}
+                      onClick={() => void handleTogglePublished(item)}
+                    >
+                      {processingId === item.id
+                        ? item.is_published
+                          ? t('admin.resources.unpublishing')
+                          : t('admin.resources.publishing')
+                        : item.is_published
+                          ? t('admin.resources.unpublish')
+                          : t('admin.resources.publish')}
+                    </AppButton>
+                  )}
                 </div>
               </div>
             ))}

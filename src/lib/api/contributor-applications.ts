@@ -55,14 +55,12 @@ export async function createContributorApplication(
     organization_name: values.organization_name.trim(),
   }
 
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from('contributor_applications')
     .insert(payload)
-    .select()
-    .single()
 
   if (error) throw error
-  return data
+  return true
 }
 
 export async function uploadContributorApplicationAvatar(

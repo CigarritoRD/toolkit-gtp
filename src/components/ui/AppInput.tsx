@@ -3,11 +3,13 @@ import type { InputHTMLAttributes } from 'react'
 type AppInputProps = InputHTMLAttributes<HTMLInputElement> & {
   label?: string
   error?: string | null
+  hint?: string
 }
 
 export default function AppInput({
   label,
   error,
+  hint,
   className = '',
   ...props
 }: AppInputProps) {
@@ -28,6 +30,7 @@ export default function AppInput({
       />
 
       {error ? <span className="text-sm text-red-600">{error}</span> : null}
+      {hint && !error ? <span className="text-sm text-brand-primary">{hint}</span> : null}
     </label>
   )
 }

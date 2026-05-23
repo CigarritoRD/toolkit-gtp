@@ -8,6 +8,7 @@ type EmptyStateProps = {
   icon?: ReactNode
   actionLabel?: string
   onAction?: () => void
+  action?: ReactNode
 }
 
 export default function EmptyState({
@@ -16,6 +17,7 @@ export default function EmptyState({
   icon,
   actionLabel,
   onAction,
+  action,
 }: EmptyStateProps) {
   return (
     <motion.div
@@ -38,7 +40,9 @@ export default function EmptyState({
         </p>
       ) : null}
 
-      {actionLabel && onAction ? (
+      {action ? (
+        <div className="mt-5">{action}</div>
+      ) : actionLabel && onAction ? (
         <div className="mt-5">
           <AppButton onClick={onAction}>{actionLabel}</AppButton>
         </div>

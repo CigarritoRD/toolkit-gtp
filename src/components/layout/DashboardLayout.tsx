@@ -4,13 +4,15 @@ import PageTransition from '@/components/ui/PageTransition'
 
 export default function DashboardLayout() {
   return (
-    <div className="min-h-screen bg-bg">
+    <div className="flex min-h-screen bg-bg">
       <DashboardSidebar />
-      <div className="pl-64">
-        <PageTransition>
-          <Outlet />
-        </PageTransition>
-      </div>
+      <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-7xl">
+          <PageTransition>
+            <Outlet />
+          </PageTransition>
+        </div>
+      </main>
     </div>
   )
 }

@@ -533,32 +533,80 @@ export default function Home() {
 function StatNumber({ label, value }: { label: string; value: number }) {
   const [count, setCount] = useState(0)
   const [hasStarted, setHasStarted] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  const prefersReducedMotion = typeof window !== 'undefined'
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    : false
 
   useEffect(() => {
-    setHasStarted(true)
+    if (!ref.current) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !hasStarted) {
+          setHasStarted(true)
+        }
+      },
+      { threshold: 0.1 },
+    )
+
+    observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [hasStarted])
+
+  useEffect(() => {
+    if (!hasStarted) return
+
     const duration = 1400
-    const steps = 60
-    const increment = value / steps
-    let current = 0
-    const timer = setInterval(() => {
-      current += increment
-      if (current >= value) {
-        setCount(value)
-        clearInterval(timer)
-      } else {
-        setCount(Math.floor(current))
+    const startTime = performance.now()
+    const startValue = 0
+
+    let rafId: number
+
+    function easeOutQuart(t: number) {
+      return 1 - Math.pow(1 - t, 4)
+    }
+
+    function animate(currentTime: number) {
+      const elapsed = currentTime - startTime
+      const progress = Math.min(elapsed / duration, 1)
+      const eased = easeOutQuart(progress)
+      const current = Math.floor(startValue + (value - startValue) * eased)
+
+      setCount(current)
+
+      if (progress < 1) {
+        rafId = requestAnimationFrame(animate)
       }
-    }, duration / steps)
-    return () => clearInterval(timer)
-  }, [value])
+    }
+
+    rafId = requestAnimationFrame(animate)
+
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId)
+    }
+  }, [hasStarted, value])
+
+  if (prefersReducedMotion || hasStarted) {
+    return (
+      <div ref={ref}>
+        <p className="text-sm uppercase tracking-[0.18em] text-brand-primary">
+          {label}
+        </p>
+        <p className="mt-2 font-heading text-4xl text-text-primary">
+          {value.toLocaleString()}
+        </p>
+      </div>
+    )
+  }
 
   return (
-    <div>
+    <div ref={ref}>
       <p className="text-sm uppercase tracking-[0.18em] text-brand-primary">
         {label}
       </p>
       <p className="mt-2 font-heading text-4xl text-text-primary">
-        {hasStarted ? count.toLocaleString() : '0'}
+        {count.toLocaleString()}
       </p>
     </div>
   )

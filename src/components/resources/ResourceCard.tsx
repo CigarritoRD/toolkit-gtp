@@ -180,6 +180,7 @@ export default function ResourceCard({
 
   const handleOpen = async () => {
     if (!slug) return
+    if (!user) return
     await trackResourceEvent(id, 'open')
   }
 

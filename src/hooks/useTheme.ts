@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react'
 
 export type Theme = 'light' | 'dark'
 
-const THEME_KEY = 'Toolkit-box-theme'
+const THEME_KEY = 'Toolkit-theme'
 
 function getInitialTheme(): Theme {
-  if (typeof window === 'undefined') return 'dark'
+  if (typeof window === 'undefined') return 'light'
 
   const savedTheme = window.localStorage.getItem(THEME_KEY)
   if (savedTheme === 'light' || savedTheme === 'dark') return savedTheme

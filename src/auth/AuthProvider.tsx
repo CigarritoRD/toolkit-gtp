@@ -25,7 +25,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const fetchProfile = useCallback(async (userId: string) => {
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, full_name, email, role, avatar_url, country, created_at, updated_at')
+      .select('id, full_name, email, role, avatar_url, country, phone, organization, created_at, updated_at')
       .eq('id', userId)
       .single()
 
@@ -128,7 +128,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
   )
 
   const signUp = useCallback(
-    async (email: string, password: string, fullName: string, country?: string) => {
+    async (
+      email: string,
+      password: string,
+      fullName: string,
+      country?: string,
+      phone?: string,
+    ) => {
       const normalizedEmail = email.trim().toLowerCase()
       const normalizedName = fullName.trim()
 
@@ -139,6 +145,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           data: {
             full_name: normalizedName,
             country: country || null,
+            phone: phone || null,
           },
         },
       })

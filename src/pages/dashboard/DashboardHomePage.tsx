@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Bookmark, Download, Heart, Sparkles } from 'lucide-react'
+import { ArrowRight, Bookmark, CheckCircle2, Clock, Download, Heart, Sparkles, Users } from 'lucide-react'
 import ResourceCard from '@/components/resources/ResourceCard'
-import FadeIn from '@/components/ui/FadeIn'
 import EmptyState from '@/components/ui/EmptyState'
 import SectionCard from '@/components/ui/SectionCard'
 import StatCard from '@/components/ui/StatCard'
+import AppButton from '@/components/ui/AppButton'
 import {
   getDashboardStats,
   getRecentDownloads,
@@ -14,6 +14,8 @@ import {
 } from '@/lib/api/dashboard'
 import { getResourceRatingSummaries } from '@/lib/api/ratings'
 import { useAuth } from '@/auth/useAuth'
+import { useTranslation } from 'react-i18next'
+import { useContributorStatus } from '@/hooks/useContributorStatus'
 import type { ResourceListItem } from '@/types/resources'
 
 type RatingMap = Map<
@@ -24,37 +26,39 @@ type RatingMap = Map<
   }
 >
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function normalizeResource(resource: any): ResourceListItem {
+function normalizeResource(resource: unknown): ResourceListItem {
+  const r = resource as Record<string, unknown>
   return {
-    ...resource,
-    title: resource?.title ?? resource?.resource?.title ?? '',
-    slug: resource?.slug ?? resource?.resource?.slug ?? '',
+    ...(r as Record<string, unknown>),
+    title: (r?.title as string) ?? (r?.resource as Record<string, unknown>)?.title as string ?? '',
+    slug: (r?.slug as string) ?? (r?.resource as Record<string, unknown>)?.slug as string ?? '',
     description:
-      resource?.description ??
-      resource?.resource?.description ??
+      (r?.description as string) ??
+      (r?.resource as Record<string, unknown>)?.description as string ??
       null,
     short_description:
-      resource?.short_description ??
-      resource?.resource?.short_description ??
+      (r?.short_description as string) ??
+      (r?.resource as Record<string, unknown>)?.short_description as string ??
       null,
     thumbnail_url:
-      resource?.thumbnail_url ??
-      resource?.resource?.thumbnail_url ??
+      (r?.thumbnail_url as string) ??
+      (r?.resource as Record<string, unknown>)?.thumbnail_url as string ??
       null,
     resource_type:
-      resource?.resource_type ??
-      resource?.resource?.resource_type ??
+      (r?.resource_type as string) ??
+      (r?.resource as Record<string, unknown>)?.resource_type as string ??
       'resource',
     contributor:
-      resource?.contributor ??
-      resource?.resource?.contributor ??
+      (r?.contributor as ResourceListItem['contributor']) ??
+      (r?.resource as Record<string, unknown>)?.contributor as ResourceListItem['contributor'] ??
       null,
   } as ResourceListItem
 }
 
 export default function DashboardHomePage() {
   const { user, profile } = useAuth()
+  const { t } = useTranslation()
+  const { status, latestApplication } = useContributorStatus()
 
   const [stats, setStats] = useState<DashboardStats>({
     savedCount: 0,
@@ -123,189 +127,261 @@ export default function DashboardHomePage() {
 
   return (
     <div className="bg-bg text-text-primary">
-      <FadeIn>
-        <section className="px-0 py-2">
-          <div className="mx-auto max-w-7xl">
-            <SectionCard className="p-8">
-              <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-                <div>
-                  <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
-                    Dashboard
-                  </p>
-                  <h1 className="mt-3 font-heading text-4xl md:text-5xl">
-                    Bienvenida{profile?.full_name ? `, ${profile.full_name}` : ''}
-                  </h1>
-                  <p className="mt-4 max-w-2xl font-body text-lg text-brand-primary">
-                    Revisa tu actividad, vuelve a tus recursos guardados y continúa
-                    explorando desde tu espacio personal.
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap gap-3">
-                  <Link
-                    to="/resources"
-                    className="inline-flex items-center gap-2 rounded-2xl bg-brand-primary px-5 py-3 font-medium text-white transition hover:opacity-90"
-                  >
-                    Explorar recursos
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-
-                  <Link
-                    to="/dashboard/library"
-                    className="rounded-2xl border border-surface-border bg-bg-soft px-5 py-3 font-medium text-text-primary transition hover:bg-surface-hover"
-                  >
-                    Ver mi librería
-                  </Link>
-                </div>
-              </div>
-            </SectionCard>
-          </div>
-        </section>
-      </FadeIn>
-
-      <FadeIn delay={0.06}>
-        <section className="px-0 py-8">
-          <div className="mx-auto max-w-7xl">
-            {loading ? (
-              <div className="grid gap-6 md:grid-cols-3">
-                {Array.from({ length: 3 }).map((_, index) => (
-                  <div
-                    key={index}
-                    className="animate-pulse rounded-3xl border border-surface-border bg-surface p-6"
-                  >
-                    <div className="h-4 w-24 rounded bg-bg-soft" />
-                    <div className="mt-4 h-10 w-16 rounded bg-bg-soft" />
-                    <div className="mt-4 h-4 w-32 rounded bg-bg-soft" />
-                  </div>
-                ))}
-              </div>
-            ) : error ? (
-              <SectionCard className="border-red-500/20 bg-red-500/10 p-6">
-                <h2 className="font-heading text-xl">No pudimos cargar tu panel</h2>
-                <p className="mt-2 text-sm text-brand-primary">{error}</p>
-              </SectionCard>
-            ) : (
-              <div className="grid gap-6 md:grid-cols-3">
-                <StatCard
-                  label="Guardados"
-                  value={stats.savedCount}
-                  icon={<Bookmark className="h-4 w-4" />}
-                />
-                <StatCard
-                  label="Favoritos"
-                  value={stats.favoriteCount}
-                  icon={<Heart className="h-4 w-4" />}
-                />
-                <StatCard
-                  label="Descargas"
-                  value={stats.downloadCount}
-                  icon={<Download className="h-4 w-4" />}
-                />
-              </div>
-            )}
-          </div>
-        </section>
-      </FadeIn>
-
-      <FadeIn delay={0.1}>
-        <section className="px-0 py-4">
-          <div className="mx-auto max-w-7xl">
-            <div className="mb-6 flex items-end justify-between gap-4">
-              <div>
-                <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
-                  Tu actividad
-                </p>
-                <h2 className="mt-2 font-heading text-3xl">Recursos recientes</h2>
-              </div>
-              <Link to="/dashboard/library" className="text-sm text-brand-accent">
-                Ver librería
-              </Link>
+      <section className="py-2">
+        <SectionCard className="p-8">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
+                Dashboard
+              </p>
+              <h1 className="mt-3 font-heading text-4xl md:text-5xl">
+                Bienvenida{profile?.full_name ? `, ${profile.full_name}` : ''}
+              </h1>
+              <p className="mt-4 max-w-2xl font-body text-lg text-brand-primary">
+                Revisa tu actividad, vuelve a tus recursos guardados y continúa
+                explorando desde tu espacio personal.
+              </p>
             </div>
 
-            {recentLibrary.length === 0 ? (
-              <EmptyState
-                icon={<Sparkles className="h-5 w-5" />}
-                title="Tu librería está vacía"
-                description="Guarda o desbloquea recursos para verlos aquí."
-              />
-            ) : (
-              <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-                {recentLibrary.map((resource, index) => (
-                  <FadeIn key={resource.id} delay={0.02 * (index % 8)}>
-                    <div className="transition-transform duration-200 hover:-translate-y-1">
-                      <ResourceCard
-                        id={resource.id}
-                        title={resource.title}
-                        description={resource.short_description || resource.description}
-                        thumbnailUrl={resource.thumbnail_url}
-                        type={resource.resource_type}
-                        contributorName={resource.contributor?.name ?? null}
-                        slug={resource.slug}
-                        averageRating={
-                          resourceRatings.get(resource.id)?.average_rating ?? 0
-                        }
-                        totalRatings={
-                          resourceRatings.get(resource.id)?.total_ratings ?? 0
-                        }
-                      />
-                    </div>
-                  </FadeIn>
-                ))}
-              </div>
-            )}
-          </div>
-        </section>
-      </FadeIn>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                to="/resources"
+                className="inline-flex items-center gap-2 rounded-2xl bg-brand-primary px-5 py-3 font-medium text-white transition hover:opacity-90"
+              >
+                Explorar recursos
+                <ArrowRight className="h-4 w-4" />
+              </Link>
 
-      <FadeIn delay={0.14}>
-        <section className="px-0 py-10">
-          <div className="mx-auto max-w-7xl">
-            <div className="mb-6 flex items-end justify-between gap-4">
-              <div>
-                <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
-                  Historial
-                </p>
-                <h2 className="mt-2 font-heading text-3xl">Últimas descargas</h2>
-              </div>
-              <Link to="/dashboard/downloads" className="text-sm text-brand-accent">
-                Ver descargas
+              <Link
+                to="/dashboard/library"
+                className="rounded-2xl border border-surface-border bg-bg-soft px-5 py-3 font-medium text-text-primary transition hover:bg-surface-hover"
+              >
+                Ver mi librería
               </Link>
             </div>
-
-            {recentDownloads.length === 0 ? (
-              <EmptyState
-                icon={<Download className="h-5 w-5" />}
-                title="Aún no tienes descargas"
-                description="Cuando descargues recursos, aparecerán aquí."
-              />
-            ) : (
-              <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-                {recentDownloads.map((resource, index) => (
-                  <FadeIn key={resource.id} delay={0.02 * (index % 8)}>
-                    <div className="transition-transform duration-200 hover:-translate-y-1">
-                      <ResourceCard
-                        id={resource.id}
-                        title={resource.title}
-                        description={resource.short_description || resource.description}
-                        thumbnailUrl={resource.thumbnail_url}
-                        type={resource.resource_type}
-                        contributorName={resource.contributor?.name ?? null}
-                        slug={resource.slug}
-                        averageRating={
-                          resourceRatings.get(resource.id)?.average_rating ?? 0
-                        }
-                        totalRatings={
-                          resourceRatings.get(resource.id)?.total_ratings ?? 0
-                        }
-                      />
-                    </div>
-                  </FadeIn>
-                ))}
-              </div>
-            )}
           </div>
+        </SectionCard>
+      </section>
+
+      <section className="py-8">
+        {loading ? (
+          <div className="grid gap-6 md:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div
+                key={index}
+                className="animate-pulse rounded-3xl border border-surface-border bg-surface p-6"
+              >
+                <div className="h-4 w-24 rounded bg-bg-soft" />
+                <div className="mt-4 h-10 w-16 rounded bg-bg-soft" />
+                <div className="mt-4 h-4 w-32 rounded bg-bg-soft" />
+              </div>
+            ))}
+          </div>
+        ) : error ? (
+          <SectionCard className="border-red-500/20 bg-red-500/10 p-6">
+            <h2 className="font-heading text-xl">No pudimos cargar tu panel</h2>
+            <p className="mt-2 text-sm text-brand-primary">{error}</p>
+          </SectionCard>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-3">
+            <StatCard
+              label="Guardados"
+              value={stats.savedCount}
+              icon={<Bookmark className="h-4 w-4" />}
+            />
+            <StatCard
+              label="Favoritos"
+              value={stats.favoriteCount}
+              icon={<Heart className="h-4 w-4" />}
+            />
+            <StatCard
+              label="Descargas"
+              value={stats.downloadCount}
+              icon={<Download className="h-4 w-4" />}
+            />
+          </div>
+        )}
+      </section>
+
+      {status === 'pending' && (
+        <section className="py-8">
+          <SectionCard className="flex flex-col gap-4 border-2 border-yellow-200/50 bg-yellow-50/50 p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-yellow-100">
+                <Clock className="h-5 w-5 text-yellow-600" />
+              </div>
+              <div>
+                <h3 className="font-heading text-lg text-text-primary">
+                  {t('dashboard.contributorCta.pendingTitle')}
+                </h3>
+                <p className="mt-1 text-sm text-brand-primary">
+                  {t('dashboard.contributorCta.pendingBody')}
+                </p>
+                {latestApplication?.admin_notes && (
+                  <p className="mt-2 rounded-lg bg-surface px-4 py-3 text-sm text-brand-primary">
+                    <strong>{t('contributorApply.adminFeedback')}:</strong> {latestApplication.admin_notes}
+                  </p>
+                )}
+              </div>
+            </div>
+            <Link to="/become-a-contributor">
+              <AppButton variant="secondary" className="shrink-0">
+                {t('common.viewAll')}
+              </AppButton>
+            </Link>
+          </SectionCard>
         </section>
-      </FadeIn>
+      )}
+
+      {status === 'contributor' && (
+        <section className="py-8">
+          <SectionCard className="flex flex-col gap-4 border-2 border-brand-accent/30 p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-accent/10">
+                <CheckCircle2 className="h-5 w-5 text-brand-accent" />
+              </div>
+              <div>
+                <h3 className="font-heading text-lg text-text-primary">
+                  {t('contributorDashboard.badge')}
+                </h3>
+                <p className="mt-1 text-sm text-brand-primary">
+                  {t('contributorDashboard.subtitle')}
+                </p>
+              </div>
+            </div>
+            <div className="flex shrink-0 flex-wrap gap-2">
+              <Link to="/dashboard/contributor/profile">
+                <AppButton variant="secondary">
+                  {t('contributorDashboard.myProfile')}
+                </AppButton>
+              </Link>
+              <Link to="/dashboard/contributor/resources">
+                <AppButton variant="secondary">
+                  {t('contributorDashboard.myResources')}
+                </AppButton>
+              </Link>
+              <Link to="/dashboard/contributor/resources/new">
+                <AppButton>
+                  {t('contributorDashboard.newResource')}
+                </AppButton>
+              </Link>
+            </div>
+          </SectionCard>
+        </section>
+      )}
+
+      {status === 'user' && (
+        <section className="py-8">
+          <SectionCard className="flex flex-col gap-4 border-2 border-brand-accent/30 p-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-accent/10">
+                <Users className="h-5 w-5 text-brand-accent" />
+              </div>
+              <div>
+                <h3 className="font-heading text-lg text-text-primary">
+                  {t('dashboard.contributorCta.title')}
+                </h3>
+                <p className="mt-1 text-sm text-brand-primary">
+                  {t('dashboard.contributorCta.body')}
+                </p>
+              </div>
+            </div>
+            <Link to="/become-a-contributor">
+              <AppButton className="shrink-0">
+                {t('dashboard.contributorCta.button')}
+              </AppButton>
+            </Link>
+          </SectionCard>
+        </section>
+      )}
+
+      <section className="py-4">
+        <div className="mb-6 flex items-end justify-between gap-4">
+          <div>
+            <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
+              Tu actividad
+            </p>
+            <h2 className="mt-2 font-heading text-3xl">Recursos recientes</h2>
+          </div>
+          <Link to="/dashboard/library" className="text-sm text-brand-accent">
+            Ver librería
+          </Link>
+        </div>
+
+        {recentLibrary.length === 0 ? (
+          <EmptyState
+            icon={<Sparkles className="h-5 w-5" />}
+            title="Tu librería está vacía"
+            description="Guarda o desbloquea recursos para verlos aquí."
+          />
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+            {recentLibrary.map((resource) => (
+              <div key={resource.id} className="transition-transform duration-200 hover:-translate-y-1">
+                <ResourceCard
+                  id={resource.id}
+                  title={resource.title}
+                  description={resource.short_description || resource.description}
+                  thumbnailUrl={resource.thumbnail_url}
+                  type={resource.resource_type}
+                  contributorName={resource.contributor?.name ?? null}
+                  slug={resource.slug}
+                  averageRating={
+                    resourceRatings.get(resource.id)?.average_rating ?? 0
+                  }
+                  totalRatings={
+                    resourceRatings.get(resource.id)?.total_ratings ?? 0
+                  }
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="py-10">
+        <div className="mb-6 flex items-end justify-between gap-4">
+          <div>
+            <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
+              Historial
+            </p>
+            <h2 className="mt-2 font-heading text-3xl">Últimas descargas</h2>
+          </div>
+          <Link to="/dashboard/downloads" className="text-sm text-brand-accent">
+            Ver descargas
+          </Link>
+        </div>
+
+        {recentDownloads.length === 0 ? (
+          <EmptyState
+            icon={<Download className="h-5 w-5" />}
+            title="Aún no tienes descargas"
+            description="Cuando descargues recursos, aparecerán aquí."
+          />
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+            {recentDownloads.map((resource) => (
+              <div key={resource.id} className="transition-transform duration-200 hover:-translate-y-1">
+                <ResourceCard
+                  id={resource.id}
+                  title={resource.title}
+                  description={resource.short_description || resource.description}
+                  thumbnailUrl={resource.thumbnail_url}
+                  type={resource.resource_type}
+                  contributorName={resource.contributor?.name ?? null}
+                  slug={resource.slug}
+                  averageRating={
+                    resourceRatings.get(resource.id)?.average_rating ?? 0
+                  }
+                  totalRatings={
+                    resourceRatings.get(resource.id)?.total_ratings ?? 0
+                  }
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   )
 }

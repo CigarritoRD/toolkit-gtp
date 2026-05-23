@@ -2,6 +2,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import {
   ArrowLeft,
+  BarChart3,
   FileSearch,
   FolderKanban,
   Grid2x2,
@@ -18,7 +19,6 @@ import { useAuth } from '@/auth/useAuth'
 import AppButton from '@/components/ui/AppButton'
 import LanguageSwitcher from '@/components/layout/LanguageSwitcher'
 import ThemeToggle from '@/components/layout/ThemeToggle'
-import PageTransition from '@/components/ui/PageTransition'
 import gtpLogo from '@/assets/gtp-logo.png'
 
 type AdminNavItem = {
@@ -74,6 +74,11 @@ export default function AdminLayout() {
       label: t('admin.nav.tags'),
       to: '/admin/tags',
       icon: Tag,
+    },
+    {
+      label: t('admin.nav.metrics'),
+      to: '/admin/metrics',
+      icon: BarChart3,
     },
   ]
 
@@ -277,9 +282,7 @@ export default function AdminLayout() {
           </header>
 
           <main className="flex-1 px-4 py-4 sm:px-6 lg:px-8">
-            <PageTransition>
-              <Outlet />
-            </PageTransition>
+            <Outlet />
           </main>
 
           <footer className="border-t border-surface-border bg-surface">

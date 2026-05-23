@@ -4,7 +4,6 @@ import { UserPlus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { useAuth } from '@/auth/useAuth'
-import FadeIn from '@/components/ui/FadeIn'
 import AppInput from '@/components/ui/AppInput'
 import AppButton from '@/components/ui/AppButton'
 import CountrySelect from '@/components/ui/CountrySelect'
@@ -42,6 +41,7 @@ export default function RegisterPage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [country, setCountry] = useState('')
+  const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -92,7 +92,7 @@ export default function RegisterPage() {
     try {
       setLoading(true)
 
-      await signUp(normalizedEmail, password, normalizedName, country)
+      await signUp(normalizedEmail, password, normalizedName, country, phone || undefined)
 
       toast.success(t('auth.registerSuccess'))
       navigate('/dashboard')
@@ -108,8 +108,7 @@ export default function RegisterPage() {
     <div className="relative flex min-h-screen items-center justify-center bg-bg px-6 text-text-primary">
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(0,116,115,0.12),transparent_40%),radial-gradient(circle_at_top_right,rgba(0,171,199,0.10),transparent_35%)]" />
 
-      <FadeIn>
-        <SectionCard className="w-full max-w-md p-8">
+      <SectionCard className="w-full max-w-md p-8">
           <div className="mb-6 text-center">
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-primary/10 text-brand-primary">
               <UserPlus className="h-5 w-5" />
@@ -157,6 +156,14 @@ export default function RegisterPage() {
             />
 
             <AppInput
+              label={t('auth.phoneOptional')}
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="+1 809 555 1234"
+            />
+
+            <AppInput
               label={t('auth.password')}
               type="password"
               value={password}
@@ -182,7 +189,6 @@ export default function RegisterPage() {
             </Link>
           </p>
         </SectionCard>
-      </FadeIn>
     </div>
   )
 }

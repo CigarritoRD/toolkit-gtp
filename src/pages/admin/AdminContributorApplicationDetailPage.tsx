@@ -4,7 +4,6 @@ import { CheckCircle2, Mail, Phone, UserSquare2, XCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/auth/useAuth'
-import FadeIn from '@/components/ui/FadeIn'
 import SectionCard from '@/components/ui/SectionCard'
 import AppButton from '@/components/ui/AppButton'
 import AppTextarea from '@/components/ui/AppTextarea'
@@ -134,8 +133,7 @@ export default function AdminContributorApplicationDetailPage() {
         </p>
       </div>
 
-      <FadeIn>
-        <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
+      <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
           <SectionCard className="p-6">
             <div className="flex flex-col items-center text-center">
               <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-xl border border-surface-border bg-bg-soft shadow-[var(--shadow-soft)]">
@@ -348,7 +346,6 @@ export default function AdminContributorApplicationDetailPage() {
             </div>
           </SectionCard>
         </div>
-      </FadeIn>
     </div>
   )
 }

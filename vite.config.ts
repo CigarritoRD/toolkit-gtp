@@ -81,11 +81,21 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-          'vendor-ui': ['lucide-react', 'framer-motion', 'recharts', 'sonner', 'sweetalert2'],
-          'vendor-utils': ['i18next', 'react-i18next', '@hookform/resolvers', 'zod', 'react-hook-form'],
-          'vendor-supabase': ['@supabase/supabase-js'],
+        manualChunks(id: string) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+              return 'vendor-react'
+            }
+            if (id.includes('lucide') || id.includes('framer-motion') || id.includes('recharts') || id.includes('sonner') || id.includes('sweetalert')) {
+              return 'vendor-ui'
+            }
+            if (id.includes('i18next') || id.includes('@hookform') || id.includes('zod') || id.includes('react-hook-form')) {
+              return 'vendor-utils'
+            }
+            if (id.includes('supabase')) {
+              return 'vendor-supabase'
+            }
+          }
         },
       },
     },

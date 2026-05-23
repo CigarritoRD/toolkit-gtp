@@ -8,6 +8,13 @@ import SectionCard from '@/components/ui/SectionCard'
 import SearchInput from '@/components/ui/SearchInput'
 import { AdminTableSkeleton } from '@/components/ui/Skeleton'
 import { getTags } from '@/lib/api/tags'
+import {
+  getCachedAdminData,
+  setCachedAdminData,
+} from '@/lib/adminCache'
+
+const CACHE_KEY = 'admin:tags'
+const CACHE_TTL = 60_000
 
 type AdminTagItem = {
   id: string
@@ -22,29 +29,44 @@ type AdminTagItem = {
 export default function AdminTagsPage() {
   const { t } = useTranslation()
 
-  const [items, setItems] = useState<AdminTagItem[]>([])
-  const [loading, setLoading] = useState(true)
+  const [items, setItems] = useState<AdminTagItem[]>(() =>
+    getCachedAdminData<AdminTagItem[]>(CACHE_KEY) ?? [],
+  )
+  const [loading, setLoading] = useState(() => !getCachedAdminData(CACHE_KEY))
   const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState('')
+  const hasInitialData = getCachedAdminData<AdminTagItem[]>(CACHE_KEY) !== null
 
-  const loadTags = useCallback(async () => {
-    try {
-      setLoading(true)
-      setError(null)
-      const data = await getTags()
-      setItems((data ?? []) as unknown as AdminTagItem[])
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : t('admin.tags.errorDescription'),
-      )
-    } finally {
-      setLoading(false)
-    }
-  }, [t])
+  const loadTags = useCallback(
+    async (silent = false) => {
+      try {
+        if (!silent) {
+          setError(null)
+        }
+        const data = await getTags()
+        const result = (data ?? []) as unknown as AdminTagItem[]
+        setItems(result)
+        setCachedAdminData(CACHE_KEY, result, CACHE_TTL)
+      } catch (err) {
+        if (!silent) {
+          setError(
+            err instanceof Error ? err.message : t('admin.tags.errorDescription'),
+          )
+        }
+      } finally {
+        if (!silent) {
+          setLoading(false)
+        }
+      }
+    },
+    [t],
+  )
 
   useEffect(() => {
-    void loadTags()
-  }, [loadTags])
+    if (!hasInitialData) {
+      void loadTags(false)
+    }
+  }, [hasInitialData, loadTags])
 
   const filteredItems = useMemo(() => {
     const term = search.trim().toLowerCase()

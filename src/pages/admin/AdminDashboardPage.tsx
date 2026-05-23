@@ -12,6 +12,7 @@ import {
 } from 'recharts'
 
 import {
+  BarChart3,
   FileSearch,
   FolderKanban,
   Grid2x2,
@@ -20,6 +21,7 @@ import {
   Users,
   Star,
   Globe2,
+  Clock,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import {
@@ -46,39 +48,95 @@ import {
   type TopContributorMetric,
   type TopResourceMetric,
 } from '@/lib/api/analytics'
+import { getPendingReviewResources } from '@/lib/api/resources'
 import AppButton from '@/components/ui/AppButton'
 import EmptyState from '@/components/ui/EmptyState'
 import SectionCard from '@/components/ui/SectionCard'
 import StatusBadge from '@/components/ui/StatusBadge'
 import RatingSummaryBadge from '@/components/ratings/RatingSummaryBadge'
+import {
+  getCachedAdminData,
+  setCachedAdminData,
+} from '@/lib/adminCache'
+
+const CACHE_KEY = 'admin:dashboard'
+const CACHE_TTL = 60_000
+
+type DashboardCache = {
+  overview: AdminOverviewMetric | null
+  recentContributors: AdminRecentContributor[]
+  recentResources: AdminRecentResource[]
+  pendingApplications: ContributorApplicationRecord[]
+  pendingResources: ResourceListItem[]
+  topResources: TopResourceMetric[]
+  topContributors: TopContributorMetric[]
+  countryMetrics: CountryMetric[]
+  topRatedResources: ResourceRatingMetric[]
+  topRatedContributors: ContributorRatingMetric[]
+}
+
+type ResourceListItem = {
+  id: string
+  title: string
+  slug: string
+  short_description?: string | null
+  thumbnail_url?: string | null
+  resource_type?: string | null
+  contributor_id: string
+  category_id?: string
+  is_featured?: boolean
+  is_public?: boolean
+  is_published?: boolean
+  approval_status?: string | null
+  created_at: string
+  contributor?: {
+    id: string
+    name: string
+    slug: string
+  } | null
+}
 
 export default function AdminDashboardPage() {
   const { t } = useTranslation()
 
-  const [overview, setOverview] = useState<AdminOverviewMetric | null>(null)
+  const cached = getCachedAdminData<DashboardCache>(CACHE_KEY)
+
+  const [overview, setOverview] = useState<AdminOverviewMetric | null>(
+    cached?.overview ?? null,
+  )
   const [recentContributors, setRecentContributors] = useState<
     AdminRecentContributor[]
-  >([])
-  const [recentResources, setRecentResources] = useState<AdminRecentResource[]>([])
+  >(cached?.recentContributors ?? [])
+  const [recentResources, setRecentResources] = useState<AdminRecentResource[]>(
+    cached?.recentResources ?? [],
+  )
   const [pendingApplications, setPendingApplications] = useState<
     ContributorApplicationRecord[]
-  >([])
-  const [topResources, setTopResources] = useState<TopResourceMetric[]>([])
-  const [topContributors, setTopContributors] = useState<TopContributorMetric[]>([])
-  const [countryMetrics, setCountryMetrics] = useState<CountryMetric[]>([])
+  >(cached?.pendingApplications ?? [])
+  const [pendingResources, setPendingResources] = useState<ResourceListItem[]>(
+    cached?.pendingResources ?? [],
+  )
+  const [topResources, setTopResources] = useState<TopResourceMetric[]>(
+    cached?.topResources ?? [],
+  )
+  const [topContributors, setTopContributors] = useState<TopContributorMetric[]>(
+    cached?.topContributors ?? [],
+  )
+  const [countryMetrics, setCountryMetrics] = useState<CountryMetric[]>(
+    cached?.countryMetrics ?? [],
+  )
   const [topRatedResources, setTopRatedResources] = useState<ResourceRatingMetric[]>(
-    [],
+    cached?.topRatedResources ?? [],
   )
   const [topRatedContributors, setTopRatedContributors] = useState<
     ContributorRatingMetric[]
-  >([])
-  const [loading, setLoading] = useState(true)
+  >(cached?.topRatedContributors ?? [])
+  const [loading, setLoading] = useState(() => !getCachedAdminData(CACHE_KEY))
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     async function loadDashboard() {
       try {
-        setLoading(true)
         setError(null)
 
         const [
@@ -86,6 +144,7 @@ export default function AdminDashboardPage() {
           contributorsData,
           resourcesData,
           applicationsData,
+          pendingResourcesData,
           topResourcesData,
           topContributorsData,
           countryMetricsData,
@@ -96,6 +155,7 @@ export default function AdminDashboardPage() {
           getRecentContributors(5),
           getRecentResources(5),
           getContributorApplications('pending_review'),
+          getPendingReviewResources(),
           getTopResources(5),
           getTopContributorsByViews(5),
           getResourceEventsByCountry(10),
@@ -103,15 +163,31 @@ export default function AdminDashboardPage() {
           getTopRatedContributors(5),
         ])
 
+        const dashboardData: DashboardCache = {
+          overview: overviewData,
+          recentContributors: contributorsData,
+          recentResources: resourcesData,
+          pendingApplications: applicationsData.slice(0, 5),
+          pendingResources: (pendingResourcesData ?? []).slice(0, 5) as unknown as ResourceListItem[],
+          topResources: topResourcesData,
+          topContributors: topContributorsData,
+          countryMetrics: countryMetricsData,
+          topRatedResources: topRatedResourcesData,
+          topRatedContributors: topRatedContributorsData,
+        }
+
         setOverview(overviewData)
         setRecentContributors(contributorsData)
         setRecentResources(resourcesData)
         setPendingApplications(applicationsData.slice(0, 5))
+        setPendingResources((pendingResourcesData ?? []).slice(0, 5) as unknown as ResourceListItem[])
         setTopResources(topResourcesData)
         setTopContributors(topContributorsData)
         setCountryMetrics(countryMetricsData)
         setTopRatedResources(topRatedResourcesData)
         setTopRatedContributors(topRatedContributorsData)
+
+        setCachedAdminData(CACHE_KEY, dashboardData, CACHE_TTL)
       } catch (err) {
         setError(err instanceof Error ? err.message : t('admin.dashboard.error'))
       } finally {
@@ -234,6 +310,14 @@ export default function AdminDashboardPage() {
           to="/admin/categories"
           actionLabel={t('admin.dashboard.qaCategoriesAction')}
         />
+
+        <QuickActionCard
+          icon={<BarChart3 className="h-5 w-5" />}
+          title={t('admin.dashboard.qaMetricsTitle')}
+          description={t('admin.dashboard.qaMetricsBody')}
+          to="/admin/metrics"
+          actionLabel={t('admin.dashboard.qaMetricsAction')}
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
@@ -295,6 +379,63 @@ export default function AdminDashboardPage() {
                       <StatusBadge label={t('admin.dashboard.pending')} tone="warning" />
 
                       <Link to={`/admin/contributor-applications/${item.id}`}>
+                        <AppButton variant="secondary">
+                          {t('common.review')}
+                        </AppButton>
+                      </Link>
+                    </div>
+                  </div>
+                )
+              })
+            )}
+          </div>
+        </SectionCard>
+
+        <SectionCard className="overflow-hidden xl:col-span-1">
+          <div className="flex items-center justify-between border-b border-surface-border px-5 py-4">
+            <div>
+              <h2 className="font-heading text-lg text-text-primary">
+                {t('admin.dashboard.pendingResourcesTitle')}
+              </h2>
+              <p className="text-sm text-text-secondary">
+                {t('admin.dashboard.pendingResourcesSubtitle')}
+              </p>
+            </div>
+
+            <Link to="/admin/resources?filter=pending_review">
+              <AppButton variant="ghost">{t('common.viewAll')}</AppButton>
+            </Link>
+          </div>
+
+          <div className="divide-y divide-surface-border">
+            {pendingResources.length === 0 ? (
+              <div className="p-5">
+                <EmptyState
+                  icon={<Clock className="h-5 w-5" />}
+                  title={t('admin.dashboard.noPendingResourcesTitle')}
+                  description={t('admin.dashboard.noPendingResourcesBody')}
+                />
+              </div>
+            ) : (
+              pendingResources.map((item) => {
+                return (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between gap-4 px-5 py-4"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate font-medium text-text-primary">
+                        {item.title}
+                      </p>
+                      <p className="truncate text-sm text-text-secondary">
+                        {item.contributor?.name ?? t('admin.dashboard.noContributor')} ·{' '}
+                        {item.resource_type ?? t('admin.dashboard.noType')}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <StatusBadge label={t('admin.resources.statusPending')} tone="warning" />
+                      <Link to={`/admin/resources/${item.id}/edit`}>
                         <AppButton variant="secondary">
                           {t('common.review')}
                         </AppButton>

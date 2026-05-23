@@ -9,7 +9,6 @@ import {
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import ResourceCard from '@/components/resources/ResourceCard'
-import FadeIn from '@/components/ui/FadeIn'
 import EmptyState from '@/components/ui/EmptyState'
 import SearchInput from '@/components/ui/SearchInput'
 import AppButton from '@/components/ui/AppButton'
@@ -194,8 +193,7 @@ export default function ResourcesPage() {
 
   return (
     <div className="bg-bg text-text-primary">
-      <FadeIn>
-        <section className="relative px-6 py-14 md:px-10 lg:px-16 lg:py-16">
+      <section className="relative px-6 py-14 md:px-10 lg:px-16 lg:py-16">
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-brand-primary/5 via-transparent to-brand-accent/5" />
           <div className="relative mx-auto max-w-6xl">
             <div className="max-w-3xl">
@@ -249,10 +247,8 @@ export default function ResourcesPage() {
             </div>
           </div>
         </section>
-      </FadeIn>
 
-      <FadeIn delay={0.08}>
-        <section className="px-6 pb-10 md:px-10 lg:px-16">
+      <section className="px-6 pb-10 md:px-10 lg:px-16">
           <div className="mx-auto max-w-6xl">
             <SectionCard className="p-5">
               <div className="mb-4 flex items-center gap-2">
@@ -343,9 +339,7 @@ export default function ResourcesPage() {
             </SectionCard>
           </div>
         </section>
-      </FadeIn>
 
-      <FadeIn delay={0.12}>
         <section className="px-6 pb-16 md:px-10 lg:px-16">
           <div className="mx-auto max-w-6xl">
             {loading ? (
@@ -395,33 +389,30 @@ export default function ResourcesPage() {
                 </div>
 
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {filteredResources.map((resource, index) => (
-                    <FadeIn key={resource.id} delay={0.02 * (index % 6)}>
-                      <div className="transition-transform duration-200 hover:-translate-y-1">
-                        <ResourceCard
-                          id={resource.id}
-                          title={resource.title}
-                          description={resource.short_description || resource.description}
-                          thumbnailUrl={resource.thumbnail_url}
-                          type={resource.resource_type}
-                          contributorName={resource.contributor?.name ?? null}
-                          slug={resource.slug}
-                          averageRating={
-                            resourceRatings.get(resource.id)?.average_rating ?? 0
-                          }
-                          totalRatings={
-                            resourceRatings.get(resource.id)?.total_ratings ?? 0
-                          }
-                        />
-                      </div>
-                    </FadeIn>
+                  {filteredResources.map((resource) => (
+                    <div key={resource.id} className="transition-transform duration-200 hover:-translate-y-1">
+                      <ResourceCard
+                        id={resource.id}
+                        title={resource.title}
+                        description={resource.short_description || resource.description}
+                        thumbnailUrl={resource.thumbnail_url}
+                        type={resource.resource_type}
+                        contributorName={resource.contributor?.name ?? null}
+                        slug={resource.slug}
+                        averageRating={
+                          resourceRatings.get(resource.id)?.average_rating ?? 0
+                        }
+                        totalRatings={
+                          resourceRatings.get(resource.id)?.total_ratings ?? 0
+                        }
+                      />
+                    </div>
                   ))}
                 </div>
               </>
             )}
           </div>
         </section>
-      </FadeIn>
     </div>
   )
 }
