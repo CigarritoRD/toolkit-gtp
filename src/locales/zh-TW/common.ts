@@ -544,6 +544,8 @@ nav: {
     signingUp: '建立中...',
     noAccount: '沒有帳戶？',
     alreadyHaveAccount: '已經有帳戶？',
+    forgotPasswordLabel: '忘記密碼？',
+    rememberPassword: '想起密碼了？',
     forgotPassword: {
       title: '找回密碼',
       subtitle: '輸入您的電子郵件，我們將發送重置密碼連結。',

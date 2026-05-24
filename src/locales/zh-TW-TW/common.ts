@@ -544,6 +544,8 @@ pendingTitle: '待處理申請',
     signingUp: '建立中...',
     noAccount: '沒有帳號？',
     alreadyHaveAccount: '已經有帳號？',
+    forgotPasswordLabel: '忘記密碼？',
+    rememberPassword: '想起密碼了？',
     forgotPassword: {
       title: '找回密碼',
       subtitle: '輸入您的電子郵件，我們將發送重置密碼連結。',

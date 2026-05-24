@@ -594,6 +594,8 @@ download: 'Download',
     signingUp: 'Creating...',
     noAccount: "Don't have an account?",
     alreadyHaveAccount: 'Already have an account?',
+    forgotPasswordLabel: 'Forgot your password?',
+    rememberPassword: 'Remember your password?',
     forgotPassword: {
       title: 'Recover password',
       subtitle: 'Enter your email and we will send you a link to reset your password.',

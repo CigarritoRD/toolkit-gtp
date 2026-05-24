@@ -63,13 +63,14 @@ export const router = createBrowserRouter([
       { path: 'contributors/:slug', element: <ContributorDetailPage /> },
       { path: 'become-a-contributor', element: <BecomeContributorPage /> },
 
+      { path: 'forgot-password', element: <ForgotPasswordPage /> },
+      { path: 'reset-password', element: <ResetPasswordPage /> },
+
       {
         element: <GuestRoute />,
         children: [
           { path: 'login', element: <LoginPage /> },
           { path: 'register', element: <RegisterPage /> },
-          { path: 'forgot-password', element: <ForgotPasswordPage /> },
-          { path: 'reset-password', element: <ResetPasswordPage /> },
         ],
       },
     ],

@@ -565,6 +565,8 @@ const zh = {
         signingUp: '正在创建...',
         noAccount: '还没有账户？',
         alreadyHaveAccount: '已经有账户？',
+        forgotPasswordLabel: '忘记密码？',
+        rememberPassword: '想起密码了？',
         forgotPassword: {
             title: '找回密码',
             subtitle: '输入你的邮箱，我们将发送重置密码链接。',
