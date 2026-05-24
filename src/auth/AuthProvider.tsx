@@ -171,6 +171,33 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setProfile(null)
   }, [])
 
+  const changePassword = useCallback(
+    async (currentPassword: string, newPassword: string) => {
+      if (!user?.email) {
+        throw new Error('No se encontró la sesión del usuario.')
+      }
+
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: currentPassword,
+      })
+
+      if (signInError) {
+        throw new Error('La contraseña actual es incorrecta.')
+      }
+
+      const { error: updateError } = await supabase.auth.updateUser({
+        password: newPassword,
+      })
+
+      if (updateError) {
+        console.error('Error updating password:', updateError)
+        throw new Error('No se pudo actualizar la contraseña.')
+      }
+    },
+    [user],
+  )
+
   const value = useMemo<AuthContextType>(
     () => ({
       user,
@@ -180,8 +207,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       signUp,
       signOut,
       refreshProfile,
+      changePassword,
     }),
-    [user, profile, loading, signIn, signUp, signOut, refreshProfile],
+    [user, profile, loading, signIn, signUp, signOut, refreshProfile, changePassword],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

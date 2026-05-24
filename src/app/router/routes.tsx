@@ -30,6 +30,7 @@ import ContributorResourcesPage from '@/pages/dashboard/contributor/ContributorR
 import ContributorResourceEditPage from '@/pages/dashboard/contributor/ContributorResourceEditPage'
 
 import AdminDashboardPage from '@/pages/admin/AdminDashboardPage'
+import AdminAccountPage from '@/pages/admin/AdminAccountPage'
 import AdminResourcesPage from '@/pages/admin/AdminResourcesPage'
 import AdminResourceCreatePage from '@/pages/admin/AdminResourceCreatePage'
 import AdminResourceEditPage from '@/pages/admin/AdminResourceEditPage'
@@ -101,6 +102,7 @@ export const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <AdminDashboardPage /> },
+      { path: 'account', element: <AdminAccountPage /> },
 
       { path: 'resources', element: <AdminResourcesPage /> },
       { path: 'resources/new', element: <AdminResourceCreatePage /> },

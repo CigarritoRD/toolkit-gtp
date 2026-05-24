@@ -31,6 +31,7 @@ const zh = {
             categories: '分类',
             tags: '标签',
             metrics: '指标',
+            account: '账户',
         },
         layout: {
             adminPanel: '管理面板',
@@ -40,6 +41,11 @@ const zh = {
             signOut: '退出登录',
             footerTitle: 'Toolkit 管理面板',
             footerBody: '管理贡献者、资源、分类和平台活动。',
+        },
+        account: {
+            badge: '账户',
+            title: '我的账户',
+            subtitle: '管理你的管理员信息。',
         },
         dashboard: {
             badge: '管理',
@@ -581,6 +587,20 @@ const zh = {
         saving: '正在保存...',
         saveChanges: '保存更改',
         reset: '重置',
+        changePasswordTitle: '更改密码',
+        changePasswordBody: '更新你的密码以保障账户安全。',
+        currentPassword: '当前密码',
+        currentPasswordPlaceholder: '输入当前密码',
+        currentPasswordRequired: '输入当前密码。',
+        newPassword: '新密码',
+        newPasswordPlaceholder: '至少 8 个字符',
+        newPasswordRequired: '输入新密码。',
+        confirmNewPassword: '确认新密码',
+        confirmNewPasswordPlaceholder: '再次输入新密码',
+        confirmPasswordRequired: '确认新密码。',
+        passwordUpdated: '密码更新成功。',
+        passwordUpdateError: '无法更新密码。',
+        updatePassword: '更新密码',
     },
 
     home: {

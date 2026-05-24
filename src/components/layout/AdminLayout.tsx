@@ -10,6 +10,7 @@ import {
   LogOut,
   Menu,
   Tag,
+  UserCircle,
   Users,
   X,
 } from 'lucide-react'
@@ -79,6 +80,11 @@ export default function AdminLayout() {
       label: t('admin.nav.metrics'),
       to: '/admin/metrics',
       icon: BarChart3,
+    },
+    {
+      label: t('admin.nav.account'),
+      to: '/admin/account',
+      icon: UserCircle,
     },
   ]
 

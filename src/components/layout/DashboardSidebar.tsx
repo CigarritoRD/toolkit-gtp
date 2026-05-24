@@ -47,15 +47,17 @@ export default function DashboardSidebar({
   return (
     <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col border-r border-surface-border bg-surface/60 backdrop-blur-xl">
       <div className="px-6 pt-6">
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-primary text-white">
-            <Sparkles className="h-4 w-4" />
+        <Link to="/" className="block">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-primary text-white">
+              <Sparkles className="h-4 w-4" />
+            </div>
+            <div>
+              <p className="font-heading text-base font-semibold text-text-primary">Toolkit</p>
+              <p className="text-xs text-brand-primary">Panel de usuario</p>
+            </div>
           </div>
-          <div>
-            <p className="font-heading text-base font-semibold text-text-primary">Toolkit</p>
-            <p className="text-xs text-brand-primary">Panel de usuario</p>
-          </div>
-        </div>
+        </Link>
       </div>
 
       <div className="mx-4 mt-4 rounded-2xl border border-surface-border bg-bg-soft p-4">

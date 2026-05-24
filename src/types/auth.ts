@@ -27,4 +27,5 @@ export type AuthContextType = {
   ) => Promise<unknown>
   signOut: () => Promise<void>
   refreshProfile: () => Promise<void>
+  changePassword: (currentPassword: string, newPassword: string) => Promise<void>
 }
