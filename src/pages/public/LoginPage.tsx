@@ -98,6 +98,12 @@ export default function LoginPage() {
             </AppButton>
           </form>
 
+          <p className="mt-4 text-center text-sm text-brand-primary">
+            <Link to="/forgot-password" className="text-brand-accent hover:underline">
+              {t('auth.forgotPasswordLabel')}
+            </Link>
+          </p>
+
           <p className="mt-6 text-center text-sm text-brand-primary">
             {t('auth.noAccount')}{' '}
             <Link to="/register" className="text-brand-accent hover:underline">

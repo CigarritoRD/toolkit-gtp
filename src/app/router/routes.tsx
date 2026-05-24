@@ -14,6 +14,8 @@ import ResourceDetailPage from '@/pages/public/ResourceDetailPage'
 import ContributorsPage from '@/pages/public/ContributorsPage'
 import ContributorDetailPage from '@/pages/public/ContributorDetailPage'
 import BecomeContributorPage from '@/pages/public/BecomeContributorPage'
+import ForgotPasswordPage from '@/pages/public/ForgotPasswordPage'
+import ResetPasswordPage from '@/pages/public/ResetPasswordPage'
 import LoginPage from '@/pages/public/LoginPage'
 import RegisterPage from '@/pages/public/RegisterPage'
 import NotFoundPage from '@/pages/public/NotFoundPage'
@@ -66,6 +68,8 @@ export const router = createBrowserRouter([
         children: [
           { path: 'login', element: <LoginPage /> },
           { path: 'register', element: <RegisterPage /> },
+          { path: 'forgot-password', element: <ForgotPasswordPage /> },
+          { path: 'reset-password', element: <ResetPasswordPage /> },
         ],
       },
     ],
