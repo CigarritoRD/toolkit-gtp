@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Bookmark, CheckCircle2, Clock, Download, Heart, Sparkles, Users, XCircle } from 'lucide-react'
+import { ArrowRight, Bookmark, CheckCircle2, Clock, Download, Heart, UserPlus, XCircle } from 'lucide-react'
 import ResourceCard from '@/components/resources/ResourceCard'
 import EmptyState from '@/components/ui/EmptyState'
 import SectionCard from '@/components/ui/SectionCard'
@@ -305,7 +305,7 @@ export default function DashboardHomePage() {
           <SectionCard className="flex flex-col gap-4 border-2 border-brand-accent/30 p-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-4">
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-accent/10">
-                <Users className="h-5 w-5 text-brand-accent" />
+                <UserPlus className="h-5 w-5 text-brand-accent" />
               </div>
               <div>
                 <h3 className="font-heading text-lg text-text-primary">
@@ -340,7 +340,7 @@ export default function DashboardHomePage() {
 
         {recentLibrary.length === 0 ? (
           <EmptyState
-            icon={<Sparkles className="h-5 w-5" />}
+            icon={<UserPlus className="h-5 w-5" />}
             title="Tu librería está vacía"
             description="Guarda o desbloquea recursos para verlos aquí."
           />

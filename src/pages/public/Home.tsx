@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowLeft, ArrowRight, Search, Sparkles } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Search, Users } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import ResourceCard from '@/components/resources/ResourceCard'
@@ -254,7 +254,7 @@ export default function Home() {
               <SectionCard className="p-6">
                 <div className="flex items-start gap-4">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-primary/10 text-brand-primary">
-                    <Sparkles className="h-5 w-5" />
+                    <Users className="h-5 w-5" />
                   </div>
 
                   <div>

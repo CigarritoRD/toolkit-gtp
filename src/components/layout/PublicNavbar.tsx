@@ -6,7 +6,7 @@ import {
   Library,
   LogOut,
   Shield,
-  Sparkles,
+  UserPlus,
   User,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -125,7 +125,7 @@ export default function PublicNavbar() {
               to="/become-a-contributor"
               className="inline-flex items-center gap-2 rounded-xl border border-surface-border bg-surface px-4 py-2 text-sm font-semibold text-text-primary transition hover:bg-surface-hover"
             >
-              <Sparkles className="h-4 w-4 text-brand-primary" />
+              <UserPlus className="h-4 w-4 text-brand-primary" />
               {t('nav.becomeContributor')}
             </Link>
           ) : null}
@@ -300,7 +300,7 @@ export default function PublicNavbar() {
                     onClick={closeMobileMenu}
                     className="mb-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-surface-border bg-surface px-4 py-3 text-sm font-semibold text-text-primary transition hover:bg-surface-hover"
                   >
-                    <Sparkles className="h-4 w-4 text-brand-primary" />
+                    <UserPlus className="h-4 w-4 text-brand-primary" />
                     {t('nav.becomeContributor')}
                   </Link>
                 ) : null}

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CheckCircle2, Clock, Send, Sparkles, Users } from 'lucide-react'
+import { CheckCircle2, Clock, Send, UserPlus, Users } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { useAuth } from '@/auth/useAuth'
@@ -257,7 +257,7 @@ export default function BecomeContributorPage() {
             <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
               <div>
                 <div className="inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface px-4 py-1 text-sm text-brand-primary shadow-[var(--shadow-soft)]">
-                  <Sparkles className="h-4 w-4 text-brand-primary" />
+                  <UserPlus className="h-4 w-4 text-brand-primary" />
                   {t('contributorApply.badge')}
                 </div>
 
