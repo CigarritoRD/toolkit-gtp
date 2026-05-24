@@ -142,6 +142,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         email: normalizedEmail,
         password,
         options: {
+          emailRedirectTo: `${window.location.origin}/auth/confirm`,
           data: {
             full_name: normalizedName,
             country: country || null,

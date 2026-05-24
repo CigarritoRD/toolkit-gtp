@@ -590,6 +590,9 @@ const zh = {
             success: '密码更新成功。',
             error: '无法更新密码。',
         },
+        confirmTitle: '帐户已确认！',
+        confirmSubtitle: '您的帐户已确认。现在可以使用您的凭据登录。',
+        confirmAction: '登录',
     },
     profile: {
         badge: '个人资料',

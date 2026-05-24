@@ -16,6 +16,7 @@ import ContributorDetailPage from '@/pages/public/ContributorDetailPage'
 import BecomeContributorPage from '@/pages/public/BecomeContributorPage'
 import ForgotPasswordPage from '@/pages/public/ForgotPasswordPage'
 import ResetPasswordPage from '@/pages/public/ResetPasswordPage'
+import AuthConfirmPage from '@/pages/public/AuthConfirmPage'
 import LoginPage from '@/pages/public/LoginPage'
 import RegisterPage from '@/pages/public/RegisterPage'
 import NotFoundPage from '@/pages/public/NotFoundPage'
@@ -65,6 +66,7 @@ export const router = createBrowserRouter([
 
       { path: 'forgot-password', element: <ForgotPasswordPage /> },
       { path: 'reset-password', element: <ResetPasswordPage /> },
+      { path: 'auth/confirm', element: <AuthConfirmPage /> },
 
       {
         element: <GuestRoute />,

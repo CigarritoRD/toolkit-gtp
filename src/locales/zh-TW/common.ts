@@ -569,6 +569,9 @@ nav: {
       success: '密碼更新成功。',
       error: '無法更新密碼。',
     },
+    confirmTitle: '帳戶已確認！',
+    confirmSubtitle: '您的帳戶已確認。現在可以使用您的憑據登入。',
+    confirmAction: '登入',
   },
   profile: {
     badge: '個人資料',

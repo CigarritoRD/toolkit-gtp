@@ -569,6 +569,9 @@ const es = {
       success: 'Contraseña actualizada correctamente.',
       error: 'No se pudo actualizar la contraseña.',
     },
+    confirmTitle: '¡Cuenta confirmada!',
+    confirmSubtitle: 'Tu cuenta ha sido confirmada. Ya puedes iniciar sesión con tus credenciales.',
+    confirmAction: 'Iniciar sesión',
   },
   profile: {
     badge: 'Perfil',
