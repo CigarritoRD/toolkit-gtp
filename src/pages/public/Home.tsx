@@ -575,7 +575,7 @@ function StatNumber({ label, value }: { label: string; value: number }) {
   }, [hasStarted])
 
   useEffect(() => {
-    if (!hasStarted) return
+    if (!hasStarted || prefersReducedMotion) return
 
     const duration = 1400
     const startTime = performance.now()
@@ -605,9 +605,9 @@ function StatNumber({ label, value }: { label: string; value: number }) {
     return () => {
       if (rafId) cancelAnimationFrame(rafId)
     }
-  }, [hasStarted, value])
+  }, [hasStarted, value, prefersReducedMotion])
 
-  if (prefersReducedMotion || hasStarted) {
+  if (prefersReducedMotion) {
     return (
       <div ref={ref}>
         <p className="text-sm uppercase tracking-[0.18em] text-brand-primary">
