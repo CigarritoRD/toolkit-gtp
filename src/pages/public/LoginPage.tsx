@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { LogIn } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { toast } from 'sonner'
 import { useAuth } from '@/auth/useAuth'
 import { supabase } from '@/lib/supabaseClient'
 import AppInput from '@/components/ui/AppInput'
@@ -17,9 +16,11 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setSubmitError(null)
 
     try {
       setLoading(true)
@@ -44,8 +45,6 @@ export default function LoginPage() {
         throw profileError
       }
 
-      toast.success('Welcome back 👋')
-
       if (profile?.role === 'admin') {
         navigate('/admin')
       } else {
@@ -53,7 +52,7 @@ export default function LoginPage() {
       }
     } catch (err) {
       console.error(err)
-      toast.error('Incorrect credentials.')
+      setSubmitError(t('auth.invalidCredentials'))
     } finally {
       setLoading(false)
     }
@@ -77,20 +76,35 @@ export default function LoginPage() {
             </p>
           </div>
 
+          {submitError ? (
+            <div className="mb-4 rounded-xl border border-red-200/50 bg-red-50/50 px-4 py-3 text-sm text-red-600">
+              {submitError}
+            </div>
+          ) : null}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <AppInput
               label={t('auth.email')}
+              type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value)
+                if (submitError) setSubmitError(null)
+              }}
               placeholder="correo@email.com"
+              autoComplete="email"
             />
 
             <AppInput
               label={t('auth.password')}
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value)
+                if (submitError) setSubmitError(null)
+              }}
               placeholder="••••••••"
+              autoComplete="current-password"
             />
 
             <AppButton type="submit" disabled={loading} className="w-full">

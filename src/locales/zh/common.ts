@@ -551,6 +551,11 @@ const zh = {
         phoneOptional: '电话（选填）',
         registerSuccess: '账户创建成功 🎉',
         registerError: '无法创建账户。',
+        registerCheckEmailTitle: '请检查你的邮箱',
+        registerCheckEmailBody: '我们向 {{email}} 发送了确认链接。打开它以激活你的账户。',
+        registerCheckEmailAction: '去登录',
+        invalidCredentials: '邮箱或密码不正确。',
+        formSubmitError: '发生错误，请重试。',
 
         loginTitle: '登录',
         loginSubtitle: '登录你的账户以继续',

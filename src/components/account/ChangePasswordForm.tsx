@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { toast } from 'sonner'
 import { useAuth } from '@/auth/useAuth'
 import AppButton from '@/components/ui/AppButton'
 import AppInput from '@/components/ui/AppInput'
@@ -18,6 +17,7 @@ export default function ChangePasswordForm() {
     newPassword?: string
     confirmPassword?: string
   }>({})
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const validate = () => {
     const errors: typeof fieldErrors = {}
@@ -49,17 +49,24 @@ export default function ChangePasswordForm() {
 
     try {
       setLoading(true)
+      setSubmitError(null)
       await changePassword(currentPassword, newPassword)
-      toast.success(t('profile.passwordUpdated'))
       setCurrentPassword('')
       setNewPassword('')
       setConfirmPassword('')
       setFieldErrors({})
     } catch (error) {
       console.error(error)
-      toast.error(
-        error instanceof Error ? error.message : t('profile.passwordUpdateError'),
-      )
+      const message = error instanceof Error ? error.message : t('profile.passwordUpdateError')
+      if (
+        message.toLowerCase().includes('incorrect') ||
+        message.toLowerCase().includes('wrong') ||
+        message.toLowerCase().includes('incorrecta')
+      ) {
+        setFieldErrors({ currentPassword: message })
+      } else {
+        setSubmitError(message)
+      }
     } finally {
       setLoading(false)
     }
@@ -76,6 +83,12 @@ export default function ChangePasswordForm() {
             {t('profile.changePasswordBody')}
           </p>
         </div>
+
+        {submitError ? (
+          <div className="rounded-xl border border-red-200/50 bg-red-50/50 px-4 py-3 text-sm text-red-600">
+            {submitError}
+          </div>
+        ) : null}
 
         <AppInput
           label={t('profile.currentPassword')}

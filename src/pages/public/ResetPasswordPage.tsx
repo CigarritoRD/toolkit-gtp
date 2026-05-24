@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Lock } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { toast } from 'sonner'
 import { supabase } from '@/lib/supabaseClient'
 import AppInput from '@/components/ui/AppInput'
 import AppButton from '@/components/ui/AppButton'
@@ -19,6 +18,7 @@ export default function ResetPasswordPage() {
     password?: string
     confirmPassword?: string
   }>({})
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const validate = () => {
     const errors: typeof fieldErrors = {}
@@ -46,6 +46,7 @@ export default function ResetPasswordPage() {
 
     try {
       setLoading(true)
+      setSubmitError(null)
 
       const { error } = await supabase.auth.updateUser({
         password,
@@ -56,12 +57,10 @@ export default function ResetPasswordPage() {
       }
 
       await supabase.auth.signOut()
-
-      toast.success(t('auth.resetPassword.success'))
       navigate('/login')
     } catch (err) {
       console.error(err)
-      toast.error(
+      setSubmitError(
         err instanceof Error ? err.message : t('auth.resetPassword.error'),
       )
     } finally {
@@ -86,6 +85,12 @@ export default function ResetPasswordPage() {
             {t('auth.resetPassword.subtitle')}
           </p>
         </div>
+
+        {submitError ? (
+          <div className="mb-4 rounded-xl border border-red-200/50 bg-red-50/50 px-4 py-3 text-sm text-red-600">
+            {submitError}
+          </div>
+        ) : null}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <AppInput

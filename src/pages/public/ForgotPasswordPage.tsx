@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Mail } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { toast } from 'sonner'
 import { supabase } from '@/lib/supabaseClient'
 import AppInput from '@/components/ui/AppInput'
 import AppButton from '@/components/ui/AppButton'
@@ -14,6 +13,7 @@ export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -22,6 +22,7 @@ export default function ForgotPasswordPage() {
 
     try {
       setLoading(true)
+      setSubmitError(null)
 
       const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
         redirectTo: `${window.location.origin}/reset-password`,
@@ -34,7 +35,7 @@ export default function ForgotPasswordPage() {
       setSubmitted(true)
     } catch (err) {
       console.error(err)
-      toast.error(t('auth.forgotPassword.error'))
+      setSubmitError(err instanceof Error ? err.message : t('auth.forgotPassword.error'))
     } finally {
       setLoading(false)
     }
@@ -83,12 +84,21 @@ export default function ForgotPasswordPage() {
           </p>
         </div>
 
+        {submitError ? (
+          <div className="mb-4 rounded-xl border border-red-200/50 bg-red-50/50 px-4 py-3 text-sm text-red-600">
+            {submitError}
+          </div>
+        ) : null}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <AppInput
             label={t('auth.email')}
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value)
+              if (submitError) setSubmitError(null)
+            }}
             placeholder="correo@email.com"
             autoComplete="email"
           />

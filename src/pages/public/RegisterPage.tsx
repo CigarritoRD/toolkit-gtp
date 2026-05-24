@@ -1,8 +1,7 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { UserPlus } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Mail, UserPlus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { toast } from 'sonner'
 import { useAuth } from '@/auth/useAuth'
 import AppInput from '@/components/ui/AppInput'
 import AppButton from '@/components/ui/AppButton'
@@ -33,8 +32,16 @@ function suggestEmailFix(email: string) {
   return null
 }
 
+type FieldErrors = {
+  name?: string
+  email?: string
+  country?: string
+  password?: string
+  confirmPassword?: string
+  form?: string
+}
+
 export default function RegisterPage() {
-  const navigate = useNavigate()
   const { t } = useTranslation()
   const { signUp } = useAuth()
 
@@ -45,63 +52,94 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
+  const [submittedEmail, setSubmittedEmail] = useState<string | null>(null)
 
   const emailSuggestion = suggestEmailFix(email)
+
+  const validate = (): boolean => {
+    const errors: FieldErrors = {}
+
+    if (!name.trim()) {
+      errors.name = t('auth.nameRequired')
+    }
+
+    if (!email.trim()) {
+      errors.email = t('auth.emailRequired')
+    } else if (!EMAIL_RE.test(email.trim())) {
+      errors.email = t('auth.emailInvalid')
+    } else if (emailSuggestion) {
+      errors.email = t('auth.emailSuggestion', { email: emailSuggestion })
+    }
+
+    if (!country) {
+      errors.country = t('auth.countryRequired')
+    }
+
+    if (password.length < 8) {
+      errors.password = t('auth.passwordMinLength')
+    }
+
+    if (!confirmPassword) {
+      errors.confirmPassword = t('auth.confirmPasswordRequired')
+    } else if (password !== confirmPassword) {
+      errors.confirmPassword = t('auth.passwordsDoNotMatch')
+    }
+
+    setFieldErrors(errors)
+    return Object.keys(errors).length === 0
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    if (!validate()) return
+
     const normalizedName = name.trim()
     const normalizedEmail = email.trim().toLowerCase()
 
-    if (!normalizedName) {
-      toast.error(t('auth.nameRequired'))
-      return
-    }
-
-    if (!normalizedEmail) {
-      toast.error(t('auth.emailRequired'))
-      return
-    }
-
-    if (!EMAIL_RE.test(normalizedEmail)) {
-      toast.error(t('auth.emailInvalid'))
-      return
-    }
-
-    if (emailSuggestion) {
-      toast.error(t('auth.emailSuggestion', { email: emailSuggestion }))
-      return
-    }
-
-    if (!country) {
-      toast.error(t('auth.countryRequired'))
-      return
-    }
-
-    if (password.length < 8) {
-      toast.error(t('auth.passwordMinLength'))
-      return
-    }
-
-    if (password !== confirmPassword) {
-      toast.error(t('auth.passwordsDoNotMatch'))
-      return
-    }
-
     try {
       setLoading(true)
-
+      setFieldErrors({})
       await signUp(normalizedEmail, password, normalizedName, country, phone || undefined)
-
-      toast.success(t('auth.registerSuccess'))
-      navigate('/dashboard')
+      setSubmittedEmail(normalizedEmail)
     } catch (err) {
       console.error(err)
-      toast.error(t('auth.registerError'))
+      setFieldErrors({
+        form: t('auth.registerError'),
+      })
     } finally {
       setLoading(false)
     }
+  }
+
+  if (submittedEmail) {
+    return (
+      <div className="relative flex min-h-screen items-center justify-center bg-bg px-6 text-text-primary">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(0,116,115,0.12),transparent_40%),radial-gradient(circle_at_top_right,rgba(0,171,199,0.10),transparent_35%)]" />
+
+        <SectionCard className="w-full max-w-md p-8 text-center">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-brand-primary/10">
+            <Mail className="h-8 w-8 text-brand-primary" />
+          </div>
+
+          <h1 className="mt-6 font-heading text-3xl">
+            {t('auth.registerCheckEmailTitle')}
+          </h1>
+          <p className="mt-3 text-sm text-text-secondary">
+            {t('auth.registerCheckEmailBody', { email: submittedEmail })}
+          </p>
+
+          <div className="mt-8">
+            <Link to="/login">
+              <AppButton className="w-full">
+                {t('auth.registerCheckEmailAction')}
+              </AppButton>
+            </Link>
+          </div>
+        </SectionCard>
+      </div>
+    )
   }
 
   return (
@@ -122,11 +160,21 @@ export default function RegisterPage() {
             </p>
           </div>
 
+          {fieldErrors.form ? (
+            <div className="mb-4 rounded-xl border border-red-200/50 bg-red-50/50 px-4 py-3 text-sm text-red-600">
+              {fieldErrors.form}
+            </div>
+          ) : null}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <AppInput
               label={t('auth.fullName')}
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => {
+                setName(e.target.value)
+                if (fieldErrors.name) setFieldErrors((prev) => ({ ...prev, name: undefined }))
+              }}
+              error={fieldErrors.name}
             />
 
             <div>
@@ -134,7 +182,11 @@ export default function RegisterPage() {
                 label={t('auth.email')}
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value)
+                  if (fieldErrors.email) setFieldErrors((prev) => ({ ...prev, email: undefined }))
+                }}
+                error={fieldErrors.email}
               />
 
               {emailSuggestion ? (
@@ -148,12 +200,20 @@ export default function RegisterPage() {
               ) : null}
             </div>
 
-            <CountrySelect
-              label={t('profile.country')}
-              value={country}
-              placeholder={t('common.selectCountry')}
-              onChange={setCountry}
-            />
+            <div>
+              <CountrySelect
+                label={t('profile.country')}
+                value={country}
+                placeholder={t('common.selectCountry')}
+                onChange={(val) => {
+                  setCountry(val)
+                  if (fieldErrors.country) setFieldErrors((prev) => ({ ...prev, country: undefined }))
+                }}
+              />
+              {fieldErrors.country ? (
+                <p className="mt-1.5 text-sm text-red-600">{fieldErrors.country}</p>
+              ) : null}
+            </div>
 
             <AppInput
               label={t('auth.phoneOptional')}
@@ -167,14 +227,22 @@ export default function RegisterPage() {
               label={t('auth.password')}
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value)
+                if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: undefined }))
+              }}
+              error={fieldErrors.password}
             />
 
             <AppInput
               label={t('auth.confirmPassword')}
               type="password"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={(e) => {
+                setConfirmPassword(e.target.value)
+                if (fieldErrors.confirmPassword) setFieldErrors((prev) => ({ ...prev, confirmPassword: undefined }))
+              }}
+              error={fieldErrors.confirmPassword}
             />
 
             <AppButton type="submit" disabled={loading} className="w-full">
