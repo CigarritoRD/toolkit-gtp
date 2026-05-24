@@ -1,25 +1,25 @@
-# Email Templates para Supabase Dashboard
+# Email Templates for Supabase Dashboard
 
-Estos templates van en:
+These templates go in:
 **Supabase Dashboard → Authentication → Email Templates**
 
 ---
 
-## 1. Confirm Signup (Confirmación de cuenta)
+## 1. Confirm Signup
 
 ### Subject
 ```
-Confirma tu cuenta en Toolkit
+Confirm your Toolkit account
 ```
 
 ### HTML Body
 ```html
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Confirma tu cuenta</title>
+  <title>Confirm your account</title>
 </head>
 <body style="margin:0;padding:0;background-color:#f5f7fa;font-family:'Segoe UI',Arial,sans-serif;">
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
@@ -36,9 +36,9 @@ Confirma tu cuenta en Toolkit
           <!-- Body -->
           <tr>
             <td style="padding:40px 40px 32px;">
-              <h2 style="margin:0 0 16px;color:#1a2b3c;font-size:22px;font-weight:700;">¡Confirma tu cuenta!</h2>
+              <h2 style="margin:0 0 16px;color:#1a2b3c;font-size:22px;font-weight:700;">Confirm your account</h2>
               <p style="margin:0 0 24px;color:#4a5568;font-size:15px;line-height:1.6;">
-                Hola, gracias por unirte a Toolkit. Para activar tu cuenta y acceder a recursos educativos, confirma tu correo electrónico haciendo clic en el botón de abajo.
+                Thanks for joining Toolkit! Please confirm your email address to activate your account and start accessing educational resources.
               </p>
 
               <!-- CTA Button -->
@@ -47,7 +47,7 @@ Confirma tu cuenta en Toolkit
                   <td style="padding:0 0 24px;text-align:center;">
                     <a href="{{ .ConfirmationURL }}"
                        style="display:inline-block;background-color:#007473;color:#ffffff;text-decoration:none;font-size:15px;font-weight:600;padding:14px 32px;border-radius:12px;">
-                      Confirmar mi cuenta
+                      Confirm my account
                     </a>
                   </td>
                 </tr>
@@ -55,7 +55,7 @@ Confirma tu cuenta en Toolkit
 
               <!-- Fallback link -->
               <p style="margin:0;color:#4a5568;font-size:13px;text-align:center;">
-                Si el botón no funciona, copia y pega este enlace en tu navegador:<br>
+                If the button doesn't work, copy and paste this link into your browser:<br>
                 <a href="{{ .ConfirmationURL }}" style="color:#007473;word-break:break-all;">{{ .ConfirmationURL }}</a>
               </p>
             </td>
@@ -72,10 +72,10 @@ Confirma tu cuenta en Toolkit
           <tr>
             <td style="padding:24px 40px 32px;">
               <p style="margin:0 0 8px;color:#4a5568;font-size:13px;text-align:center;">
-                Si no creaste esta cuenta, puedes ignorar este mensaje.
+                If you didn't create this account, you can safely ignore this message.
               </p>
               <p style="margin:0;color:#a0aec0;font-size:12px;text-align:center;">
-                Este enlace expira en 60 minutos.
+                This link expires in 60 minutes.
               </p>
             </td>
           </tr>
@@ -89,21 +89,21 @@ Confirma tu cuenta en Toolkit
 
 ---
 
-## 2. Reset Password (Restablecer contraseña)
+## 2. Reset Password
 
 ### Subject
 ```
-Restablece tu contraseña en Toolkit
+Reset your Toolkit password
 ```
 
 ### HTML Body
 ```html
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Restablecer contraseña</title>
+  <title>Reset your password</title>
 </head>
 <body style="margin:0;padding:0;background-color:#f5f7fa;font-family:'Segoe UI',Arial,sans-serif;">
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
@@ -120,9 +120,9 @@ Restablece tu contraseña en Toolkit
           <!-- Body -->
           <tr>
             <td style="padding:40px 40px 32px;">
-              <h2 style="margin:0 0 16px;color:#1a2b3c;font-size:22px;font-weight:700;">Restablecer contraseña</h2>
+              <h2 style="margin:0 0 16px;color:#1a2b3c;font-size:22px;font-weight:700;">Reset your password</h2>
               <p style="margin:0 0 24px;color:#4a5568;font-size:15px;line-height:1.6;">
-                Recibimos una solicitud para restablecer la contraseña de tu cuenta en Toolkit. Haz clic en el botón de abajo para crear una nueva contraseña.
+                We received a request to reset your Toolkit password. Click the button below to create a new one.
               </p>
 
               <!-- CTA Button -->
@@ -131,7 +131,7 @@ Restablece tu contraseña en Toolkit
                   <td style="padding:0 0 24px;text-align:center;">
                     <a href="{{ .ConfirmationURL }}"
                        style="display:inline-block;background-color:#007473;color:#ffffff;text-decoration:none;font-size:15px;font-weight:600;padding:14px 32px;border-radius:12px;">
-                      Crear nueva contraseña
+                      Create new password
                     </a>
                   </td>
                 </tr>
@@ -139,7 +139,7 @@ Restablece tu contraseña en Toolkit
 
               <!-- Fallback link -->
               <p style="margin:0;color:#4a5568;font-size:13px;text-align:center;">
-                Si el botón no funciona, copia y pega este enlace en tu navegador:<br>
+                If the button doesn't work, copy and paste this link into your browser:<br>
                 <a href="{{ .ConfirmationURL }}" style="color:#007473;word-break:break-all;">{{ .ConfirmationURL }}</a>
               </p>
             </td>
@@ -156,10 +156,10 @@ Restablece tu contraseña en Toolkit
           <tr>
             <td style="padding:24px 40px 32px;">
               <p style="margin:0 0 8px;color:#4a5568;font-size:13px;text-align:center;">
-                Si no fuiste tú quien solicitó el cambio, ignora este correo. Tu contraseña actual seguirá vigente.
+                If you didn't request this change, ignore this email. Your current password remains active.
               </p>
               <p style="margin:0;color:#a0aec0;font-size:12px;text-align:center;">
-                Este enlace expira en 60 minutos.
+                This link expires in 60 minutes.
               </p>
             </td>
           </tr>
@@ -173,54 +173,54 @@ Restablece tu contraseña en Toolkit
 
 ---
 
-## Notas Importantes
+## Important Notes
 
-### Variables disponibles en Supabase
-| Variable | Descripción |
+### Available variables in Supabase
+| Variable | Description |
 |----------|-------------|
-| `{{ .ConfirmationURL }}` | URL completa con token para confirmar/cambiar contraseña |
-| `{{ .Token }}` | Token crudo |
-| `{{ .TokenHash }}` | Token hasheado |
-| `{{ .SiteURL }}` | URL base configurada en Supabase |
-| `{{ .Email }}` | Email del usuario |
-| `{{ .RedirectTo }}` | URL de redirección configurada |
+| `{{ .ConfirmationURL }}` | Full URL with token to confirm/reset |
+| `{{ .Token }}` | Raw token |
+| `{{ .TokenHash }}` | Hashed token |
+| `{{ .SiteURL }}` | Base URL configured in Supabase |
+| `{{ .Email }}` | User's email |
+| `{{ .RedirectTo }}` | Redirect URL configured |
 
-### Colores usados
-- Primary (header/fondo): `#007473`
-- White (texto botón): `#ffffff`
-- Dark (títulos): `#1a2b3c`
+### Colors used
+- Primary (header/background): `#007473`
+- White (button text): `#ffffff`
+- Dark (headings): `#1a2b3c`
 - Body text: `#4a5568`
 - Muted: `#a0aec0`
 - Background: `#f5f7fa`
 
-### Configuración necesaria en Supabase
+### Supabase Configuration
 
 1. **Site URL**
-   - Production: `https://tu-dominio.com`
+   - Production: `https://your-domain.com`
    - Development: `http://localhost:5173`
 
-2. **Redirect URLs** (en Authentication → URL Configuration → Redirect URLs)
+2. **Redirect URLs** (Authentication → URL Configuration → Redirect URLs)
    ```
-   https://tu-dominio.com/auth/confirm
-   https://tu-dominio.com/reset-password
+   https://your-domain.com/auth/confirm
+   https://your-domain.com/reset-password
    http://localhost:5173/auth/confirm
    http://localhost:5173/reset-password
    ```
 
-### SMTP propio (recomendado para producción)
+### SMTP (recommended for production)
 
-Para que el remitente se vea profesional (no "supabase.co" o similar), configura SMTP en:
+To have a professional sender (not "supabase.co" or similar), configure SMTP in:
 **Authentication → SMTP Settings**
 
-Proveedores recomendados:
-- **Resend** (el más simple, tier gratuito generoso)
+Recommended providers:
+- **Resend** (simplest, generous free tier)
 - **Postmark**
-- **Brevo** (antes Sendinblue)
+- **Brevo** (formerly Sendinblue)
 - **Amazon SES**
 
-### Próximos pasos
-1. Copiar los templates HTML a Supabase Dashboard
-2. Personalizar el `{{ .ConfirmationURL }}` en los templates si usas SMTP
-3. Configurar SMTP propio para remitente profesional
-4. Agregar las Redirect URLs en Supabase
-5. Probar el flujo completo de registro y confirmación
+### Next steps
+1. Copy the HTML templates above to Supabase Dashboard
+2. Personalize `{{ .ConfirmationURL }}` in templates if using custom SMTP
+3. Configure SMTP for professional sender
+4. Add Redirect URLs in Supabase
+5. Test the full registration and password reset flow
