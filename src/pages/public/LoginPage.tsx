@@ -22,6 +22,10 @@ export default function LoginPage() {
     e.preventDefault()
     setSubmitError(null)
 
+    if (!email.trim() || !password.trim()) {
+      return
+    }
+
     try {
       setLoading(true)
 
