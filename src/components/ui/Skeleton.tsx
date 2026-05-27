@@ -1,4 +1,73 @@
+import { LoaderCircle } from 'lucide-react'
 import { motion } from 'framer-motion'
+
+type LoadingStateProps = {
+  variant?: 'fullPage' | 'inline' | 'section'
+  text?: string
+  className?: string
+}
+
+export function LoadingState({
+  variant = 'fullPage',
+  text,
+  className = '',
+}: LoadingStateProps) {
+  if (variant === 'inline') {
+    return (
+      <div className={`flex items-center gap-2 ${className}`}>
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+        >
+          <LoaderCircle className="h-4 w-4 text-brand-accent" />
+        </motion.div>
+        {text && (
+          <span className="text-sm text-text-secondary">{text}</span>
+        )}
+      </div>
+    )
+  }
+
+  if (variant === 'section') {
+    return (
+      <div className={`flex flex-col items-center justify-center gap-4 ${className}`}>
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+        >
+          <LoaderCircle className="h-8 w-8 text-brand-accent" />
+        </motion.div>
+        {text && (
+          <span className="text-sm text-text-secondary">{text}</span>
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <div className={`flex min-h-[60vh] flex-col items-center justify-center gap-6 ${className}`}>
+      <div className="relative">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+          className="relative"
+        >
+          <LoaderCircle className="h-14 w-14 text-brand-accent" />
+        </motion.div>
+        <motion.div
+          animate={{ opacity: [0.3, 0.8, 0.3] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute inset-0 flex items-center justify-center"
+        >
+          <div className="h-3 w-3 rounded-full bg-brand-primary" />
+        </motion.div>
+      </div>
+      {text && (
+        <p className="font-body text-lg text-text-secondary">{text}</p>
+      )}
+    </div>
+  )
+}
 
 interface SkeletonProps {
   className?: string

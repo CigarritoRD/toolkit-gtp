@@ -25,7 +25,7 @@ describe('ProtectedRoute', () => {
         </Routes>
       </MemoryRouter>,
     )
-    expect(screen.getByText('Cargando…')).toBeInTheDocument()
+    expect(screen.getByText('Preparando tu espacio...')).toBeInTheDocument()
   })
 
   it('redirige a /login cuando no hay usuario', () => {
@@ -71,7 +71,7 @@ describe('ProtectedRoute', () => {
         </Routes>
       </MemoryRouter>,
     )
-    expect(screen.queryByText('Cargando…')).not.toBeInTheDocument()
+    expect(screen.queryByText('Preparando tu espacio...')).not.toBeInTheDocument()
     expect(screen.getByText('Protected Content')).toBeInTheDocument()
   })
 })

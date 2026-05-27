@@ -14,6 +14,7 @@ import { toast } from 'sonner'
 import LanguageSwitcher from '@/components/layout/LanguageSwitcher'
 import ThemeToggle from '@/components/layout/ThemeToggle'
 import { useAuth } from '@/auth/useAuth'
+import { LoadingState } from '@/components/ui/Skeleton'
 import gtpLogo from '@/assets/gtp-logo.png'
 
 export default function PublicNavbar() {
@@ -134,9 +135,7 @@ export default function PublicNavbar() {
           <ThemeToggle />
 
           {loading ? (
-            <div className="rounded-xl border border-surface-border bg-surface px-4 py-2 text-sm text-brand-primary">
-              {t('common.loading')}
-            </div>
+            <LoadingState variant="inline" />
           ) : !isAuthenticated ? (
             <>
               <Link
@@ -289,9 +288,7 @@ export default function PublicNavbar() {
         <div className="border-t border-surface-border/70 bg-bg/95 px-6 py-5 shadow-[var(--shadow-soft)] md:hidden">
           <div className="mx-auto max-w-6xl">
             {loading ? (
-              <div className="rounded-xl border border-surface-border bg-surface px-4 py-3 text-sm text-brand-primary">
-                {t('common.loading')}
-              </div>
+              <LoadingState variant="inline" />
             ) : (
               <>
                 {!isAdmin ? (

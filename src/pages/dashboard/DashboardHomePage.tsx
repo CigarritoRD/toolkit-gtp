@@ -135,7 +135,7 @@ export default function DashboardHomePage() {
                 Dashboard
               </p>
               <h1 className="mt-3 font-heading text-4xl md:text-5xl">
-                Bienvenida{profile?.full_name ? `, ${profile.full_name}` : ''}
+                Tu panel{profile?.full_name ? `, ${profile.full_name}` : ''}
               </h1>
               <p className="mt-4 max-w-2xl font-body text-lg text-brand-primary">
                 Revisa tu actividad, vuelve a tus recursos guardados y continúa

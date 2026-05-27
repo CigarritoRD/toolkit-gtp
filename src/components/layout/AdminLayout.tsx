@@ -211,6 +211,7 @@ export default function AdminLayout() {
 
                 <AppButton
                   variant="secondary"
+                  aria-label={isMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
                   onClick={() => setIsMenuOpen((prev) => !prev)}
                 >
                   {isMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}

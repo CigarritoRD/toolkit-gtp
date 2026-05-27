@@ -17,25 +17,25 @@ test.describe('Contributor Role', () => {
   test('Contributor can access contributor home', async ({ page }) => {
     await login(page, E2E_CONTRIBUTOR_EMAIL, E2E_CONTRIBUTOR_PASSWORD)
     await page.goto(CONTRIBUTOR_ROUTES.contributorHome)
-    await expect(page.getByRole('heading')).toBeVisible()
+    await expect(page.getByRole('heading', { name: /mi panel/i })).toBeVisible()
   })
 
   test('Contributor can access contributor profile', async ({ page }) => {
     await login(page, E2E_CONTRIBUTOR_EMAIL, E2E_CONTRIBUTOR_PASSWORD)
     await page.goto(CONTRIBUTOR_ROUTES.contributorProfile)
-    await expect(page.getByRole('heading')).toBeVisible()
+    await expect(page.getByRole('heading', { name: /mi perfil público/i })).toBeVisible()
   })
 
   test('Contributor can access contributor resources', async ({ page }) => {
     await login(page, E2E_CONTRIBUTOR_EMAIL, E2E_CONTRIBUTOR_PASSWORD)
     await page.goto(CONTRIBUTOR_ROUTES.contributorResources)
-    await expect(page.getByRole('heading')).toBeVisible()
+    await expect(page.getByRole('heading', { name: /mis recursos/i })).toBeVisible()
   })
 
   test('Contributor can access new resource page', async ({ page }) => {
     await login(page, E2E_CONTRIBUTOR_EMAIL, E2E_CONTRIBUTOR_PASSWORD)
     await page.goto(CONTRIBUTOR_ROUTES.contributorNewResource)
-    await expect(page.getByRole('heading').or(page.getByRole('button'))).toBeVisible()
+    await expect(page.getByRole('heading', { name: /nuevo recurso/i })).toBeVisible()
   })
 
   test('Contributor can access regular user routes', async ({ page }) => {
@@ -53,21 +53,7 @@ test.describe('Contributor Role', () => {
   test('Contributor can logout', async ({ page }) => {
     await login(page, E2E_CONTRIBUTOR_EMAIL, E2E_CONTRIBUTOR_PASSWORD)
     await page.goto(CONTRIBUTOR_ROUTES.contributorHome)
-    try {
-      const logoutButton = page.getByRole('button').filter({ hasText: /signOut|logout|cerrar/i }).first()
-      if (await logoutButton.isVisible()) {
-        await logoutButton.click()
-      } else {
-        const menuButton = page.locator('[aria-label="menu"]').first()
-        await menuButton.click()
-        const logoutInMenu = page.getByRole('menuitem').filter({ hasText: /signOut|logout|cerrar/i }).first()
-        await logoutInMenu.click()
-      }
-    } catch {
-      await page.evaluate(() => localStorage.clear())
-    }
-    await page.waitForURL(PUBLIC_ROUTES.login, { timeout: 5000 }).catch(() => {
-      expect(page.url()).not.toContain('/contributor')
-    })
+    await page.getByRole('button', { name: /cerrar sesión/i }).first().click()
+    await expect(page).toHaveURL(PUBLIC_ROUTES.login, { timeout: 15000 })
   })
 })
