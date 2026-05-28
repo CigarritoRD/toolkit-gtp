@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabaseClient'
+import { getUserCountry } from '@/lib/utils/geolocation'
 
 export type ResourceDownloadInput = {
   resource_id: string
@@ -14,10 +15,13 @@ export async function trackResourceDownload(input: ResourceDownloadInput) {
   if (authError) throw new Error(authError.message)
   if (!user) throw new Error('You must be signed in to access this resource.')
 
+  const country = await getUserCountry()
+
   const { error } = await supabase.from('resource_downloads').insert({
     user_id: user.id,
     resource_id: input.resource_id,
     action_type: input.action_type ?? 'download',
+    country,
   })
 
   if (error) throw new Error(error.message)
@@ -38,6 +42,7 @@ export async function getMyDownloads() {
       id,
       action_type,
       created_at,
+      country,
       resource:resources (
         id,
         title,

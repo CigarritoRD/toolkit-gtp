@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabaseClient'
+import { getUserCountry, UNKNOWN_COUNTRY } from '@/lib/utils/geolocation'
 
 export type ResourceEventType = 'open' | 'download'
 
@@ -57,35 +58,6 @@ export type AdminOverviewMetric = {
   total_contributor_ratings: number
 }
 
-async function getUserCountry(): Promise<string> {
-  try {
-    const cached = sessionStorage.getItem('toolkit_country')
-
-    if (cached) {
-      return cached
-    }
-
-    const response = await fetch('https://ipapi.co/json/')
-
-    if (!response.ok) {
-      return 'Unknown'
-    }
-
-    const data = await response.json()
-    const country =
-      typeof data?.country === 'string' && data.country.trim()
-        ? data.country.trim().toUpperCase()
-        : 'Unknown'
-
-    sessionStorage.setItem('toolkit_country', country)
-
-    return country
-  } catch (error) {
-    console.error('getUserCountry error:', error)
-    return 'Unknown'
-  }
-}
-
 export async function trackResourceEvent(
   resourceId: string,
   eventType: ResourceEventType,
@@ -96,7 +68,7 @@ export async function trackResourceEvent(
 
   if (!user) return
 
-  const country = await getUserCountry()
+  const country = (await getUserCountry()) ?? UNKNOWN_COUNTRY
 
   const { error } = await supabase.from('resource_events').insert({
     resource_id: resourceId,
@@ -120,7 +92,7 @@ export async function trackContributorEvent(
 
   if (!user) return
 
-  const country = await getUserCountry()
+  const country = (await getUserCountry()) ?? UNKNOWN_COUNTRY
 
   const { error } = await supabase.from('contributor_events').insert({
     contributor_id: contributorId,

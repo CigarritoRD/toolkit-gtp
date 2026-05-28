@@ -168,6 +168,11 @@ const zh = {
             timelineTitle: '用户活动',
             timelineSubtitle: '该资源的事件记录。',
             closeDetail: '关闭',
+            exportExcel: '导出Excel',
+            exporting: '导出中...',
+            exportSuccess: '报告导出成功。',
+            exportError: '无法导出报告。',
+            updating: '正在更新指标...',
         },
         applications: {
             badge: '申请',

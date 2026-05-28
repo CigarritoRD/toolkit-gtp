@@ -167,6 +167,11 @@ nav: {
       timelineTitle: '用戶活動',
       timelineSubtitle: '該資源的事件記錄。',
       closeDetail: '關閉',
+      exportExcel: '匯出Excel',
+      exporting: '匯出中...',
+      exportSuccess: '報告匯出成功。',
+      exportError: '無法匯出報告。',
+      updating: '正在更新指標...',
     },
     applications: {
       badge: '申請',

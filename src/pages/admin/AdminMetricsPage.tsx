@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useDeferredValue, startTransition, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   BarChart3,
@@ -10,7 +10,10 @@ import {
   ArrowUpRight,
   Search,
   ChevronDown,
+  FileSpreadsheet,
+  Loader2,
 } from 'lucide-react'
+import { toast } from 'sonner'
 import SectionCard from '@/components/ui/SectionCard'
 import AppButton from '@/components/ui/AppButton'
 import EmptyState from '@/components/ui/EmptyState'
@@ -19,6 +22,7 @@ import {
   getResourceMetrics,
   getResourceMetricSummary,
   getResourceMetricEvents,
+  getMetricExportData,
   type MetricPeriod,
   type MetricSort,
   type ResourceMetricItem,
@@ -29,10 +33,21 @@ import {
   getCachedAdminData,
   setCachedAdminData,
 } from '@/lib/adminCache'
+import { exportMetricsToExcel } from '@/lib/utils/exportMetrics'
 
-const CACHE_KEY_SUMMARY = 'admin:metrics:summary'
 const CACHE_KEY_PREFIX = 'admin:metrics:'
 const CACHE_TTL = 60_000
+
+const MS_PER_MINUTE = 60_000
+const MINUTES_PER_HOUR = 60
+const HOURS_PER_DAY = 24
+const DAYS_PER_MONTH_APPROX = 30
+const MS_PER_DAY = 86_400_000
+
+const HOT_BADGE_MIN_VIEWS = 100
+const HOT_BADGE_MIN_CONVERSION = 15
+const HIGH_CONVERSION_THRESHOLD = 20
+const RECENT_BADGE_DAYS = 7
 
 const PERIOD_OPTIONS: { value: MetricPeriod; labelKey: string }[] = [
   { value: '7d', labelKey: 'admin.metrics.period7d' },
@@ -49,20 +64,20 @@ const SORT_OPTIONS: { value: MetricSort['key']; labelKey: string }[] = [
 ]
 
 function formatRelative(iso: string | null): string {
-  if (!iso) return '—'
+  if (!iso) return '\u2014'
   const diff = Date.now() - new Date(iso).getTime()
-  const mins = Math.floor(diff / 60000)
-  if (mins < 60) return `${mins}m`
-  const hrs = Math.floor(mins / 60)
-  if (hrs < 24) return `${hrs}h`
-  const days = Math.floor(hrs / 24)
-  if (days < 30) return `${days}d`
-  const months = Math.floor(days / 30)
+  const mins = Math.floor(diff / MS_PER_MINUTE)
+  if (mins < MINUTES_PER_HOUR) return `${mins}m`
+  const hrs = Math.floor(mins / MINUTES_PER_HOUR)
+  if (hrs < HOURS_PER_DAY) return `${hrs}h`
+  const days = Math.floor(hrs / HOURS_PER_DAY)
+  if (days < DAYS_PER_MONTH_APPROX) return `${days}d`
+  const months = Math.floor(days / DAYS_PER_MONTH_APPROX)
   return `${months}mo`
 }
 
 function formatDate(iso: string | null) {
-  if (!iso) return '—'
+  if (!iso) return '\u2014'
   return new Date(iso).toLocaleDateString('es-ES', {
     day: '2-digit',
     month: 'short',
@@ -72,17 +87,17 @@ function formatDate(iso: string | null) {
 }
 
 function getResourceBadge(item: ResourceMetricItem): { label: string; className: string } | null {
-  if (item.total_views >= 100 && item.conversion_rate >= 15) {
+  if (item.total_views >= HOT_BADGE_MIN_VIEWS && item.conversion_rate >= HOT_BADGE_MIN_CONVERSION) {
     return { label: 'admin.metrics.hot', className: 'bg-red-100 text-red-700 border-red-200' }
   }
-  if (item.conversion_rate >= 20) {
+  if (item.conversion_rate >= HIGH_CONVERSION_THRESHOLD) {
     return { label: 'admin.metrics.highConversion', className: 'bg-green-100 text-green-700 border-green-200' }
   }
   if (item.total_downloads === 0 && item.total_views > 0) {
     return { label: 'admin.metrics.noDownloads', className: 'bg-yellow-100 text-yellow-700 border-yellow-200' }
   }
   const daysSince = item.last_view_at ?? item.last_download_at
-  if (daysSince && Date.now() - new Date(daysSince).getTime() < 7 * 86400000) {
+  if (daysSince && Date.now() - new Date(daysSince).getTime() < RECENT_BADGE_DAYS * MS_PER_DAY) {
     return { label: 'admin.metrics.recent', className: 'bg-blue-100 text-blue-700 border-blue-200' }
   }
   return null
@@ -227,7 +242,7 @@ function EventTimelineItem({ event }: { event: ResourceMetricEvent }) {
       </div>
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium text-text-primary">
-          {event.user_full_name || event.user_email || '—'}
+          {event.user_full_name || event.user_email || '\u2014'}
         </p>
         {event.user_full_name && event.user_email && (
           <p className="truncate text-xs text-text-secondary">{event.user_email}</p>
@@ -323,43 +338,79 @@ export default function AdminMetricsPage() {
   const { t } = useTranslation()
   const [period, setPeriod] = useState<MetricPeriod>('30d')
   const [sort, setSort] = useState<MetricSort>({ key: 'views', dir: 'desc' })
-  const [search, setSearch] = useState('')
+  const [searchInput, setSearchInput] = useState('')
+  const deferredSearch = useDeferredValue(searchInput)
 
-  const cacheKey = `${CACHE_KEY_PREFIX}${period}:${sort.key}:${sort.dir}:${search}`
-  const cachedSummary = getCachedAdminData<ResourceMetricSummary>(CACHE_KEY_SUMMARY)
-  const cachedResources = getCachedAdminData<ResourceMetricItem[]>(cacheKey)
-
-  const [resources, setResources] = useState<ResourceMetricItem[]>(cachedResources ?? [])
-  const [summary, setSummary] = useState<ResourceMetricSummary | null>(cachedSummary ?? null)
-  const [loading, setLoading] = useState(() => !cachedResources || !cachedSummary)
+  const [resources, setResources] = useState<ResourceMetricItem[]>([])
+  const [summary, setSummary] = useState<ResourceMetricSummary | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [updating, setUpdating] = useState(false)
   const [selectedResource, setSelectedResource] = useState<ResourceMetricItem | null>(null)
   const [events, setEvents] = useState<ResourceMetricEvent[]>([])
   const [loadingEvents, setLoadingEvents] = useState(false)
+  const [exporting, setExporting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const abortRef = useRef<AbortController | null>(null)
 
-  const load = useCallback(async () => {
+  const fetchMetrics = useCallback(async (targetPeriod: MetricPeriod, targetSort: MetricSort, searchQuery: string, signal?: AbortSignal) => {
     try {
-      setError(null)
+      const cacheKey = `${CACHE_KEY_PREFIX}${targetPeriod}:${targetSort.key}:${targetSort.dir}:${searchQuery}`
+      const cachedSummary = getCachedAdminData<ResourceMetricSummary>(`${CACHE_KEY_PREFIX}summary:${targetPeriod}`)
+      const cachedResources = getCachedAdminData<ResourceMetricItem[]>(cacheKey)
+
+      if (cachedSummary && cachedResources) {
+        setSummary(cachedSummary)
+        setResources(cachedResources)
+        return
+      }
+
       const [metricsData, summaryData] = await Promise.all([
-        getResourceMetrics(period, sort, search),
-        getResourceMetricSummary(period),
+        getResourceMetrics(targetPeriod, targetSort, searchQuery),
+        getResourceMetricSummary(targetPeriod),
       ])
+
+      if (signal?.aborted) return
+
       setResources(metricsData)
       setSummary(summaryData)
       setCachedAdminData(cacheKey, metricsData, CACHE_TTL)
-      setCachedAdminData(CACHE_KEY_SUMMARY, summaryData, CACHE_TTL)
+      setCachedAdminData(`${CACHE_KEY_PREFIX}summary:${targetPeriod}`, summaryData, CACHE_TTL)
     } catch (err) {
+      if (signal?.aborted) return
       setError(err instanceof Error ? err.message : t('common.error'))
-    } finally {
-      setLoading(false)
     }
-  }, [period, sort, search, cacheKey, t])
+  }, [t])
 
   useEffect(() => {
-    if (!cachedResources || !cachedSummary) {
-      void load()
+    abortRef.current?.abort()
+    const controller = new AbortController()
+    abortRef.current = controller
+
+    if (loading) {
+      void fetchMetrics(period, sort, deferredSearch, controller.signal)
+        .finally(() => setLoading(false))
+    } else {
+      setUpdating(true)
+      void fetchMetrics(period, sort, deferredSearch, controller.signal)
+        .finally(() => setUpdating(false))
     }
-  }, [load, cachedResources, cachedSummary])
+
+    return () => { controller.abort() }
+  }, [period, sort, deferredSearch, fetchMetrics, loading])
+
+  function handlePeriodChange(newPeriod: MetricPeriod) {
+    startTransition(() => {
+      setPeriod(newPeriod)
+      setSelectedResource(null)
+      setEvents([])
+    })
+  }
+
+  function handleSortChange(key: MetricSort['key']) {
+    startTransition(() => {
+      setSort((prev) => ({ ...prev, key }))
+    })
+  }
 
   async function handleSelectResource(resource: ResourceMetricItem) {
     setSelectedResource(resource)
@@ -377,6 +428,23 @@ export default function AdminMetricsPage() {
   function handleCloseDetail() {
     setSelectedResource(null)
     setEvents([])
+  }
+
+  async function handleExport() {
+    setExporting(true)
+    try {
+      const data = await getMetricExportData(period)
+      await exportMetricsToExcel(data, {
+        period,
+        periodLabel: PERIOD_OPTIONS.find((o) => o.value === period)?.labelKey ?? period,
+      })
+      toast.success(t('admin.metrics.exportSuccess'))
+    } catch (err) {
+      console.error(err)
+      toast.error(t('admin.metrics.exportError'))
+    } finally {
+      setExporting(false)
+    }
   }
 
   if (loading) {
@@ -398,18 +466,38 @@ export default function AdminMetricsPage() {
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <AppButton
+            variant="secondary"
+            onClick={handleExport}
+            disabled={exporting}
+          >
+            {exporting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <FileSpreadsheet className="h-4 w-4" />
+            )}
+            {exporting ? t('admin.metrics.exporting') : t('admin.metrics.exportExcel')}
+          </AppButton>
+
           {PERIOD_OPTIONS.map((opt) => (
             <AppButton
               key={opt.value}
               variant={period === opt.value ? 'primary' : 'secondary'}
-              onClick={() => setPeriod(opt.value)}
+              onClick={() => handlePeriodChange(opt.value)}
             >
               {t(opt.labelKey)}
             </AppButton>
           ))}
         </div>
       </div>
+
+      {updating && (
+        <div className="flex items-center gap-2 text-sm text-text-secondary">
+          <Loader2 className="h-4 w-4 animate-spin text-brand-primary" />
+          {t('admin.metrics.updating')}
+        </div>
+      )}
 
       {error ? (
         <SectionCard className="border-red-200 bg-red-50 p-6">
@@ -461,13 +549,13 @@ export default function AdminMetricsPage() {
                   <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-secondary" />
                   <input
                     type="text"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
                     placeholder={t('admin.metrics.searchPlaceholder')}
                     className="h-9 w-44 rounded-lg border border-surface-border bg-surface pl-9 pr-3 text-sm text-text-primary placeholder:text-text-secondary focus:outline-none focus:ring-1 focus:ring-brand-primary/50"
                   />
                 </div>
-                <SortDropdown value={sort.key} onChange={(k) => setSort({ key: k, dir: sort.dir })} options={SORT_OPTIONS} />
+                <SortDropdown value={sort.key} onChange={handleSortChange} options={SORT_OPTIONS} />
               </div>
             </div>
           </div>

@@ -167,6 +167,11 @@ const es = {
       timelineTitle: 'Actividad por usuario',
       timelineSubtitle: 'Eventos registrados para este recurso.',
       closeDetail: 'Cerrar',
+      exportExcel: 'Exportar Excel',
+      exporting: 'Exportando...',
+      exportSuccess: 'Reporte exportado correctamente.',
+      exportError: 'No se pudo exportar el reporte.',
+      updating: 'Actualizando métricas...',
     },
     applications: {
       badge: 'Solicitudes',
