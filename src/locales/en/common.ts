@@ -131,6 +131,7 @@ const en = {
       noResourceData: 'No resource data yet.',
       noContributorData: 'No contributor data yet.',
       noCountryData: 'No country data yet.',
+      noCountryDataDesc: 'No activity has been recorded from any country yet.',
     },
     metrics: {
       badge: 'Metrics',

@@ -153,6 +153,8 @@ export type ResourceMetricEvent = {
   user_email: string | null
   user_full_name: string | null
   country: string | null
+  resource_id?: string
+  resource_title?: string
 }
 
 export type ResourceMetricSummary = {
@@ -168,10 +170,19 @@ export type MetricSortDir = 'asc' | 'desc'
 
 export type MetricSort = { key: MetricSortKey; dir: MetricSortDir }
 
+export type MetricCountryItem = {
+  country: string
+  total: number
+  unique_users: number
+  views: number
+  downloads: number
+}
+
 export type MetricExportData = {
   summary: ResourceMetricSummary
   resources: ResourceMetricItem[]
-  countries: Array<{ country: string; total: number; unique_users: number }>
+  countries: MetricCountryItem[]
+  events: ResourceMetricEvent[]
   generated_at: string
   period: string
 }
@@ -223,6 +234,23 @@ export async function getResourceMetricEvents(
 
   if (error) throw new Error(error.message)
   return (data ?? []) as ResourceMetricEvent[]
+}
+
+export async function getMetricCountries(
+  period: MetricPeriod = '30d',
+): Promise<MetricCountryItem[]> {
+  const { data, error } = await supabase.rpc('get_admin_metric_countries', {
+    p_period: period,
+  })
+
+  if (error) throw new Error(error.message)
+  return ((data ?? []) as MetricCountryItem[]).map((item) => ({
+    ...item,
+    total: Number(item.total),
+    unique_users: Number(item.unique_users),
+    views: Number(item.views),
+    downloads: Number(item.downloads),
+  }))
 }
 
 export async function getMetricExportData(

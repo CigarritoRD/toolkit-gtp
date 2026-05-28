@@ -118,6 +118,7 @@ pendingTitle: '待處理申請',
       noResourceData: '尚無資源數據。',
       noContributorData: '尚無協作者數據。',
       noCountryData: '尚無縣市數據。',
+      noCountryDataDesc: '尚未記錄任何縣市的活動。',
     },
     metrics: {
       badge: '指標',

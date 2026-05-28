@@ -118,6 +118,7 @@ const es = {
       noResourceData: 'Aún no hay datos de recursos.',
       noContributorData: 'Aún no hay datos de colaboradores.',
       noCountryData: 'Aún no hay datos de países.',
+      noCountryDataDesc: 'Aún no se ha registrado actividad desde ningún país.',
     },
     metrics: {
       badge: 'Métricas',

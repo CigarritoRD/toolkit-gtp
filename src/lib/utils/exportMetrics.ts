@@ -6,6 +6,12 @@ type ExportOptions = {
   periodLabel: string
 }
 
+const EVENT_TYPE_LABELS: Record<string, string> = {
+  open: 'Vista',
+  download: 'Descarga',
+  open_external: 'Apertura externa',
+}
+
 function formatDate(iso: string | null): string {
   if (!iso) return '\u2014'
   return new Date(iso).toLocaleDateString('es-ES', {
@@ -27,6 +33,10 @@ function formatPeriodLabel(period: string): string {
   }
 }
 
+function formatEventType(type: string): string {
+  return EVENT_TYPE_LABELS[type] ?? type
+}
+
 export async function exportMetricsToExcel(
   data: MetricExportData,
   options: ExportOptions,
@@ -42,10 +52,12 @@ export async function exportMetricsToExcel(
 
   const summaryWs = buildSummarySheet(XLSX, data.summary, periodLabel, data.generated_at)
   const resourcesWs = buildResourcesSheet(XLSX, data.resources)
+  const eventsWs = buildEventsSheet(XLSX, data.events)
   const countriesWs = buildCountriesSheet(XLSX, data.countries)
 
   XLSX.utils.book_append_sheet(wb, summaryWs, 'Resumen')
   XLSX.utils.book_append_sheet(wb, resourcesWs, 'Recursos')
+  XLSX.utils.book_append_sheet(wb, eventsWs, 'Eventos')
   XLSX.utils.book_append_sheet(wb, countriesWs, 'Pa\u00edses')
 
   XLSX.writeFile(wb, fileName)
@@ -75,15 +87,11 @@ function buildSummarySheet(
     ['- Las descargas incluyen aperturas externas y descargas directas.', ''],
     ['- La tasa de conversi\u00f3n = (descargas / vistas) \u00d7 100.', ''],
     ['- Usuarios \u00fanicos se cuentan por ID de usuario distintas.', ''],
+    ['- La hoja Eventos contiene el detalle por usuario con su pa\u00eds.', ''],
   ]
 
   const ws = XLSX.utils.aoa_to_sheet(rows)
-
-  ws['!cols'] = [
-    { wch: 30 },
-    { wch: 20 },
-  ]
-
+  ws['!cols'] = [{ wch: 30 }, { wch: 20 }]
   return ws
 }
 
@@ -108,30 +116,48 @@ function buildResourcesSheet(
   ])
 
   const data = [...headers, ...rows]
-
   const ws = XLSX.utils.aoa_to_sheet(data)
-
   ws['!cols'] = [
-    { wch: 5 },
-    { wch: 40 },
-    { wch: 25 },
-    { wch: 10 },
-    { wch: 12 },
-    { wch: 14 },
-    { wch: 14 },
-    { wch: 18 },
-    { wch: 18 },
+    { wch: 5 }, { wch: 40 }, { wch: 25 }, { wch: 10 },
+    { wch: 12 }, { wch: 14 }, { wch: 14 }, { wch: 18 }, { wch: 18 },
+  ]
+  return ws
+}
+
+function buildEventsSheet(
+  XLSX: typeof import('xlsx'),
+  events: MetricExportData['events'],
+) {
+  const headers: Array<Array<string | number>> = [
+    ['#', 'Fecha', 'Tipo de evento', 'Recurso', 'Usuario', 'Email', 'Pa\u00eds', 'C\u00f3digo pa\u00eds'],
   ]
 
+  const rows = (events ?? []).map((e, i) => [
+    i + 1,
+    formatDate(e.created_at),
+    formatEventType(e.event_type),
+    e.resource_title ?? '',
+    e.user_full_name || e.user_email || 'An\u00f3nimo',
+    e.user_email || '',
+    getCountryLabel(e.country) || e.country || 'Desconocido',
+    e.country || '',
+  ])
+
+  const data = [...headers, ...rows]
+  const ws = XLSX.utils.aoa_to_sheet(data)
+  ws['!cols'] = [
+    { wch: 5 }, { wch: 20 }, { wch: 16 }, { wch: 30 },
+    { wch: 25 }, { wch: 30 }, { wch: 20 }, { wch: 12 },
+  ]
   return ws
 }
 
 function buildCountriesSheet(
   XLSX: typeof import('xlsx'),
-  countries: Array<{ country: string; total: number; unique_users: number }>,
+  countries: MetricExportData['countries'],
 ) {
   const headers: Array<Array<string | number>> = [
-    ['#', 'Pa\u00eds', 'C\u00f3digo', 'Total de eventos', 'Usuarios \u00fanicos'],
+    ['#', 'Pa\u00eds', 'C\u00f3digo', 'Total de eventos', 'Vistas', 'Descargas', 'Usuarios \u00fanicos'],
   ]
 
   const rows = countries.map((c, i) => [
@@ -139,20 +165,16 @@ function buildCountriesSheet(
     getCountryLabel(c.country) || c.country || 'Desconocido',
     c.country || '\u2014',
     c.total,
+    c.views,
+    c.downloads,
     c.unique_users,
   ])
 
   const data = [...headers, ...rows]
-
   const ws = XLSX.utils.aoa_to_sheet(data)
-
   ws['!cols'] = [
-    { wch: 5 },
-    { wch: 25 },
-    { wch: 10 },
-    { wch: 18 },
-    { wch: 16 },
+    { wch: 5 }, { wch: 25 }, { wch: 10 }, { wch: 18 },
+    { wch: 10 }, { wch: 12 }, { wch: 16 },
   ]
-
   return ws
 }

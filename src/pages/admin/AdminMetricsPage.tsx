@@ -11,6 +11,7 @@ import {
   Search,
   ChevronDown,
   FileSpreadsheet,
+  Globe2,
   Loader2,
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -18,16 +19,20 @@ import SectionCard from '@/components/ui/SectionCard'
 import AppButton from '@/components/ui/AppButton'
 import EmptyState from '@/components/ui/EmptyState'
 import Skeleton from '@/components/ui/Skeleton'
+import CountryFlag from '@/components/ui/CountryFlag'
+import { getCountryLabel } from '@/lib/constants/countries'
 import {
   getResourceMetrics,
   getResourceMetricSummary,
   getResourceMetricEvents,
   getMetricExportData,
+  getMetricCountries,
   type MetricPeriod,
   type MetricSort,
   type ResourceMetricItem,
   type ResourceMetricEvent,
   type ResourceMetricSummary,
+  type MetricCountryItem,
 } from '@/lib/api/admin'
 import {
   getCachedAdminData,
@@ -76,16 +81,6 @@ function formatRelative(iso: string | null): string {
   return `${months}mo`
 }
 
-function formatDate(iso: string | null) {
-  if (!iso) return '\u2014'
-  return new Date(iso).toLocaleDateString('es-ES', {
-    day: '2-digit',
-    month: 'short',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
-
 function getResourceBadge(item: ResourceMetricItem): { label: string; className: string } | null {
   if (item.total_views >= HOT_BADGE_MIN_VIEWS && item.conversion_rate >= HOT_BADGE_MIN_CONVERSION) {
     return { label: 'admin.metrics.hot', className: 'bg-red-100 text-red-700 border-red-200' }
@@ -103,23 +98,14 @@ function getResourceBadge(item: ResourceMetricItem): { label: string; className:
   return null
 }
 
-interface KpiCardProps {
-  icon: React.ReactNode
-  label: string
-  value: string | number
-  sub?: string
-}
-
-function KpiCard({ icon, label, value, sub }: KpiCardProps) {
+function KpiCard({ icon, label, value, sub }: { icon: React.ReactNode; label: string; value: string | number; sub?: string }) {
   return (
     <div className="flex items-center gap-4 rounded-xl border border-surface-border bg-surface p-4">
       <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-primary/10 text-brand-primary">
         {icon}
       </div>
       <div>
-        <p className="text-xs font-medium uppercase tracking-wide text-text-secondary">
-          {label}
-        </p>
+        <p className="text-xs font-medium uppercase tracking-wide text-text-secondary">{label}</p>
         <p className="mt-0.5 font-heading text-2xl text-text-primary">{value}</p>
         {sub && <p className="text-xs text-text-secondary">{sub}</p>}
       </div>
@@ -127,17 +113,8 @@ function KpiCard({ icon, label, value, sub }: KpiCardProps) {
   )
 }
 
-function SortDropdown({
-  value,
-  onChange,
-  options,
-}: {
-  value: MetricSort['key']
-  onChange: (v: MetricSort['key']) => void
-  options: { value: MetricSort['key']; labelKey: string }[]
-}) {
+function SortDropdown({ value, onChange, options }: { value: MetricSort['key']; onChange: (v: MetricSort['key']) => void; options: { value: MetricSort['key']; labelKey: string }[] }) {
   const { t } = useTranslation()
-
   return (
     <div className="relative">
       <select
@@ -146,9 +123,7 @@ function SortDropdown({
         className="h-9 appearance-none rounded-lg border border-surface-border bg-surface px-3 pr-8 text-sm text-text-primary cursor-pointer"
       >
         {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {t(o.labelKey)}
-          </option>
+          <option key={o.value} value={o.value}>{t(o.labelKey)}</option>
         ))}
       </select>
       <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-text-secondary" />
@@ -156,15 +131,7 @@ function SortDropdown({
   )
 }
 
-function ResourceRow({
-  resource,
-  isSelected,
-  onClick,
-}: {
-  resource: ResourceMetricItem
-  isSelected: boolean
-  onClick: () => void
-}) {
+function ResourceRow({ resource, isSelected, onClick }: { resource: ResourceMetricItem; isSelected: boolean; onClick: () => void }) {
   const { t } = useTranslation()
   const badge = getResourceBadge(resource)
 
@@ -172,17 +139,11 @@ function ResourceRow({
     <button
       type="button"
       onClick={onClick}
-      className={`flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-all hover:bg-surface-hover ${
-        isSelected ? 'bg-brand-primary/5 ring-1 ring-brand-primary/30' : ''
-      }`}
+      className={`flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-all hover:bg-surface-hover ${isSelected ? 'bg-brand-primary/5 ring-1 ring-brand-primary/30' : ''}`}
     >
       <div className="flex min-w-0 items-center gap-3">
         {resource.thumbnail_url ? (
-          <img
-            src={resource.thumbnail_url}
-            alt={resource.title}
-            className="h-10 w-10 rounded-lg object-cover shrink-0"
-          />
+          <img src={resource.thumbnail_url} alt={resource.title} className="h-10 w-10 rounded-lg object-cover shrink-0" />
         ) : (
           <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-surface-border bg-bg-soft text-sm font-medium text-text-secondary shrink-0">
             {resource.title.slice(0, 1).toUpperCase()}
@@ -190,13 +151,9 @@ function ResourceRow({
         )}
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <p className="truncate font-medium text-text-primary text-sm">
-              {resource.title}
-            </p>
+            <p className="truncate font-medium text-text-primary text-sm">{resource.title}</p>
             {badge && (
-              <span
-                className={`shrink-0 rounded border px-1.5 py-0.5 text-[10px] font-medium ${badge.className}`}
-              >
+              <span className={`shrink-0 rounded border px-1.5 py-0.5 text-[10px] font-medium ${badge.className}`}>
                 {t(badge.label)}
               </span>
             )}
@@ -232,8 +189,8 @@ function ResourceRow({
 function EventTimelineItem({ event }: { event: ResourceMetricEvent }) {
   const { t } = useTranslation()
   const isDownload = event.event_type === 'download' || event.event_type === 'open_external'
-
   const initial = event.user_full_name?.[0]?.toUpperCase() ?? event.user_email?.[0]?.toUpperCase() ?? '?'
+  const countryLabel = event.country ? getCountryLabel(event.country) : null
 
   return (
     <div className="flex items-start gap-3 px-4 py-3">
@@ -244,16 +201,23 @@ function EventTimelineItem({ event }: { event: ResourceMetricEvent }) {
         <p className="truncate text-sm font-medium text-text-primary">
           {event.user_full_name || event.user_email || '\u2014'}
         </p>
-        {event.user_full_name && event.user_email && (
-          <p className="truncate text-xs text-text-secondary">{event.user_email}</p>
-        )}
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+          {event.user_full_name && event.user_email && (
+            <span className="truncate text-xs text-text-secondary">{event.user_email}</span>
+          )}
+          {countryLabel && (
+            <>
+              <span className="text-xs text-text-secondary">\u00b7</span>
+              <span className="inline-flex items-center gap-1 text-xs text-text-secondary">
+                <CountryFlag code={event.country} className="text-xs" />
+                {countryLabel}
+              </span>
+            </>
+          )}
+        </div>
       </div>
       <div className="flex flex-col items-end gap-1 shrink-0">
-        <span
-          className={`text-[10px] font-semibold uppercase tracking-wide ${
-            isDownload ? 'text-brand-primary' : 'text-brand-accent'
-          }`}
-        >
+        <span className={`text-[10px] font-semibold uppercase tracking-wide ${isDownload ? 'text-brand-primary' : 'text-brand-accent'}`}>
           {event.event_type === 'download'
             ? t('admin.metrics.download')
             : event.event_type === 'open_external'
@@ -263,8 +227,57 @@ function EventTimelineItem({ event }: { event: ResourceMetricEvent }) {
         <span className="text-xs text-text-secondary">
           {formatRelative(event.created_at)} {t('admin.metrics.ago')}
         </span>
-        <span className="text-[10px] text-text-secondary">{formatDate(event.created_at)}</span>
       </div>
+    </div>
+  )
+}
+
+function CountryPanel({ countries }: { countries: MetricCountryItem[] }) {
+  const { t } = useTranslation()
+
+  if (countries.length === 0) {
+    return (
+      <EmptyState
+        icon={<Globe2 className="h-5 w-5" />}
+        title={t('admin.metrics.noCountryData')}
+        description={t('admin.metrics.noCountryDataDesc')}
+      />
+    )
+  }
+
+  return (
+    <div className="divide-y divide-surface-border">
+      {countries.map((item, index) => (
+        <div
+          key={`${item.country}-${index}`}
+          className="flex items-center justify-between gap-3 px-4 py-3"
+        >
+          <div className="flex min-w-0 items-center gap-3">
+            <span className="text-sm font-medium text-text-secondary">{index + 1}.</span>
+            <CountryFlag code={item.country} className="text-lg" />
+            <p className="truncate text-sm font-medium text-text-primary">
+              {getCountryLabel(item.country)}
+            </p>
+          </div>
+          <div className="flex items-center gap-4 shrink-0">
+            <div className="flex flex-col items-center">
+              <Eye className="h-3 w-3 text-text-secondary" />
+              <span className="text-sm font-semibold text-text-primary">{item.views}</span>
+              <span className="text-[10px] text-text-secondary">{t('admin.metrics.views')}</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <Download className="h-3 w-3 text-text-secondary" />
+              <span className="text-sm font-semibold text-text-primary">{item.downloads}</span>
+              <span className="text-[10px] text-text-secondary">{t('admin.metrics.downloads')}</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <Users className="h-3 w-3 text-text-secondary" />
+              <span className="text-sm font-semibold text-text-primary">{item.unique_users}</span>
+              <span className="text-[10px] text-text-secondary">{t('admin.metrics.users')}</span>
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   )
 }
@@ -316,17 +329,13 @@ function MetricsSkeleton() {
 
         <SectionCard className="overflow-hidden">
           <div className="flex items-center justify-between border-b border-surface-border px-5 py-4">
-            <div>
-              <Skeleton width={140} height={20} />
-              <Skeleton width={200} height={14} className="mt-1" />
-            </div>
+            <Skeleton width={140} height={20} />
+            <Skeleton width={80} height={36} />
           </div>
-          <div className="flex items-center justify-center p-12">
-            <EmptyState
-              icon={<TrendingUp className="h-5 w-5" />}
-              title="admin.metrics.selectResource"
-              description="admin.metrics.selectResourceDesc"
-            />
+          <div className="flex flex-col items-center justify-center p-12 gap-3">
+            <Skeleton width={48} height={48} variant="circular" />
+            <Skeleton width={120} height={16} variant="text" />
+            <Skeleton width={180} height={12} variant="text" />
           </div>
         </SectionCard>
       </div>
@@ -343,6 +352,7 @@ export default function AdminMetricsPage() {
 
   const [resources, setResources] = useState<ResourceMetricItem[]>([])
   const [summary, setSummary] = useState<ResourceMetricSummary | null>(null)
+  const [countries, setCountries] = useState<MetricCountryItem[]>([])
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState(false)
   const [selectedResource, setSelectedResource] = useState<ResourceMetricItem | null>(null)
@@ -357,10 +367,13 @@ export default function AdminMetricsPage() {
       const cacheKey = `${CACHE_KEY_PREFIX}${targetPeriod}:${targetSort.key}:${targetSort.dir}:${searchQuery}`
       const cachedSummary = getCachedAdminData<ResourceMetricSummary>(`${CACHE_KEY_PREFIX}summary:${targetPeriod}`)
       const cachedResources = getCachedAdminData<ResourceMetricItem[]>(cacheKey)
+      const cachedCountries = getCachedAdminData<MetricCountryItem[]>(`${CACHE_KEY_PREFIX}countries:${targetPeriod}`)
 
-      if (cachedSummary && cachedResources) {
+      if (cachedSummary && cachedResources && cachedCountries) {
         setSummary(cachedSummary)
         setResources(cachedResources)
+        setCountries(cachedCountries)
+        setError(null)
         return
       }
 
@@ -369,12 +382,22 @@ export default function AdminMetricsPage() {
         getResourceMetricSummary(targetPeriod),
       ])
 
+      let countriesData: MetricCountryItem[] = []
+      try {
+        countriesData = await getMetricCountries(targetPeriod)
+      } catch {
+        // Degrade gracefully - countries panel hides if unavailable
+      }
+
       if (signal?.aborted) return
 
       setResources(metricsData)
       setSummary(summaryData)
+      setCountries(countriesData)
+      setError(null)
       setCachedAdminData(cacheKey, metricsData, CACHE_TTL)
       setCachedAdminData(`${CACHE_KEY_PREFIX}summary:${targetPeriod}`, summaryData, CACHE_TTL)
+      setCachedAdminData(`${CACHE_KEY_PREFIX}countries:${targetPeriod}`, countriesData, CACHE_TTL)
     } catch (err) {
       if (signal?.aborted) return
       setError(err instanceof Error ? err.message : t('common.error'))
@@ -467,11 +490,7 @@ export default function AdminMetricsPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <AppButton
-            variant="secondary"
-            onClick={handleExport}
-            disabled={exporting}
-          >
+          <AppButton variant="secondary" onClick={handleExport} disabled={exporting}>
             {exporting ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
@@ -650,6 +669,23 @@ export default function AdminMetricsPage() {
           )}
         </SectionCard>
       </div>
+
+      <SectionCard className="overflow-hidden">
+        <div className="border-b border-surface-border px-5 py-4">
+          <div className="flex items-center gap-2">
+            <Globe2 className="h-5 w-5 text-brand-primary" />
+            <div>
+              <h2 className="font-heading text-lg text-text-primary">
+                {t('admin.metrics.countriesTitle')}
+              </h2>
+              <p className="text-sm text-text-secondary">
+                {t('admin.metrics.countriesSubtitle')}
+              </p>
+            </div>
+          </div>
+        </div>
+        <CountryPanel countries={countries} />
+      </SectionCard>
     </div>
   )
 }

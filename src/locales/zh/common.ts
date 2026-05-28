@@ -119,6 +119,7 @@ const zh = {
             noResourceData: '暂无资源数据。',
             noContributorData: '暂无贡献者数据。',
             noCountryData: '暂无国家/地区数据。',
+            noCountryDataDesc: '尚未记录任何国家/地区的活动。',
         },
         metrics: {
             badge: '指标',

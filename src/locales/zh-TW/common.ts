@@ -118,6 +118,7 @@ nav: {
       noResourceData: '尚無資源數據。',
       noContributorData: '尚無貢獻者數據。',
       noCountryData: '尚無國家數據。',
+      noCountryDataDesc: '尚未記錄任何國家的活動。',
     },
     metrics: {
       badge: '指標',
