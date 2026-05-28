@@ -341,6 +341,15 @@ function sanitizeFileName(fileName: string) {
     .toLowerCase()
 }
 
+export async function deleteContributor(id: string): Promise<{ id: string; name: string; slug: string }> {
+  const { data, error } = await supabase.rpc('delete_admin_contributor', {
+    p_contributor_id: id,
+  })
+
+  if (error) throw new Error(error.message)
+  return data as { id: string; name: string; slug: string }
+}
+
 export async function uploadContributorAvatar(file: File, contributorSlug: string) {
   const extension = file.name.split('.').pop()?.toLowerCase() ?? 'jpg'
   const safeName = sanitizeFileName(file.name.replace(/\.[^.]+$/, ''))

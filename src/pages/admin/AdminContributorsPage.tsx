@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Users, UserCheck, UserX } from 'lucide-react'
+import { Plus, Users, UserCheck, UserX, Trash2, Loader2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 import EmptyState from '@/components/ui/EmptyState'
 import AppButton from '@/components/ui/AppButton'
 import SectionCard from '@/components/ui/SectionCard'
@@ -9,7 +10,7 @@ import SearchInput from '@/components/ui/SearchInput'
 import StatusBadge from '@/components/ui/StatusBadge'
 import AppSelect from '@/components/ui/AppSelect'
 import { AdminTableSkeleton } from '@/components/ui/Skeleton'
-import { getAdminContributors } from '@/lib/api/contributors'
+import { getAdminContributors, deleteContributor } from '@/lib/api/contributors'
 import type { ContributorListItemAdmin } from '@/types/contributors'
 import {
   getCachedAdminData,
@@ -29,6 +30,8 @@ export default function AdminContributorsPage() {
   const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState('')
   const [filterAccess, setFilterAccess] = useState<'all' | 'account' | 'external'>('all')
+  const [confirmingDelete, setConfirmingDelete] = useState<ContributorListItemAdmin | null>(null)
+  const [deleting, setDeleting] = useState(false)
   const hasInitialData = getCachedAdminData<ContributorListItemAdmin[]>(CACHE_KEY) !== null
 
   const loadContributors = useCallback(
@@ -87,6 +90,27 @@ export default function AdminContributorsPage() {
   const active = items.filter((item) => item.is_active).length
   const withAccount = items.filter((item) => item.access_type === 'account').length
   const externalProfiles = items.filter((item) => item.access_type === 'external').length
+
+  async function handleDelete() {
+    if (!confirmingDelete) return
+    setDeleting(true)
+    try {
+      await deleteContributor(confirmingDelete.id)
+      toast.success(t('admin.contributors.deleteSuccess', { name: confirmingDelete.name }))
+      setItems((prev) => prev.filter((c) => c.id !== confirmingDelete.id))
+      setCachedAdminData(CACHE_KEY, items.filter((c) => c.id !== confirmingDelete.id), CACHE_TTL)
+      setConfirmingDelete(null)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : t('admin.contributors.deleteError')
+      if (message.includes('resources') || message.includes('recursos')) {
+        toast.error(t('admin.contributors.deleteHasResourcesError'))
+      } else {
+        toast.error(message)
+      }
+    } finally {
+      setDeleting(false)
+    }
+  }
 
   return (
     <div className="space-y-8">
@@ -255,12 +279,59 @@ export default function AdminContributorsPage() {
                       {t('admin.dashboard.edit')}
                     </AppButton>
                   </Link>
+
+                  <AppButton
+                    variant="ghost"
+                    onClick={() => setConfirmingDelete(item)}
+                    className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    {t('admin.contributors.delete')}
+                  </AppButton>
                 </div>
               </div>
             ))}
           </div>
         )}
       </SectionCard>
+
+      {confirmingDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="mx-4 w-full max-w-md rounded-2xl border border-surface-border bg-surface p-6 shadow-xl">
+            <h3 className="font-heading text-lg text-text-primary">
+              {t('admin.contributors.deleteTitle')}
+            </h3>
+            <p className="mt-2 text-sm text-text-secondary">
+              {t('admin.contributors.deleteDescription', { name: confirmingDelete.name })}
+            </p>
+            <p className="mt-1 text-xs text-text-secondary">
+              @{confirmingDelete.slug}
+            </p>
+            <div className="mt-4 flex items-center justify-end gap-3">
+              <AppButton
+                variant="secondary"
+                onClick={() => setConfirmingDelete(null)}
+                disabled={deleting}
+              >
+                {t('common.cancel')}
+              </AppButton>
+              <AppButton
+                variant="primary"
+                onClick={handleDelete}
+                disabled={deleting}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                {deleting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Trash2 className="h-4 w-4" />
+                )}
+                {deleting ? t('admin.contributors.deleting') : t('admin.contributors.deleteConfirm')}
+              </AppButton>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
