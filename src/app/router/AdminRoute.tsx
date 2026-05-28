@@ -1,6 +1,7 @@
 import { Navigate, useLocation } from 'react-router-dom'
 import type { ReactNode } from 'react'
 import { useAuth } from '@/auth/useAuth'
+import { LoadingState } from '@/components/ui/Skeleton'
 
 type AdminRouteProps = {
   children: ReactNode
@@ -11,7 +12,7 @@ export default function AdminRoute({ children }: AdminRouteProps) {
   const location = useLocation()
 
   if (loading) {
-    return <div className="p-6">Cargando...</div>
+    return <LoadingState variant="fullPage" text="Preparando tu espacio..." />
   }
 
   if (!user) {
@@ -19,7 +20,7 @@ export default function AdminRoute({ children }: AdminRouteProps) {
   }
 
   if (!profile) {
-    return <div className="p-6">Cargando perfil...</div>
+    return <LoadingState variant="fullPage" text="Cargando perfil..." />
   }
 
   if (profile.role !== 'admin') {

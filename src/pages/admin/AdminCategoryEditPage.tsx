@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import CategoryForm from '@/components/admin/CategoryForm'
 import SectionCard from '@/components/ui/SectionCard'
+import { LoadingState } from '@/components/ui/Skeleton'
 import { getCategoryById, updateCategory } from '@/lib/api/categories'
 
 type CategoryRecord = {
@@ -70,11 +71,7 @@ export default function AdminCategoryEditPage() {
   }
 
   if (loading) {
-    return (
-      <SectionCard className="p-6">
-        <p className="text-sm text-text-secondary">{t('common.loading')}</p>
-      </SectionCard>
-    )
+    return <LoadingState variant="section" text="Cargando categoría..." />
   }
 
   if (error || !category) {

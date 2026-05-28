@@ -12,6 +12,7 @@ import {
   type AdminResourceInput,
 } from '@/lib/api/resources'
 import SectionCard from '@/components/ui/SectionCard'
+import { LoadingState } from '@/components/ui/Skeleton'
 import { getResourceTagIds, setResourceTags } from '@/lib/api/tags'
 import { parseSubmitError, getSubmitErrorMessage } from '@/lib/formErrors'
 
@@ -116,11 +117,7 @@ export default function AdminResourceEditPage() {
   }
 
   if (loading) {
-    return (
-      <SectionCard className="p-6">
-        <p className="text-sm text-brand-primary">{t('common.loading')}</p>
-      </SectionCard>
-    )
+    return <LoadingState variant="section" text="Cargando recurso..." />
   }
 
   if (error || !resource) {

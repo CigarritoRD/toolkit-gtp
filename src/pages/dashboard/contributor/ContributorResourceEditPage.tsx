@@ -17,6 +17,7 @@ import AppTextarea from '@/components/ui/AppTextarea'
 import AppSelect from '@/components/ui/AppSelect'
 import AppButton from '@/components/ui/AppButton'
 import FileInput from '@/components/ui/FileInput'
+import { LoadingState } from '@/components/ui/Skeleton'
 import { parseSubmitError, getSubmitErrorMessage } from '@/lib/formErrors'
 
 function slugify(value: string) {
@@ -214,13 +215,7 @@ export default function ContributorResourceEditPage() {
   }
 
   if (loading) {
-    return (
-      <div className="space-y-6">
-        <SectionCard className="p-6">
-          <p className="text-sm text-brand-primary">{t('common.loading')}</p>
-        </SectionCard>
-      </div>
-    )
+    return <LoadingState variant="section" text="Cargando recurso..." />
   }
 
   return (

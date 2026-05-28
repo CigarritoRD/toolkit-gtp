@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import CountryFlag from '@/components/ui/CountryFlag'
+import { LoadingState } from '@/components/ui/Skeleton'
 import { getCountryLabel } from '@/lib/constants/countries'
 import {
   BarChart,
@@ -199,13 +200,7 @@ export default function AdminDashboardPage() {
   }, [t])
 
   if (loading) {
-    return (
-      <div className="space-y-6">
-        <SectionCard className="p-6">
-          <p className="text-sm text-text-secondary">{t('common.loading')}</p>
-        </SectionCard>
-      </div>
-    )
+    return <LoadingState variant="section" text="Cargando estadísticas..." />
   }
 
   if (error || !overview) {

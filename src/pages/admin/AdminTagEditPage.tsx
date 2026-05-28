@@ -6,6 +6,7 @@ import SectionCard from '@/components/ui/SectionCard'
 import AppButton from '@/components/ui/AppButton'
 import AppInput from '@/components/ui/AppInput'
 import AppTextarea from '@/components/ui/AppTextarea'
+import { LoadingState } from '@/components/ui/Skeleton'
 import { getTags, updateTag, type TagRecord } from '@/lib/api/tags'
 
 function slugify(value: string) {
@@ -116,11 +117,7 @@ export default function AdminTagEditPage() {
   }
 
   if (loading) {
-    return (
-      <SectionCard className="p-6">
-        <p className="text-sm text-text-secondary">{t('common.loading')}</p>
-      </SectionCard>
-    )
+    return <LoadingState variant="section" text="Cargando etiqueta..." />
   }
 
   if (error || !tag) {

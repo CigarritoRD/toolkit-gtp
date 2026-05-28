@@ -16,6 +16,7 @@ import AppTextarea from '@/components/ui/AppTextarea'
 import SectionCard from '@/components/ui/SectionCard'
 import TagSelector from '@/components/admin/TagSelector'
 import UploadBox from '@/components/ui/UploadBox'
+import { LoadingState } from '@/components/ui/Skeleton'
 
 type ContributorOption = {
   id: string
@@ -252,7 +253,7 @@ export default function ResourceForm({
                 <p className="text-sm text-red-700">{loadOptionsError}</p>
               </div>
             ) : (
-              <p className="text-sm text-text-secondary">{t('common.loading')}</p>
+              <LoadingState variant="inline" />
             )
           ) : (
             <>

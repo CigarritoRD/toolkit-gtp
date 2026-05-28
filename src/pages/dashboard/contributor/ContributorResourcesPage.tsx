@@ -13,6 +13,7 @@ import AppButton from '@/components/ui/AppButton'
 import StatusBadge from '@/components/ui/StatusBadge'
 import EmptyState from '@/components/ui/EmptyState'
 import { confirmAction } from '@/lib/api/confirm'
+import { LoadingState } from '@/components/ui/Skeleton'
 import { Inbox, Plus, Send, FileEdit } from 'lucide-react'
 
 export default function ContributorResourcesPage() {
@@ -71,13 +72,7 @@ export default function ContributorResourcesPage() {
   }
 
   if (loading) {
-    return (
-      <div className="space-y-6">
-        <SectionCard className="p-6">
-          <p className="text-sm text-brand-primary">{t('common.loading')}</p>
-        </SectionCard>
-      </div>
-    )
+    return <LoadingState variant="section" text="Cargando recursos..." />
   }
 
   return (

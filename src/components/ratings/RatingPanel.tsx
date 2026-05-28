@@ -6,6 +6,7 @@ import AppButton from '@/components/ui/AppButton'
 import AppTextarea from '@/components/ui/AppTextarea'
 import SectionCard from '@/components/ui/SectionCard'
 import StarRating from '@/components/ui/StarRating'
+import { LoadingState } from '@/components/ui/Skeleton'
 import {
   getContributorRatingSummary,
   getContributorReviews,
@@ -117,7 +118,7 @@ export default function RatingPanel({ mode, targetId }: RatingPanelProps) {
           </h2>
           <p className="mt-2 text-sm text-text-secondary">
             {loading
-              ? t('common.loading')
+              ? <LoadingState variant="inline" />
               : t('ratings.summary', {
                   average: summary.average_rating.toFixed(1),
                   count: summary.total_ratings,

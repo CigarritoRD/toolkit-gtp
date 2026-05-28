@@ -13,6 +13,7 @@ import AppInput from '@/components/ui/AppInput'
 import AppTextarea from '@/components/ui/AppTextarea'
 import AppButton from '@/components/ui/AppButton'
 import FileInput from '@/components/ui/FileInput'
+import { LoadingState } from '@/components/ui/Skeleton'
 
 function normalizeUrl(value: string) {
   const trimmed = value.trim()
@@ -107,13 +108,7 @@ export default function ContributorProfilePage() {
   }
 
   if (loading) {
-    return (
-      <div className="space-y-6">
-        <SectionCard className="p-6">
-          <p className="text-sm text-brand-primary">{t('common.loading')}</p>
-        </SectionCard>
-      </div>
-    )
+    return <LoadingState variant="section" text="Cargando perfil..." />
   }
 
   return (

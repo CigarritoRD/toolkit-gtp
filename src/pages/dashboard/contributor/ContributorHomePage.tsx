@@ -5,6 +5,7 @@ import { useAuth } from '@/auth/useAuth'
 import { getMyContributorProfile } from '@/lib/api/contributor-dashboard'
 import SectionCard from '@/components/ui/SectionCard'
 import AppButton from '@/components/ui/AppButton'
+import { LoadingState } from '@/components/ui/Skeleton'
 
 export default function ContributorHomePage() {
   const { t } = useTranslation()
@@ -35,13 +36,7 @@ export default function ContributorHomePage() {
   }, [user?.id])
 
   if (loading) {
-    return (
-      <div className="space-y-6">
-        <SectionCard className="p-6">
-          <p className="text-sm text-brand-primary">{t('common.loading')}</p>
-        </SectionCard>
-      </div>
-    )
+    return <LoadingState variant="section" text="Cargando panel..." />
   }
 
   if (!hasProfile) {

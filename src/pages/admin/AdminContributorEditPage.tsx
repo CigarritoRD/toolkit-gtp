@@ -8,6 +8,7 @@ import type { ContributorFormValues } from '@/schemas/contributor'
 import SectionCard from '@/components/ui/SectionCard'
 import AppButton from '@/components/ui/AppButton'
 import StatusBadge from '@/components/ui/StatusBadge'
+import { LoadingState } from '@/components/ui/Skeleton'
 import {
   getContributorById,
   updateContributor,
@@ -147,11 +148,7 @@ export default function AdminContributorEditPage() {
   }
 
   if (loading) {
-    return (
-      <SectionCard className="p-6">
-        <p className="text-sm text-text-secondary">{t('common.loading')}</p>
-      </SectionCard>
-    )
+    return <LoadingState variant="section" text="Cargando colaborador..." />
   }
 
   if (error || !contributor) {
