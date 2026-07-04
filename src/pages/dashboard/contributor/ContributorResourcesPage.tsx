@@ -72,7 +72,7 @@ export default function ContributorResourcesPage() {
   }
 
   if (loading) {
-    return <LoadingState variant="section" text="Cargando recursos..." />
+    return <LoadingState variant="section" text={t('loading.resources')} />
   }
 
   return (

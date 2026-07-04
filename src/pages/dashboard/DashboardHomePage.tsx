@@ -111,7 +111,7 @@ export default function DashboardHomePage() {
       } catch (err) {
         if (!active) return
         const message =
-          err instanceof Error ? err.message : 'No se pudo cargar el dashboard.'
+          err instanceof Error ? err.message : t('dashboardHome.errorFallback')
         setError(message)
       } finally {
         if (active) setLoading(false)
@@ -123,7 +123,7 @@ export default function DashboardHomePage() {
     return () => {
       active = false
     }
-  }, [user])
+  }, [user, t])
 
   return (
     <div className="bg-bg text-text-primary">
@@ -132,14 +132,13 @@ export default function DashboardHomePage() {
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
-                Dashboard
+                {t('dashboardHome.badge')}
               </p>
               <h1 className="mt-3 font-heading text-4xl md:text-5xl">
-                Tu panel{profile?.full_name ? `, ${profile.full_name}` : ''}
+                {t('dashboardHome.greeting')}{profile?.full_name ? `, ${profile.full_name}` : ''}
               </h1>
               <p className="mt-4 max-w-2xl font-body text-lg text-brand-primary">
-                Revisa tu actividad, vuelve a tus recursos guardados y continúa
-                explorando desde tu espacio personal.
+                {t('dashboardHome.subtitle')}
               </p>
             </div>
 
@@ -148,7 +147,7 @@ export default function DashboardHomePage() {
                 to="/resources"
                 className="inline-flex items-center gap-2 rounded-2xl bg-brand-primary px-5 py-3 font-medium text-white transition hover:opacity-90"
               >
-                Explorar recursos
+                {t('dashboardHome.exploreResources')}
                 <ArrowRight className="h-4 w-4" />
               </Link>
 
@@ -156,7 +155,7 @@ export default function DashboardHomePage() {
                 to="/dashboard/library"
                 className="rounded-2xl border border-surface-border bg-bg-soft px-5 py-3 font-medium text-text-primary transition hover:bg-surface-hover"
               >
-                Ver mi librería
+                {t('dashboardHome.viewLibrary')}
               </Link>
             </div>
           </div>
@@ -179,23 +178,23 @@ export default function DashboardHomePage() {
           </div>
         ) : error ? (
           <SectionCard className="border-red-500/20 bg-red-500/10 p-6">
-            <h2 className="font-heading text-xl">No pudimos cargar tu panel</h2>
+            <h2 className="font-heading text-xl">{t('dashboardHome.errorTitle')}</h2>
             <p className="mt-2 text-sm text-brand-primary">{error}</p>
           </SectionCard>
         ) : (
           <div className="grid gap-6 md:grid-cols-3">
             <StatCard
-              label="Guardados"
+              label={t('dashboardHome.saved')}
               value={stats.savedCount}
               icon={<Bookmark className="h-4 w-4" />}
             />
             <StatCard
-              label="Favoritos"
+              label={t('dashboardHome.favorites')}
               value={stats.favoriteCount}
               icon={<Heart className="h-4 w-4" />}
             />
             <StatCard
-              label="Descargas"
+              label={t('dashboardHome.downloads')}
               value={stats.downloadCount}
               icon={<Download className="h-4 w-4" />}
             />
@@ -329,20 +328,20 @@ export default function DashboardHomePage() {
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
             <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
-              Tu actividad
+              {t('dashboardHome.yourActivity')}
             </p>
-            <h2 className="mt-2 font-heading text-3xl">Recursos recientes</h2>
+            <h2 className="mt-2 font-heading text-3xl">{t('dashboardHome.recentResources')}</h2>
           </div>
           <Link to="/dashboard/library" className="text-sm text-brand-accent">
-            Ver librería
+            {t('dashboardHome.viewAll')}
           </Link>
         </div>
 
         {recentLibrary.length === 0 ? (
           <EmptyState
             icon={<UserPlus className="h-5 w-5" />}
-            title="Tu librería está vacía"
-            description="Guarda o desbloquea recursos para verlos aquí."
+            title={t('dashboardHome.emptyLibraryTitle')}
+            description={t('dashboardHome.emptyLibraryBody')}
           />
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
@@ -373,20 +372,20 @@ export default function DashboardHomePage() {
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
             <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
-              Historial
+              {t('dashboardHome.history')}
             </p>
-            <h2 className="mt-2 font-heading text-3xl">Últimas descargas</h2>
+            <h2 className="mt-2 font-heading text-3xl">{t('dashboardHome.recentDownloads')}</h2>
           </div>
           <Link to="/dashboard/downloads" className="text-sm text-brand-accent">
-            Ver descargas
+            {t('dashboardHome.viewDownloads')}
           </Link>
         </div>
 
         {recentDownloads.length === 0 ? (
           <EmptyState
             icon={<Download className="h-5 w-5" />}
-            title="Aún no tienes descargas"
-            description="Cuando descargues recursos, aparecerán aquí."
+            title={t('dashboardHome.emptyDownloadsTitle')}
+            description={t('dashboardHome.emptyDownloadsBody')}
           />
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">

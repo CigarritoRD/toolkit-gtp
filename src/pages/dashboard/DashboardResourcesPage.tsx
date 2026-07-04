@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Filter, FolderKanban, Tag } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import ResourceCard from '@/components/resources/ResourceCard'
 import EmptyState from '@/components/ui/EmptyState'
 import SearchInput from '@/components/ui/SearchInput'
@@ -13,15 +14,15 @@ import {
 import { getActiveTags, type TagRecord } from '@/lib/api/tags'
 import type { ResourceListItem } from '@/types/resources'
 
-const typeOptions = [
-  { label: 'Todos', value: 'all' },
-  { label: 'PDF', value: 'pdf' },
-  { label: 'Video', value: 'video' },
-  { label: 'Audio', value: 'audio' },
-  { label: 'Imagen', value: 'image' },
-  { label: 'Documento', value: 'document' },
-  { label: 'Enlace', value: 'link' },
-  { label: 'Descarga', value: 'download' },
+const typeOptionKeys = [
+  { labelKey: 'dashboardResources.typeAll', value: 'all' },
+  { labelKey: 'dashboardResources.typePdf', value: 'pdf' },
+  { labelKey: 'dashboardResources.typeVideo', value: 'video' },
+  { labelKey: 'dashboardResources.typeAudio', value: 'audio' },
+  { labelKey: 'dashboardResources.typeImage', value: 'image' },
+  { labelKey: 'dashboardResources.typeDocument', value: 'document' },
+  { labelKey: 'dashboardResources.typeLink', value: 'link' },
+  { labelKey: 'dashboardResources.typeDownload', value: 'download' },
 ]
 
 type ResourceWithTags = ResourceListItem & {
@@ -35,6 +36,7 @@ type ResourceWithTags = ResourceListItem & {
 }
 
 export default function DashboardResourcesPage() {
+  const { t } = useTranslation()
   const [resources, setResources] = useState<ResourceWithTags[]>([])
   const [categories, setCategories] = useState<ResourceCategory[]>([])
   const [tags, setTags] = useState<TagRecord[]>([])
@@ -65,7 +67,7 @@ export default function DashboardResourcesPage() {
         setTags(tagsData)
       } catch (err) {
         if (!active) return
-        setError(err instanceof Error ? err.message : 'Failed to load resources.')
+        setError(err instanceof Error ? err.message : t('dashboardResources.errorFallback'))
       } finally {
         if (active) setLoading(false)
       }
@@ -76,7 +78,7 @@ export default function DashboardResourcesPage() {
     return () => {
       active = false
     }
-  }, [])
+  }, [t])
 
   const filteredResources = useMemo(() => {
     const normalized = query.toLowerCase().trim()
@@ -138,14 +140,13 @@ export default function DashboardResourcesPage() {
       <section className="py-2">
         <SectionCard className="p-8">
           <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
-            Dashboard
+            {t('dashboardResources.badge')}
           </p>
           <h1 className="mt-3 font-heading text-4xl md:text-5xl">
-            Explorar recursos
+            {t('dashboardResources.title')}
           </h1>
           <p className="mt-4 max-w-2xl font-body text-lg text-brand-primary">
-            Descubre materiales desde tu panel personal y encuentra recursos útiles
-            por tema, tipo, colaborador o tags.
+            {t('dashboardResources.subtitle')}
           </p>
         </SectionCard>
       </section>
@@ -157,9 +158,9 @@ export default function DashboardResourcesPage() {
               <Filter className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="font-heading text-lg text-text-primary">Filtros</h2>
+              <h2 className="font-heading text-lg text-text-primary">{t('dashboardResources.filters')}</h2>
               <p className="text-sm text-brand-primary">
-                Ajusta tu búsqueda rápidamente.
+                {t('dashboardResources.filterHelp')}
               </p>
             </div>
           </div>
@@ -168,14 +169,14 @@ export default function DashboardResourcesPage() {
             <SearchInput
               value={query}
               onChange={setQuery}
-              placeholder="Buscar por título, colaborador, categoría o tag..."
+              placeholder={t('dashboardResources.searchPlaceholder')}
             />
 
             <AppSelect
               value={selectedCategory}
               onChange={setSelectedCategory}
             >
-              <option value="all">Todas las categorías</option>
+              <option value="all">{t('dashboardResources.allCategories')}</option>
               {categories.map((category) => (
                 <option key={category.id} value={category.slug}>
                   {category.name}
@@ -187,9 +188,9 @@ export default function DashboardResourcesPage() {
               value={selectedType}
               onChange={setSelectedType}
             >
-              {typeOptions.map((type) => (
+              {typeOptionKeys.map((type) => (
                 <option key={type.value} value={type.value}>
-                  {type.label}
+                  {t(type.labelKey)}
                 </option>
               ))}
             </AppSelect>
@@ -199,7 +200,7 @@ export default function DashboardResourcesPage() {
             <div className="mt-4">
               <div className="mb-3 flex items-center gap-2">
                 <Tag className="h-4 w-4 text-brand-primary" />
-                <p className="text-sm font-medium text-text-primary">Tags</p>
+                <p className="text-sm font-medium text-text-primary">{t('dashboardResources.tags')}</p>
               </div>
 
               <div className="flex flex-wrap gap-3">
@@ -233,7 +234,7 @@ export default function DashboardResourcesPage() {
                 onClick={clearFilters}
                 className="rounded-2xl border border-surface-border bg-bg-soft px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
               >
-                Limpiar filtros
+                {t('dashboardResources.clear')}
               </button>
             </div>
           ) : null}
@@ -258,14 +259,14 @@ export default function DashboardResourcesPage() {
           </div>
         ) : error ? (
           <SectionCard className="border-red-500/20 bg-red-500/10 p-6">
-            <h2 className="font-heading text-xl">No pudimos cargar los recursos</h2>
+            <h2 className="font-heading text-xl">{t('dashboardResources.errorTitle')}</h2>
             <p className="mt-2 text-sm text-brand-primary">{error}</p>
           </SectionCard>
         ) : filteredResources.length === 0 ? (
           <EmptyState
             icon={<FolderKanban className="h-5 w-5" />}
-            title="No encontramos resultados"
-            description="Prueba con otra búsqueda o ajusta los filtros."
+            title={t('dashboardResources.emptyTitle')}
+            description={t('dashboardResources.emptyBody')}
           />
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">

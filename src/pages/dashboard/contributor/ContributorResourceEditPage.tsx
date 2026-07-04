@@ -215,7 +215,7 @@ export default function ContributorResourceEditPage() {
   }
 
   if (loading) {
-    return <LoadingState variant="section" text="Cargando recurso..." />
+    return <LoadingState variant="section" text={t('loading.resource')} />
   }
 
   return (

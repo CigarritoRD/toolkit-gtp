@@ -1,5 +1,6 @@
 import { Navigate, useLocation } from 'react-router-dom'
 import type { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/auth/useAuth'
 import { LoadingState } from '@/components/ui/Skeleton'
 
@@ -8,11 +9,12 @@ type AdminRouteProps = {
 }
 
 export default function AdminRoute({ children }: AdminRouteProps) {
+  const { t } = useTranslation()
   const { user, profile, loading } = useAuth()
   const location = useLocation()
 
   if (loading) {
-    return <LoadingState variant="fullPage" text="Preparando tu espacio..." />
+    return <LoadingState variant="fullPage" text={t('loading.preparing')} />
   }
 
   if (!user) {
@@ -20,7 +22,7 @@ export default function AdminRoute({ children }: AdminRouteProps) {
   }
 
   if (!profile) {
-    return <LoadingState variant="fullPage" text="Cargando perfil..." />
+    return <LoadingState variant="fullPage" text={t('loading.profile')} />
   }
 
   if (profile.role !== 'admin') {

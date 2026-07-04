@@ -200,7 +200,7 @@ export default function AdminDashboardPage() {
   }, [t])
 
   if (loading) {
-    return <LoadingState variant="section" text="Cargando estadísticas..." />
+    return <LoadingState variant="section" text={t('loading.statistics')} />
   }
 
   if (error || !overview) {

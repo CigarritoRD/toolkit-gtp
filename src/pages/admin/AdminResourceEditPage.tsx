@@ -117,7 +117,7 @@ export default function AdminResourceEditPage() {
   }
 
   if (loading) {
-    return <LoadingState variant="section" text="Cargando recurso..." />
+    return <LoadingState variant="section" text={t('loading.resource')} />
   }
 
   if (error || !resource) {

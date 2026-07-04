@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/auth/useAuth'
 import { getUserDownloads, type DashboardResourceItem } from '@/lib/api/dashboard'
 
 export default function DashboardDownloadsPage() {
+  const { t } = useTranslation()
   const { user } = useAuth()
   const [downloads, setDownloads] = useState<DashboardResourceItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -30,7 +32,7 @@ export default function DashboardDownloadsPage() {
       } catch (error) {
         console.error(error)
         if (active) {
-          toast.error('No se pudieron cargar tus descargas.')
+          toast.error(t('dashboardDownloads.errorLoad'))
         }
       } finally {
         if (active) {
@@ -44,20 +46,20 @@ export default function DashboardDownloadsPage() {
     return () => {
       active = false
     }
-  }, [user?.id])
+  }, [user?.id, t])
 
   return (
     <div className="bg-bg text-text-primary">
       <section className="py-2">
         <div className="rounded-3xl border border-surface-border bg-surface p-8 shadow-[var(--shadow-soft)]">
           <p className="text-sm uppercase tracking-[0.2em] text-brand-primary">
-            Descargas
+            {t('dashboardDownloads.badge')}
           </p>
           <h1 className="mt-3 font-heading text-4xl md:text-5xl">
-            Mis descargas
+            {t('dashboardDownloads.title')}
           </h1>
           <p className="mt-4 max-w-2xl font-body text-lg text-brand-primary">
-            Aquí puedes encontrar los recursos que has descargado recientemente.
+            {t('dashboardDownloads.subtitle')}
           </p>
         </div>
       </section>
@@ -84,18 +86,17 @@ export default function DashboardDownloadsPage() {
         ) : downloads.length === 0 ? (
           <div className="rounded-3xl border border-surface-border bg-surface p-10 text-center shadow-[var(--shadow-soft)]">
             <h2 className="font-heading text-2xl text-text-primary">
-              Aún no tienes descargas
+              {t('dashboardDownloads.emptyTitle')}
             </h2>
             <p className="mt-3 text-brand-primary">
-              Cuando descargues recursos, aparecerán aquí para que puedas
-              volver a encontrarlos fácilmente.
+              {t('dashboardDownloads.emptyBody')}
             </p>
 
             <Link
               to="/resources"
               className="mt-6 inline-flex rounded-2xl bg-brand-primary px-5 py-3 font-medium text-white shadow-[var(--shadow-soft)] transition hover:opacity-90"
             >
-              Explorar recursos
+              {t('dashboardDownloads.explore')}
             </Link>
           </div>
         ) : (
@@ -114,7 +115,7 @@ export default function DashboardDownloadsPage() {
                     />
                   ) : (
                     <div className="flex h-full items-center justify-center text-sm text-brand-primary">
-                      Sin miniatura
+                      {t('dashboardDownloads.noThumbnail')}
                     </div>
                   )}
 
@@ -131,12 +132,12 @@ export default function DashboardDownloadsPage() {
                   <p className="mt-2 line-clamp-2 text-sm text-brand-primary">
                     {resource.short_description ||
                       resource.description ||
-                      'Sin descripción.'}
+                      t('dashboardDownloads.noDescription')}
                   </p>
 
                   {resource.contributor ? (
                     <p className="mt-4 text-xs text-neutral-muted">
-                      Por{' '}
+                      {t('dashboardDownloads.by')}{' '}
                       <span className="text-text-primary">
                         {resource.contributor.name}
                       </span>
@@ -148,7 +149,7 @@ export default function DashboardDownloadsPage() {
                       to={`/resources/${resource.slug}`}
                       className="inline-flex rounded-2xl bg-brand-primary px-4 py-2 text-sm font-medium text-white transition hover:opacity-90"
                     >
-                      Ver recurso
+                      {t('dashboardDownloads.viewResource')}
                     </Link>
 
                     {resource.file_url || resource.external_url ? (
@@ -158,7 +159,7 @@ export default function DashboardDownloadsPage() {
                         rel="noreferrer"
                         className="inline-flex rounded-2xl border border-surface-border bg-bg-soft px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
                       >
-                        Abrir archivo
+                        {t('dashboardDownloads.openFile')}
                       </a>
                     ) : null}
                   </div>

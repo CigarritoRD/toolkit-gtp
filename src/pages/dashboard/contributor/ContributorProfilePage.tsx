@@ -108,7 +108,7 @@ export default function ContributorProfilePage() {
   }
 
   if (loading) {
-    return <LoadingState variant="section" text="Cargando perfil..." />
+    return <LoadingState variant="section" text={t('loading.profile')} />
   }
 
   return (

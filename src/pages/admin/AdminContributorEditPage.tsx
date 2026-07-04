@@ -130,25 +130,25 @@ export default function AdminContributorEditPage() {
     try {
       const user = await getUserByEmail(linkEmail.trim())
       if (!user) {
-        setLinkError('No se encontró ningún usuario con ese email.')
+        setLinkError(t('contributorForm.linkErrorEmail'))
         return
       }
 
       await linkContributorToUser(id, user.id)
-      toast.success('Usuario vinculado correctamente.')
+      toast.success(t('contributorForm.linkSuccess'))
 
       const data = await getContributorById(id)
       setContributor(data as unknown as ContributorRecord)
       setLinkEmail('')
     } catch (err) {
-      setLinkError(err instanceof Error ? err.message : 'Error al vincular.')
+      setLinkError(err instanceof Error ? err.message : t('contributorForm.linkErrorGeneric'))
     } finally {
       setLinkLoading(false)
     }
   }
 
   if (loading) {
-    return <LoadingState variant="section" text="Cargando colaborador..." />
+    return <LoadingState variant="section" text={t('loading.contributor')} />
   }
 
   if (error || !contributor) {

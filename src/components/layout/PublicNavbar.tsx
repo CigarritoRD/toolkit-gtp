@@ -56,7 +56,7 @@ export default function PublicNavbar() {
       navigate('/')
     } catch (error) {
       console.error(error)
-      toast.error('No se pudo cerrar sesión.')
+      toast.error(t('dashboardSidebar.signOutError'))
     }
   }
 

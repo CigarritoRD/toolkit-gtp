@@ -71,7 +71,7 @@ export default function AdminCategoryEditPage() {
   }
 
   if (loading) {
-    return <LoadingState variant="section" text="Cargando categoría..." />
+    return <LoadingState variant="section" text={t('loading.category')} />
   }
 
   if (error || !category) {

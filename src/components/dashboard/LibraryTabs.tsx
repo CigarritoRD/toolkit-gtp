@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next'
+
 type LibraryTabValue = 'all' | 'saved' | 'favorite' | 'assigned' | 'unlocked'
 
 type LibraryTabsProps = {
@@ -5,18 +7,19 @@ type LibraryTabsProps = {
   onChange: (value: LibraryTabValue) => void
 }
 
-const tabs: { label: string; value: LibraryTabValue }[] = [
-  { label: 'Todos', value: 'all' },
-  { label: 'Guardados', value: 'saved' },
-  { label: 'Favoritos', value: 'favorite' },
-  { label: 'Asignados', value: 'assigned' },
-  { label: 'Desbloqueados', value: 'unlocked' },
+const tabKeys: { key: string; value: LibraryTabValue }[] = [
+  { key: 'libraryTabs.all', value: 'all' },
+  { key: 'libraryTabs.saved', value: 'saved' },
+  { key: 'libraryTabs.favorites', value: 'favorite' },
+  { key: 'libraryTabs.assigned', value: 'assigned' },
+  { key: 'libraryTabs.unlocked', value: 'unlocked' },
 ]
 
 export default function LibraryTabs({ value, onChange }: LibraryTabsProps) {
+  const { t } = useTranslation()
   return (
     <div className="flex flex-wrap gap-3">
-      {tabs.map((tab) => {
+      {tabKeys.map((tab) => {
         const isActive = tab.value === value
 
         return (
@@ -31,7 +34,7 @@ export default function LibraryTabs({ value, onChange }: LibraryTabsProps) {
                 : 'border border-surface-border bg-surface text-text-primary hover:bg-surface-hover',
             ].join(' ')}
           >
-            {tab.label}
+            {t(tab.key)}
           </button>
         )
       })}

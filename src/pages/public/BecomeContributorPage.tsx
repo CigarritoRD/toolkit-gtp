@@ -189,12 +189,12 @@ export default function BecomeContributorPage() {
     e.preventDefault()
 
     if (!validate()) {
-      toast.error('Revisa los campos marcados e inténtalo de nuevo.')
+      toast.error(t('contributorApply.validationError'))
       return
     }
 
     if (hasPendingOrApproved) {
-      toast.error('Ya tienes una solicitud en revisión o aprobada.')
+      toast.error(t('contributorApply.alreadyPendingOrApproved'))
       return
     }
 
