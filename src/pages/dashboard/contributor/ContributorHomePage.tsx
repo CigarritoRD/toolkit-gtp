@@ -36,7 +36,7 @@ export default function ContributorHomePage() {
   }, [user?.id])
 
   if (loading) {
-    return <LoadingState variant="section" text="Cargando panel..." />
+    return <LoadingState variant="section" text={t('loading.panel')} />
   }
 
   if (!hasProfile) {

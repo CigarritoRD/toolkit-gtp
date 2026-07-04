@@ -7,15 +7,15 @@ import { Home, Library, Download, User, Plus, UserCircle, FileText, Clock, LogOu
 import gtpLogo from '@/assets/gtp-logo.png'
 
 const navItems = [
-  { label: 'Inicio', to: '/dashboard', icon: Home },
-  { label: 'Mi librería', to: '/dashboard/library', icon: Library },
-  { label: 'Descargas', to: '/dashboard/downloads', icon: Download },
-  { label: 'Perfil', to: '/dashboard/profile', icon: User },
+  { labelKey: 'dashboardSidebar.home', to: '/dashboard', icon: Home },
+  { labelKey: 'dashboardSidebar.library', to: '/dashboard/library', icon: Library },
+  { labelKey: 'dashboardSidebar.downloads', to: '/dashboard/downloads', icon: Download },
+  { labelKey: 'dashboardSidebar.profile', to: '/dashboard/profile', icon: User },
 ]
 
 const contributorNavItems = [
-  { label: 'Mi perfil', to: '/dashboard/contributor/profile', icon: UserCircle },
-  { label: 'Mis recursos', to: '/dashboard/contributor/resources', icon: FileText },
+  { labelKey: 'dashboardSidebar.myProfile', to: '/dashboard/contributor/profile', icon: UserCircle },
+  { labelKey: 'dashboardSidebar.myResources', to: '/dashboard/contributor/resources', icon: FileText },
 ]
 
 type DashboardSidebarProps = {
@@ -31,17 +31,17 @@ export default function DashboardSidebar({
   const { status, loading } = useContributorStatus()
 
   const displayName =
-    profile?.full_name?.trim() || user?.email?.split('@')[0] || 'Usuario'
+    profile?.full_name?.trim() || user?.email?.split('@')[0] || t('common.user')
 
   const handleSignOut = async () => {
     try {
       await signOut()
-      toast.success('Sesión cerrada correctamente.')
+      toast.success(t('dashboardSidebar.signOutSuccess'))
       onNavigate?.()
       navigate('/')
     } catch (error) {
       console.error(error)
-      toast.error('No se pudo cerrar sesión.')
+      toast.error(t('dashboardSidebar.signOutError'))
     }
   }
 
@@ -55,7 +55,7 @@ export default function DashboardSidebar({
             </div>
             <div>
               <p className="font-heading text-base font-semibold text-text-primary">Toolkit</p>
-              <p className="text-xs text-brand-primary">Panel de usuario</p>
+              <p className="text-xs text-brand-primary">{t('dashboardSidebar.panel')}</p>
             </div>
           </div>
         </Link>
@@ -85,7 +85,7 @@ export default function DashboardSidebar({
               }
             >
               <Icon className="h-4 w-4 shrink-0" />
-              {item.label}
+              {t(item.labelKey)}
             </NavLink>
           )
         })}
@@ -126,7 +126,7 @@ export default function DashboardSidebar({
           <>
             <div className="my-2 border-t border-surface-border" />
             <p className="mb-1 px-4 text-xs font-medium uppercase tracking-wider text-text-secondary">
-              Colaborador
+              {t('dashboardSidebar.contributor')}
             </p>
             {contributorNavItems.map((item) => {
               const Icon = item.icon
@@ -146,7 +146,7 @@ export default function DashboardSidebar({
                   }
                 >
                   <Icon className="h-4 w-4 shrink-0" />
-                  {item.label}
+                  {t(item.labelKey)}
                 </NavLink>
               )
             })}
@@ -168,7 +168,7 @@ export default function DashboardSidebar({
           className="flex w-full items-center gap-3 rounded-2xl border border-surface-border bg-bg-soft px-4 py-3 text-sm font-medium text-text-primary transition hover:bg-surface-hover"
         >
           <LogOut className="h-4 w-4 shrink-0" />
-          Cerrar sesión
+          {t('dashboardSidebar.signOut')}
         </button>
       </div>
     </aside>

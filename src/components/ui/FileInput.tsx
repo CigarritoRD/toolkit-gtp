@@ -9,6 +9,7 @@ type FileInputProps = {
   maxSize?: number
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   onClear?: () => void
+  inputRef?: React.Ref<HTMLInputElement>
 }
 
 export default function FileInput({
@@ -19,6 +20,7 @@ export default function FileInput({
   maxSize,
   onChange,
   onClear,
+  inputRef,
 }: FileInputProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0]
@@ -43,6 +45,7 @@ export default function FileInput({
 
       <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-surface-border bg-bg-soft px-6 py-6 text-center transition hover:border-brand-accent hover:bg-surface-hover">
         <input
+          ref={inputRef}
           type="file"
           accept={accept}
           onChange={handleChange}

@@ -117,7 +117,7 @@ export default function AdminTagEditPage() {
   }
 
   if (loading) {
-    return <LoadingState variant="section" text="Cargando etiqueta..." />
+    return <LoadingState variant="section" text={t('loading.tag')} />
   }
 
   if (error || !tag) {
