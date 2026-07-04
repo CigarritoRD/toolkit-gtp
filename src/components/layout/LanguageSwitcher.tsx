@@ -80,7 +80,7 @@ export default function LanguageSwitcher() {
         role="listbox"
         aria-label="Idiomas disponibles"
         className={[
-          'absolute left-0 top-full z-50 mt-2 w-48 overflow-hidden rounded-xl border border-surface-border bg-surface shadow-lg',
+          'absolute left-0 top-full z-50 mt-2 w-48 overflow-hidden rounded-xl border border-overlay-border bg-overlay shadow-lg',
           'opacity-0 invisible -translate-y-2 transition-all duration-200',
           isOpen ? 'opacity-100 visible translate-y-0' : '',
         ].join(' ')}
@@ -97,7 +97,7 @@ export default function LanguageSwitcher() {
                 'flex w-full items-center justify-between px-4 py-2.5 text-left text-sm transition-colors',
                 lang.code === currentLang.code
                   ? 'bg-brand-primary/10 text-brand-primary'
-                  : 'text-text-primary hover:bg-surface-hover',
+                  : 'text-text-primary hover:bg-overlay-hover',
               ].join(' ')}
             >
               <span>{lang.label}</span>

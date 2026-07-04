@@ -9,6 +9,10 @@
   --color-surface-border: var(--surface-border);
   --color-surface-strong: var(--surface-strong);
 
+  --color-overlay: var(--overlay);
+  --color-overlay-hover: var(--overlay-hover);
+  --color-overlay-border: var(--overlay-border);
+
   --color-brand-primary: var(--brand-primary);
   --color-brand-accent: var(--brand-accent);
   --color-brand-gray: var(--brand-gray);
@@ -44,6 +48,10 @@
   --surface-hover: #f3f7f7;
   --surface-border: rgba(11, 31, 30, 0.08);
   --surface-strong: rgba(11, 31, 30, 0.12);
+
+  --overlay: #ffffff;
+  --overlay-hover: #f3f7f7;
+  --overlay-border: rgba(11, 31, 30, 0.12);
 
   /* --brand-primary: #007473;
   --brand-accent: #00ABC7; */
@@ -88,6 +96,10 @@
   --surface-hover: rgba(255, 255, 255, 0.08);
   --surface-border: rgba(255, 255, 255, 0.10);
   --surface-strong: rgba(255, 255, 255, 0.12);
+
+  --overlay: #0F1622;
+  --overlay-hover: #1A2333;
+  --overlay-border: rgba(255, 255, 255, 0.18);
 
   --brand-primary: #007473;
   --brand-accent: #00ABC7;
