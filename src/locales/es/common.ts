@@ -178,6 +178,10 @@ const es = {
       exportSuccess: 'Reporte exportado correctamente.',
       exportError: 'No se pudo exportar el reporte.',
       updating: 'Actualizando métricas...',
+      countriesTitle: 'Actividad por país',
+      countriesSubtitle: 'Países desde donde se han abierto recursos.',
+      noCountryData: 'Aún no hay datos de países.',
+      noCountryDataDesc: 'Aún no se ha registrado actividad desde ningún país.',
     },
     applications: {
       badge: 'Solicitudes',

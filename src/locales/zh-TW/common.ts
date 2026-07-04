@@ -267,6 +267,10 @@ nav: {
       exportSuccess: '報告匯出成功。',
       exportError: '無法匯出報告。',
       updating: '正在更新指標...',
+      countriesTitle: '各國活動',
+      countriesSubtitle: '開啟資源的國家。',
+      noCountryData: '尚無國家數據。',
+      noCountryDataDesc: '尚未記錄任何國家的活動。',
     },
     applications: {
       badge: '申請',

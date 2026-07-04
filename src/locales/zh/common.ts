@@ -268,6 +268,10 @@ const zh = {
             exportSuccess: '报告导出成功。',
             exportError: '无法导出报告。',
             updating: '正在更新指标...',
+            countriesTitle: '按国家/地区查看活动',
+            countriesSubtitle: '资源被打开的国家/地区来源。',
+            noCountryData: '暂无国家/地区数据。',
+            noCountryDataDesc: '尚未记录任何国家/地区的活动。',
         },
         applications: {
             badge: '申请',
