@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { LogIn } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/auth/useAuth'
@@ -8,8 +8,33 @@ import AppInput from '@/components/ui/AppInput'
 import AppButton from '@/components/ui/AppButton'
 import SectionCard from '@/components/ui/SectionCard'
 
+type LocationState = { from?: { pathname?: string; search?: string } } | null
+
+function resolveRedirectTarget(
+  state: unknown,
+  role: 'user' | 'contributor' | 'admin' | undefined,
+): string {
+  const from = (state as LocationState)?.from
+  const fromPath = from?.pathname
+  const fromSearch = from?.search ?? ''
+
+  if (fromPath && fromPath !== '/login' && fromPath !== '/register') {
+    if (fromPath.startsWith('/admin') && role !== 'admin') {
+      return '/dashboard'
+    }
+    if (fromPath.startsWith('/dashboard/contributor') && role !== 'contributor' && role !== 'admin') {
+      return '/dashboard'
+    }
+    return `${fromPath}${fromSearch}`
+  }
+
+  if (role === 'admin') return '/admin'
+  return '/dashboard'
+}
+
 export default function LoginPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { t } = useTranslation()
   const { signIn } = useAuth()
 
@@ -49,11 +74,7 @@ export default function LoginPage() {
         throw profileError
       }
 
-      if (profile?.role === 'admin') {
-        navigate('/admin')
-      } else {
-        navigate('/dashboard')
-      }
+      navigate(resolveRedirectTarget(location.state, profile?.role), { replace: true })
     } catch (err) {
       console.error(err)
       setSubmitError(t('auth.invalidCredentials'))
