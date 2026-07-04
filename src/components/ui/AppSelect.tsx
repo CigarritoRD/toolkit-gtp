@@ -233,7 +233,7 @@ export default function AppSelect({
           aria-activedescendant={activeDescendantId}
           tabIndex={-1}
           className={[
-            'absolute left-0 right-0 top-full z-50 mt-2 max-h-60 overflow-auto rounded-xl border border-surface-border bg-surface py-1 shadow-lg',
+            'absolute left-0 right-0 top-full z-50 mt-2 max-h-60 overflow-auto rounded-xl border border-overlay-border bg-overlay py-1 shadow-lg',
             'opacity-0 invisible -translate-y-2 transition-all duration-200',
             isOpen ? 'opacity-100 visible translate-y-0' : '',
           ].join(' ')}
@@ -263,8 +263,8 @@ export default function AppSelect({
                   'flex w-full items-center justify-between px-4 py-2.5 text-left text-sm transition-colors',
                   isSelected
                     ? 'bg-brand-primary/10 text-brand-primary'
-                    : 'text-text-primary hover:bg-surface-hover',
-                  isActive ? 'bg-surface-hover ring-1 ring-brand-primary/30' : '',
+                    : 'text-text-primary hover:bg-overlay-hover',
+                  isActive ? 'bg-overlay-hover ring-1 ring-brand-primary/30' : '',
                   disabled ? 'cursor-not-allowed opacity-60' : '',
                 ].join(' ')}
               >
