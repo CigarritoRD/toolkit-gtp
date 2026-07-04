@@ -36,6 +36,10 @@ void i18n.use(initReactI18next).init({
   },
 })
 
+if (typeof window !== 'undefined') {
+  document.documentElement.lang = i18n.language || 'es'
+}
+
 i18n.on('languageChanged', (lng) => {
   if (typeof window !== 'undefined') {
     localStorage.setItem('tb-language', lng)

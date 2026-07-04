@@ -18,6 +18,7 @@ dist-ssr
 
 # Supabase
 .supabase/
+supabase/.temp/
 
 # Scripts (keep apply-migration.ps1, check-supabase-migration-env.ps1; delete any with credentials)
 scripts/apply-migration.ps1

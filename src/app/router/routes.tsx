@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom'
 
 import GuestRoute from '@/app/router/GuestRoute'
 import ProtectedRoute from '@/app/router/ProtectedRoute'
+import ContributorRoute from '@/app/router/ContributorRoute'
 import AdminRoute from '@/app/router/AdminRoute'
 
 import PublicLayout from '@/components/layout/PublicLayout'
@@ -92,11 +93,16 @@ export const router = createBrowserRouter([
       { path: 'downloads', element: <DashboardDownloadsPage /> },
       { path: 'profile', element: <DashboardProfilePage /> },
 
-      { path: 'contributor', element: <ContributorHomePage /> },
-      { path: 'contributor/profile', element: <ContributorProfilePage /> },
-      { path: 'contributor/resources', element: <ContributorResourcesPage /> },
-      { path: 'contributor/resources/new', element: <ContributorResourceEditPage /> },
-      { path: 'contributor/resources/:id/edit', element: <ContributorResourceEditPage /> },
+      {
+        element: <ContributorRoute />,
+        children: [
+          { path: 'contributor', element: <ContributorHomePage /> },
+          { path: 'contributor/profile', element: <ContributorProfilePage /> },
+          { path: 'contributor/resources', element: <ContributorResourcesPage /> },
+          { path: 'contributor/resources/new', element: <ContributorResourceEditPage /> },
+          { path: 'contributor/resources/:id/edit', element: <ContributorResourceEditPage /> },
+        ],
+      },
     ],
   },
 

@@ -606,6 +606,11 @@ const es = {
     assigned: 'Asignados',
     unlocked: 'Desbloqueados',
   },
+  contributorForm: {
+    linkErrorEmail: 'No se encontró ningún usuario con ese email.',
+    linkErrorGeneric: 'Error al vincular.',
+    linkSuccess: 'Usuario vinculado correctamente.',
+  },
   nav: {
     resources: 'Recursos',
     contributors: 'Colaboradores',

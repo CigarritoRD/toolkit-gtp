@@ -116,7 +116,7 @@ describe('LoginPage', () => {
     await user.type(screen.getByLabelText(/auth.password/i), 'password123')
     await user.click(screen.getByRole('button', { name: /auth.signIn/i }))
 
-    expect(navigateMock).toHaveBeenCalledWith('/dashboard')
+    expect(navigateMock).toHaveBeenCalledWith('/dashboard', { replace: true })
   })
 
   it('navega a /admin cuando el login es exitoso como admin', async () => {
@@ -139,7 +139,7 @@ describe('LoginPage', () => {
     await user.type(screen.getByLabelText(/auth.password/i), 'password123')
     await user.click(screen.getByRole('button', { name: /auth.signIn/i }))
 
-    expect(navigateMock).toHaveBeenCalledWith('/admin')
+    expect(navigateMock).toHaveBeenCalledWith('/admin', { replace: true })
   })
 
   it('no llama a signIn si los campos están vacíos', async () => {

@@ -1,4 +1,10 @@
 {
+  "rewrites": [
+    {
+      "source": "/((?!api/|_next/|_static/|_vercel/|favicon\\.ico|robots\\.txt|gtplogo\\.png|.*\\.(?:js|css|map|json|png|jpg|jpeg|svg|ico|webp|woff2?|ttf|webmanifest|mp4|webm|pdf|txt)$).*)",
+      "destination": "/index.html"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
@@ -25,7 +31,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://tixkibcbfimduxjanpjr.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests;"
+          "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests;"
         }
       ]
     }
