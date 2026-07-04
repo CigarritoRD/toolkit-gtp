@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Camera, RotateCcw, Save } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -31,6 +31,7 @@ export default function AdminAccountPage() {
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const avatarInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     setFullName(initialName)
@@ -159,9 +160,17 @@ export default function AdminAccountPage() {
             {user?.email}
           </p>
 
-          <div className="mt-4 inline-flex items-center gap-2 rounded-2xl border border-surface-border bg-bg-soft px-3 py-2 text-xs text-brand-primary">
-            <Camera className="h-4 w-4" />
-            {profile?.role || 'admin'}
+          <div className="mt-4 flex justify-center">
+            <button
+              type="button"
+              onClick={() => avatarInputRef.current?.click()}
+              className="inline-flex items-center gap-2 rounded-2xl border border-surface-border bg-bg-soft px-3 py-2 text-xs text-brand-primary transition hover:border-brand-accent hover:bg-surface-hover"
+              aria-label={t('profile.avatar')}
+              title={t('profile.avatar')}
+            >
+              <Camera className="h-4 w-4" />
+              {profile?.role || 'admin'}
+            </button>
           </div>
         </SectionCard>
 
@@ -204,6 +213,7 @@ export default function AdminAccountPage() {
               accept="image/*"
               fileName={avatarFile?.name ?? null}
               hint={t('profile.avatarHint')}
+              inputRef={avatarInputRef}
               onChange={(e) => setAvatarFile(e.target.files?.[0] ?? null)}
               onClear={() => setAvatarFile(null)}
             />
